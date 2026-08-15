@@ -66,7 +66,9 @@ export function emitRequestEnd(correlationId: string, requestId: string, toolNam
     tenant_id: 'unknown',
     request_id: requestId,
     tool_name: toolName,
-    duration_ms: durationMs
+    tool_count: 1,
+    duration_ms: durationMs,
+    server_version: getBuildVersion()
   });
 }
 

@@ -8,33 +8,12 @@
  * They never throw; on unexpected input they return a minimal safe record.
  */
 
+import { redactSecrets } from './audit-secret-patterns.js';
+
 const MAX_SUMMARY_DEPTH = 6;
 const MAX_SUMMARY_KEYS = 50;
 const MAX_SUMMARY_STRING_LEN = 2_048;
 const MAX_SUMMARY_ARRAY_ITEMS = 50;
-
-/** Patterns stripped from string values before they reach the audit file. */
-const SECRET_PATTERNS: RegExp[] = [
-  /Bearer\s+[A-Za-z0-9\-._~+/]+=*/gi,
-  /\bsk-[A-Za-z0-9]{20,}/gi,
-  /\bghp_[A-Za-z0-9]{36}/gi,
-  /\bgho_[A-Za-z0-9]{36}/gi,
-  /\bglpat-[A-Za-z0-9\-]{20,}/gi,
-  /\bxox[baprs]-[A-Za-z0-9\-]+/gi,
-  /AIza[A-Za-z0-9\-_]{35}/gi,
-];
-
-const REDACTED = '[REDACTED]';
-
-/** Strip known secret patterns from a string value. */
-function redactSecrets(value: string): string {
-  let result = value;
-  for (const pattern of SECRET_PATTERNS) {
-    pattern.lastIndex = 0;
-    result = result.replace(pattern, REDACTED);
-  }
-  return result;
-}
 
 /** Recursively sanitize a value for audit output (depth-bounded, key-bounded, string-capped). */
 function sanitizeValue(value: unknown, depth = 0): unknown {
@@ -55,12 +34,11 @@ function sanitizeValue(value: unknown, depth = 0): unknown {
   }
   if (Array.isArray(value)) {
     const items = value.slice(0, MAX_SUMMARY_ARRAY_ITEMS).map((v) => sanitizeValue(v, depth + 1));
-    const result: Record<string, unknown> = { items };
     if (value.length > MAX_SUMMARY_ARRAY_ITEMS) {
-      result['_truncated'] = true;
-      result['_original_count'] = value.length;
+      // Wrap with metadata to preserve array semantics in JSON (plan: _truncated flag)
+      return { items, _truncated: true, _original_count: value.length };
     }
-    return result;
+    return items;
   }
   if (typeof value === 'object') {
     const entries = Object.entries(value as Record<string, unknown>);
@@ -92,11 +70,9 @@ export function summarizeRequestArgs(toolName: string, args: unknown): Record<st
       const summary: Record<string, unknown> = {};
       for (const [k, v] of Object.entries(raw)) {
         if (k === 'content' || k === 'markdown') {
-          // At level 2, include length only; level 3 caller should use summarizeResponse for full content
+          // At level 2, include length and metadata only (not raw content)
           summary[`${k}_length`] = typeof v === 'string' ? v.length : 0;
-          summary[k] = typeof v === 'string'
-            ? redactSecrets(v.slice(0, MAX_SUMMARY_STRING_LEN))
-            : sanitizeValue(v, 1);
+          // Pass through non-content fields normally
         } else {
           summary[k] = sanitizeValue(v, 1);
         }

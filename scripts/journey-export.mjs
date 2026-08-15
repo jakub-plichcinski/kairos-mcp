@@ -73,6 +73,8 @@ if (!inputPath) {
 }
 
 // ── Secret redaction ─────────────────────────────────────────────────────────
+// NOTE: Keep in sync with src/utils/audit-secret-patterns.ts (source of truth)
+// This script is standalone (node, not TypeScript) so patterns are duplicated here.
 
 const SECRET_PATTERNS = [
   /Bearer\s+[A-Za-z0-9\-._~+/]+=*/gi,

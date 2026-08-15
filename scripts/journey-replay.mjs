@@ -1,28 +1,15 @@
 #!/usr/bin/env node
 /**
- * Journey replay script.
- *
- * Replays an exported journey JSON against a running KAIROS MCP server.
+ * Journey replay: replays an exported journey JSON against a running KAIROS MCP server.
  * Sends each tool call in sequence and runs consistency checks.
- *
- * Usage:
- *   node scripts/journey-replay.mjs --journey ./journeys/corr-abc.json --server http://localhost:3300
- *
- * Options:
- *   --journey <path>     Path to the journey JSON file (required)
- *   --server <url>       Base URL of the KAIROS server (required)
- *   --bearer <token>     Bearer token for auth (or set JOURNEY_BEARER_TOKEN env)
- *   --strict             Fail on any drift (CI mode, exit code 1)
- *   --redact-tenant <id> Send a different tenant_id (test multi-tenancy)
- *   --dry-run            Validate journey file without sending requests
- *   --help               Show this help message
+ * Usage: node scripts/journey-replay.mjs --journey ./journeys/corr-abc.json --server http://localhost:3300
+ * Options: --journey <path> --server <url> --bearer <token> --strict --redact-tenant <id> --dry-run --help
  */
 
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-// ── CLI argument parsing ─────────────────────────────────────────────────────
-
+// CLI argument parsing
 const args = process.argv.slice(2);
 
 function getArg(name, required = false) {
@@ -41,21 +28,7 @@ function hasFlag(name) {
 }
 
 if (hasFlag('help')) {
-  console.log(`
-Journey replay: replay exported journey against a KAIROS server
-
-Usage:
-  node scripts/journey-replay.mjs --journey ./journeys/corr-abc.json --server http://localhost:3300
-
-Options:
-  --journey <path>     Path to the journey JSON file (required)
-  --server <url>       Base URL of the KAIROS server (required)
-  --bearer <token>     Bearer token for auth (or set JOURNEY_BEARER_TOKEN env)
-  --strict             Fail on any drift (CI mode, exit code 1)
-  --redact-tenant <id> Send a different tenant_id (test multi-tenancy)
-  --dry-run            Validate journey file without sending requests
-  --help               Show this help message
-`);
+  console.log('Journey replay: replay exported journey against a KAIROS server\n\nUsage:\n  node scripts/journey-replay.mjs --journey ./journeys/corr-abc.json --server http://localhost:3300\n\nOptions: --journey <path> --server <url> --bearer <token> --strict --redact-tenant <id> --dry-run --help');
   process.exit(0);
 }
 
@@ -148,13 +121,26 @@ function checkSchemaShape(expectedResponse, actualResult) {
   if (!expectedResponse || !actualResult) return { match: true, diffs: [] };
   const diffs = [];
 
-  // Compare top-level keys
+  // Compare top-level keys and their types
   const expectedKeys = Object.keys(expectedResponse).sort();
   const actualKeys = Object.keys(actualResult).sort();
 
   for (const key of expectedKeys) {
     if (!actualKeys.includes(key)) {
       diffs.push(`missing field "${key}"`);
+    } else {
+      // Validate type match
+      const expectedType = typeof expectedResponse[key];
+      const actualType = typeof actualResult[key];
+      if (expectedType !== actualType) {
+        diffs.push(`field "${key}" type mismatch: expected ${expectedType}, got ${actualType}`);
+      }
+      // Check array shape if both are arrays
+      if (Array.isArray(expectedResponse[key]) && Array.isArray(actualResult[key])) {
+        if (expectedResponse[key].length > 0 && actualResult[key].length === 0) {
+          diffs.push(`field "${key}" array is empty but expected items`);
+        }
+      }
     }
   }
 
@@ -172,9 +158,65 @@ function checkSchemaShape(expectedResponse, actualResult) {
 
 function checkErrorCodeMatch(expectedErrorCode, actualResult) {
   if (!expectedErrorCode) return true;
-  // Check if the actual result contains the same error code
-  const actualStr = JSON.stringify(actualResult);
-  return actualStr.includes(expectedErrorCode);
+  return JSON.stringify(actualResult).includes(expectedErrorCode);
+}
+
+// Check if response body matches recorded response (level 3 exact replay), skipping dynamic fields
+function checkExactMatch(expectedResponse, actualResult) {
+  if (!expectedResponse || !actualResult) return { match: true, diffs: [] };
+  const diffs = [];
+
+  // Fields that are dynamic and should be skipped in exact comparison
+  const dynamicFields = new Set([
+    'execution_id', 'nonce', 'proof_hash', 'created_at', 'updated_at',
+    'timestamp', 'request_id', 'correlation_id', 'duration_ms'
+  ]);
+
+  function compareObjects(expected, actual, path = '') {
+    if (!expected || !actual) {
+      if (expected !== actual) diffs.push(`${path || 'root'}: ${expected} !== ${actual}`);
+      return;
+    }
+
+    if (typeof expected !== typeof actual) {
+      diffs.push(`${path}: type mismatch ${typeof expected} !== ${typeof actual}`);
+      return;
+    }
+
+    if (Array.isArray(expected)) {
+      if (!Array.isArray(actual) || expected.length !== actual.length) {
+        diffs.push(`${path}: array length mismatch`);
+        return;
+      }
+      for (let i = 0; i < expected.length; i++) {
+        compareObjects(expected[i], actual[i], `${path}[${i}]`);
+      }
+      return;
+    }
+
+    if (typeof expected === 'object') {
+      const expectedKeys = Object.keys(expected);
+      const actualKeys = Object.keys(actual);
+
+      for (const key of expectedKeys) {
+        if (dynamicFields.has(key)) continue; // Skip dynamic fields
+        const fullPath = path ? `${path}.${key}` : key;
+        if (!actualKeys.includes(key)) {
+          diffs.push(`${fullPath}: missing`);
+        } else {
+          compareObjects(expected[key], actual[key], fullPath);
+        }
+      }
+      return;
+    }
+
+    if (expected !== actual) {
+      diffs.push(`${path}: ${JSON.stringify(expected)} !== ${JSON.stringify(actual)}`);
+    }
+  }
+
+  compareObjects(expectedResponse, actualResult);
+  return { match: diffs.length === 0, diffs };
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -271,6 +313,17 @@ async function main() {
       } else {
         checks.push(`FAIL: schema drift: ${shapeResult.diffs.join(', ')}`);
         hasFailure = true;
+      }
+
+      // Check 5: exact-match (level 3 only)
+      if (event.response && event.response.content) {
+        const exactResult = checkExactMatch(event.response, actualResult);
+        if (exactResult.match) {
+          checks.push('exact match');
+        } else {
+          checks.push(`WARN: exact drift: ${exactResult.diffs.slice(0, 3).join(', ')}${exactResult.diffs.length > 3 ? '...' : ''}`);
+          warnCount++;
+        }
       }
     }
 
