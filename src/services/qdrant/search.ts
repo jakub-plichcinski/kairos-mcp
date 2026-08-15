@@ -25,14 +25,15 @@ export async function searchMemory(conn: QdrantConnection, query: string, limit?
       const filter = buildSpaceFilter(allowedSpaceIds, domainFilter);
 
       const searchParams: any = {
-        vector: { name: `vs${queryVector.length}`, vector: queryVector },
+        query: queryVector,
+        using: `vs${queryVector.length}`,
         limit: limitVal,
         filter,
         params: { quantization: { rescore: conn.rescoreEnabled } }
       };
 
       logger.debug(`[Qdrant][search] collection=${conn.collectionName} req=${JSON.stringify(searchParams)}`);
-      const searchResult = await conn.client.search(conn.collectionName, searchParams);
+      const searchResult = (await conn.client.query(conn.collectionName, searchParams))?.points ?? [];
       logger.debug(`Qdrant search returned ${searchResult?.length || 0} results`);
       
       qdrantOperations.inc({ 

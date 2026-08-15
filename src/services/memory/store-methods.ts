@@ -219,15 +219,16 @@ export class MemoryQdrantStoreMethods {
       logger.warn(
         `Hybrid query failed, falling back to dense search: ${queryErr instanceof Error ? queryErr.message : String(queryErr)}`
       );
-      const searchResults = await this.client.search(this.collection, {
-        vector: { name: primaryVectorName, vector: queryVector },
+      const fallbackResponse = await this.client.query(this.collection, {
+        query: queryVector,
+        using: primaryVectorName,
         limit: searchLimit,
         filter,
         params: { quantization: { rescore: true } },
         with_payload: true,
         with_vector: false
       });
-      points = searchResults ?? [];
+      points = fallbackResponse?.points ?? [];
     }
     type SearchHit = { id: string | number; score?: number; payload?: Record<string, unknown> | null };
     const scored = points.map((r: SearchHit) => {
