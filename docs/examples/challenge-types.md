@@ -36,5 +36,5 @@ call **`reward`** to finish the run.
 
 For execution semantics (how to perform each challenge type, not infer or
 fabricate), see the **`activate`**, **`forward`**, and **`reward`** tool
-descriptions (and the companion workflow topics in the [project Wiki](https://github.com/debian777/kairos-mcp/wiki)
+descriptions (and the companion workflow topics in the [project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki)
 where noted).

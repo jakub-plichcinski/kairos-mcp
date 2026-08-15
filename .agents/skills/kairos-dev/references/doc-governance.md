@@ -14,9 +14,9 @@ description: >-
 # Documentation governance (kairos-mcp)
 
 **Repository:** `kairos-mcp`
-**Authority rule:** [`documentation-authority`](https://github.com/debian777/kairos-mcp/blob/main/.qoder/rules/documentation-authority.md) (always-on)
-**Agent contract:** [`AGENTS.md`](https://github.com/debian777/kairos-mcp/blob/main/AGENTS.md)
-**Skill index:** [`.agents/skills/README.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/README.md) (`kairos-dev` references)
+**Authority rule:** [`documentation-authority`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.qoder/rules/documentation-authority.md) (always-on)
+**Agent contract:** [`AGENTS.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/AGENTS.md)
+**Skill index:** [`.agents/skills/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/README.md) (`kairos-dev` references)
 
 This skill makes documentation **auto-maintained by the agent**. It reads the
 always-on `documentation-authority` rule and repairs drift against it. The rule
@@ -82,7 +82,7 @@ links are burned down. Once the backlog is clear, promote to `--strict` in
 ### 3. Link-repair pass
 
 - **Retired paths** (`docs/architecture/**`): repoint to the project Wiki
-  (`https://github.com/debian777/kairos-mcp/wiki`) with a descriptive section
+  (`https://github.com/jakub-plichcinski/kairos-mcp/wiki`) with a descriptive section
   name, or drop the link if it added nothing.
 - **Dangling links**: fix the path or remove the reference. Prefer linking to the
   single home over re-adding a copied file.
@@ -138,8 +138,8 @@ This is intentional, justified non-DRY at the doc-text level.
 
 ## Related skills
 
-- [`sync-qoder-repowiki-to-github-wiki` workflow](https://github.com/debian777/kairos-mcp/blob/main/.github/workflows/sync-qoder-repowiki-to-github-wiki.yml)
-  + [`scripts/sync-wiki.sh`](https://github.com/debian777/kairos-mcp/blob/main/scripts/sync-wiki.sh) —
+- [`sync-qoder-repowiki-to-github-wiki` workflow](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.github/workflows/sync-qoder-repowiki-to-github-wiki.yml)
+  + [`scripts/sync-wiki.sh`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/scripts/sync-wiki.sh) —
   publish RepoWiki content to the GitHub Wiki (CI runs the script on push to `main`).
 - [`build-test`](build-test.md) — build/lint/test after changes (`npm run lint`
   includes `lint:docs`).

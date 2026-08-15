@@ -11,9 +11,9 @@ description: >-
 
 # Version bump and release (kairos-mcp)
 
-**Repository:** `kairos-mcp`. **Skill index:** [`.agents/skills/README.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/README.md).
+**Repository:** `kairos-mcp`. **Skill index:** [`.agents/skills/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/README.md).
 **Tag automation:** `.github/workflows/release-tag-on-version-bump.yml` (see
-**[`.github/workflows/README.md`](https://github.com/debian777/kairos-mcp/blob/main/.github/workflows/README.md)**).
+**[`.github/workflows/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.github/workflows/README.md)**).
 **Build/test after merge:** [`kmcp-dev-build-test`](build-test.md).
 
 Releases work **with or without** stepping through every narrative below.
@@ -125,7 +125,7 @@ syncs and is why the staging set above includes `compose.yaml` and
 `helm/kairos-mcp/`:
 
 1. **`version:sync-skills`** — `scripts/build-sync-skill-versions.mjs` (below).
-2. **`compose:sync-app-tag`** — updates the `debian777/kairos-mcp:` image tag in **`compose.yaml`**.
+2. **`compose:sync-app-tag`** — updates the `jakub-plichcinski/kairos-mcp:` image tag in **`compose.yaml`**.
 3. **`helm:sync-app-version`** — `scripts/helm-sync-app-version.mjs` updates **`helm/kairos-mcp/Chart.yaml`** and **`helm/kairos-mcp/values.yaml`**.
 
 ### `version:sync-skills`

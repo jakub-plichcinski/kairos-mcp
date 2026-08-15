@@ -35,7 +35,7 @@ Docker Compose full stack via npm scripts.
 
 - **[dev-environment.md](references/dev-environment.md)** — spin up the local
   full stack (`npm ci`, `npm run infra:up`, `dev:deploy`), ports, and how it
-  maps to [CONTRIBUTING.md](https://github.com/debian777/kairos-mcp/blob/main/CONTRIBUTING.md).
+  maps to [CONTRIBUTING.md](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/CONTRIBUTING.md).
 - **[build-test.md](references/build-test.md)** — the authoritative build /
   deploy / test contract: npm scripts only, always `dev:deploy` before
   `dev:test`. Read this before running any test.
@@ -60,6 +60,6 @@ Docker Compose full stack via npm scripts.
 
 Publishing `.qoder/repowiki/en/content/` to the GitHub Wiki is **not** a manual
 skill. Qoder regenerates the RepoWiki, and the
-[`sync-qoder-repowiki-to-github-wiki`](https://github.com/debian777/kairos-mcp/blob/main/.github/workflows/sync-qoder-repowiki-to-github-wiki.yml)
-workflow runs [`scripts/sync-wiki.sh`](https://github.com/debian777/kairos-mcp/blob/main/scripts/sync-wiki.sh)
+[`sync-qoder-repowiki-to-github-wiki`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.github/workflows/sync-qoder-repowiki-to-github-wiki.yml)
+workflow runs [`scripts/sync-wiki.sh`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/scripts/sync-wiki.sh)
 on push to `main`. See [doc-governance.md](references/doc-governance.md).

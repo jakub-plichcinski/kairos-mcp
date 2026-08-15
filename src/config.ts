@@ -12,7 +12,6 @@ import {
   KAIROS_LOCAL_ARTIFACT_DIRS_DEFAULT,
   parseLocalArtifactDirHints
 } from './utils/kairos-local-artifact-dirs.js';
-export { DEFAULT_OIDC_SCOPES_SUPPORTED, parseOidcScopesSupported } from './http/oidc-scopes.js';
 export { parseLocalArtifactDirHints } from './utils/kairos-local-artifact-dirs.js';
 
 /** Throws if key is missing or empty (after trim). Use for vars that must be set. */

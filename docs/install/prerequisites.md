@@ -15,7 +15,7 @@ variables you place in `.env` or Helm values.
 | **Node.js 25+** + **[KAIROS CLI](../CLI.md)** | Required. Primary interface for auth, bulk management, and verification. Enables KAIROS usage without MCP. |
 
 ```sh
-npm install -g @debian777/kairos-mcp
+npm install -g @jakub-plichcinski/kairos-mcp
 kairos --help
 ```
 

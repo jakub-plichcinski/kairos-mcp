@@ -27,7 +27,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-const REPO_OWNER = 'debian777';
+const REPO_OWNER = 'jakub-plichcinski';
 const REPO_NAME = 'kairos-mcp';
 const REPO_BRANCH = 'main';
 const BLOB_BASE = `https://github.com/${REPO_OWNER}/${REPO_NAME}/blob/${REPO_BRANCH}/`;

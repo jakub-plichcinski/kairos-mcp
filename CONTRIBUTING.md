@@ -216,7 +216,7 @@ npm run dev:test       # run the integration suite against the running server
 The `fullstack` Compose profile provides the optional cache / DB / OIDC
 services. **Keycloak / IdP configuration is your responsibility** — see the
 Deployment and Operations pages in the
-[project Wiki](https://github.com/debian777/kairos-mcp/wiki).
+[project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki).
 
 The [`kairos-dev`](.agents/skills/kairos-dev/SKILL.md) agent skill documents
 this environment plus every maintainer workflow (build/test, bug-fix ship,
@@ -243,7 +243,7 @@ release, QA, wiki publishing). Its reference files live under
    [`scripts/env/.env.template`](scripts/env/.env.template), then set variables
    for your dev stack (embeddings, Qdrant, Redis, session, and any IdP secrets you
    use). **IdP setup is not part of `docs/install/`** — see the
-   Deployment and Operations topic in the [project Wiki](https://github.com/debian777/kairos-mcp/wiki).
+   Deployment and Operations topic in the [project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki).
 2. Start infrastructure (Compose `fullstack` profile and helpers as needed):
 
   ```bash
@@ -347,7 +347,7 @@ npm run knip          # dead code / unused exports
 **Docker**
 
 ```bash
-npm run docker:build  # build image (debian777/kairos-mcp)
+npm run docker:build  # build image (jakub-plichcinski/kairos-mcp)
 ```
 
 **Snapshot management**
@@ -472,7 +472,7 @@ objects. Never swallow errors silently. Include `error_code` and
 - **Logger:** Use `structuredLogger` (from
 `src/utils/structured-logger.ts`) for HTTP/MCP request flow. The same module
 also exports `logger` as an alias used by services. See the
-Testing and Observability topic in the [project Wiki](https://github.com/debian777/kairos-mcp/wiki) for levels, fields, and examples.
+Testing and Observability topic in the [project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki) for levels, fields, and examples.
 - **Tests:** Write integration tests for new tools and API endpoints.
 Place them in `tests/integration/`.
 
@@ -496,7 +496,7 @@ space id + key). Each request runs inside `runWithSpaceContext()`.
 and MCP tool args against `allowedSpaceIds`; invalid → 400/403.
 
 See the Authentication and Security topic in the
-[project Wiki](https://github.com/debian777/kairos-mcp/wiki)
+[project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki)
 for Keycloak URL routing and the current auth model.
 
 ## Constraints

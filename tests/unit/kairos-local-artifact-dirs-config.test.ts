@@ -59,7 +59,7 @@ describe('parseLocalArtifactDirHints', () => {
     // Regression guard for the original bug: server emitted /app/node_modules/... in Docker.
     // Hints must always be relative under a known scheme; absolute filesystem paths must be rejected.
     expect(() =>
-      parseLocalArtifactDirHints('project:///app/node_modules/@debian777/kairos-mcp/.local/kairos/work')
+      parseLocalArtifactDirHints('project:///app/node_modules/@jakub-plichcinski/kairos-mcp/.local/kairos/work')
     ).toThrow(/safe relative path/);
   });
 });

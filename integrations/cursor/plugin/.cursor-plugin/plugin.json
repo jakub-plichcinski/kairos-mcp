@@ -6,8 +6,8 @@
     "name": "Jakub Plichcinski",
     "email": "kuba@xpl.pl"
   },
-  "homepage": "https://github.com/debian777/kairos-mcp",
-  "repository": "https://github.com/debian777/kairos-mcp",
+  "homepage": "https://github.com/jakub-plichcinski/kairos-mcp",
+  "repository": "https://github.com/jakub-plichcinski/kairos-mcp",
   "license": "MIT",
   "keywords": ["kairos", "mcp", "memory", "adapters", "workflows"],
   "logo": "assets/logo.svg",

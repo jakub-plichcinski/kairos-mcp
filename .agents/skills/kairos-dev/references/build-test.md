@@ -9,12 +9,12 @@ description: >-
 # Build, deploy, and test (kairos-mcp)
 
 **Repository:** `kairos-mcp` — Node 24 LTS minimum, TypeScript, Qdrant, Redis, optional Keycloak.
-**Agent contract:** [`AGENTS.md`](https://github.com/debian777/kairos-mcp/blob/main/AGENTS.md). **Adapter execution (shipped skill):**
-[`.agents/skills/kairos/SKILL.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md). **Skill index:**
-[`.agents/skills/README.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/README.md) (`kmcp-dev-*`).
+**Agent contract:** [`AGENTS.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/AGENTS.md). **Adapter execution (shipped skill):**
+[`.agents/skills/kairos/SKILL.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md). **Skill index:**
+[`.agents/skills/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/README.md) (`kmcp-dev-*`).
 
 Use this skill whenever you need to **build**, **deploy**, or **test** this repository.
-Derived from [`CONTRIBUTING.md`](https://github.com/debian777/kairos-mcp/blob/main/CONTRIBUTING.md); this file is the **authoritative**
+Derived from [`CONTRIBUTING.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/CONTRIBUTING.md); this file is the **authoritative**
 execution path for agents in this worktree.
 
 ## Core rules (source of truth)

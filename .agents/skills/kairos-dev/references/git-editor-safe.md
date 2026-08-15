@@ -9,7 +9,7 @@ description: >-
 
 # Git: editor-safe commands (agent terminal)
 
-**Repository:** `kairos-mcp`. **Skill index:** [`.agents/skills/README.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/README.md).
+**Repository:** `kairos-mcp`. **Skill index:** [`.agents/skills/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/README.md).
 
 Maintainers often set **`core.editor = code --wait`**. When **this agent** runs Git in the terminal, prefix commands that may invoke an editor so the IDE does not block automation:
 

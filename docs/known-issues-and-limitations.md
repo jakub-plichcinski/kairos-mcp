@@ -44,7 +44,7 @@ codebase and configuration model.
 ## Upgrades
 
 Release notes are published on
-[GitHub Releases](https://github.com/debian777/kairos-mcp/releases).
+[GitHub Releases](https://github.com/jakub-plichcinski/kairos-mcp/releases).
 
 Before upgrading, check:
 

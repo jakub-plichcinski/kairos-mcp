@@ -5,7 +5,7 @@ app:
   replicaCount: 2
   logFormat: json
   image:
-    repository: quay.io/debian777/kairos-mcp
+    repository: quay.io/jakub-plichcinski/kairos-mcp
 
 # Keep anti-affinity enabled in dev as a soft preference.
 ha:

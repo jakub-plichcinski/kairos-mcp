@@ -198,7 +198,7 @@ See the plan in the repository for details.
 
 ## Relationship to other documentation
 
-- **[Logging (project Wiki)](https://github.com/debian777/kairos-mcp/wiki)** -- general log levels, fields, and
+- **[Logging (project Wiki)](https://github.com/jakub-plichcinski/kairos-mcp/wiki)** -- general log levels, fields, and
   environment variables for the Pino pipeline.
 - **[Incident runbook](incident-runbook.md)** -- using structured logs and the
   optional audit stream for correlation by `request_id`.

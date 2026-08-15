@@ -61,4 +61,4 @@ flowchart LR
 ## More information
 
 For technical details on how protocols actually run in this repository, see
-[Architecture and adapter workflows in the project Wiki](https://github.com/debian777/kairos-mcp/wiki).
+[Architecture and adapter workflows in the project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki).

@@ -2,15 +2,15 @@ apiVersion: v2
 name: kairos-mcp
 description: KAIROS MCP application chart (Phase 2+). Phase 1 data plane lives under helm/infrastructure (Kustomize). Operators under helm/operators.
 type: application
-version: 0.10.0
-appVersion: "4.8.1"
-icon: https://raw.githubusercontent.com/debian777/kairos-mcp/main/logo/kairos-mcp.svg
+version: 0.14.0
+appVersion: "4.8.5"
+icon: https://raw.githubusercontent.com/jakub-plichcinski/kairos-mcp/main/logo/kairos-mcp.svg
 keywords:
   - kairos
   - mcp
 maintainers:
   - name: KAIROS
-    url: https://github.com/debian777/kairos-mcp
+    url: https://github.com/jakub-plichcinski/kairos-mcp
 dependencies:
   - name: qdrant
     version: "1.17.0"

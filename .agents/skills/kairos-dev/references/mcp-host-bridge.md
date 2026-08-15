@@ -19,13 +19,13 @@ This repository commonly uses three MCP server instances. Each one has a
 different purpose and authority boundary.
 
 - **`KAIROS`**: Live server. Treat it as authoritative for everything and use it
-  with the shipped [kairos skill](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md). In this
+  with the shipped [kairos skill](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md). In this
   environment, you (the agent) act as a user, not a developer.
 - **`KAIROS-DEVELOPMENT`**: Development instance built from this worktree,
-  configured at the project level in [mcp.json](https://github.com/debian777/kairos-mcp/blob/main/.agents/mcp.json). Use it as a
+  configured at the project level in [mcp.json](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/mcp.json). Use it as a
   developer/QA to validate local code changes.
 - **`KAIROS-HELM-INTEGRATION`**: Kubernetes instance built from the Helm chart in
-  `helm/`, configured at the project level in [mcp.json](https://github.com/debian777/kairos-mcp/blob/main/.agents/mcp.json). Use it
+  `helm/`, configured at the project level in [mcp.json](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/mcp.json). Use it
   as a developer/QA of the Helm chart to validate the deployment process and app
   availability. The app version can vary.
 

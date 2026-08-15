@@ -3,10 +3,8 @@
  * Limits come from {@link getAdapterMarkdownSizeLimits} / config env vars.
  */
 
-import type { AdapterMarkdownSizeLimits } from '../../config/adapter-markdown-size-limits.js';
 import { getAdapterMarkdownSizeLimits } from '../../config/adapter-markdown-size-limits.js';
 
-export type { AdapterMarkdownSizeLimits };
 
 export interface ValidateAdapterMarkdownSizeOptions {
   /** When false, skip the full-document line count check (layer body updates). Default true. */

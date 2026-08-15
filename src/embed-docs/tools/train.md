@@ -24,7 +24,7 @@ Register a new **adapter** from markdown (one H1 = one adapter; each verifiable 
 - Contract fences must use the `json` language tag only (no plain ``` blocks holding contract JSON).
 - Non-markdown artifacts (`mime` not `text/markdown`) are stored as adapter-linked artifacts instead of stored Markdown layers.
 
-**Size limits (safety):** Before structure checks, the server rejects oversized Markdown and artifact bodies (max logical lines, max UTF-8 bytes per line, and a total-byte ceiling from env — default line cap **350**, default per-line bytes **8192**, safety factor **1.15**). See the Train workflow in the [project Wiki](https://github.com/debian777/kairos-mcp/wiki).
+**Size limits (safety):** Before structure checks, the server rejects oversized Markdown and artifact bodies (max logical lines, max UTF-8 bytes per line, and a total-byte ceiling from env — default line cap **350**, default per-line bytes **8192**, safety factor **1.15**). See the Train workflow in the [project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki).
 
 **Output:** `status: stored` and `items` with `layer_uuid`, `adapter_uri`, `layer` URIs, labels, tags.
 

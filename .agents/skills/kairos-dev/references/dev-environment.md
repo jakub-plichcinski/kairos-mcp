@@ -3,10 +3,10 @@
 How to run kairos-mcp the way maintainers and CI do: the Docker Compose full
 stack, driven by npm scripts. This is the developer counterpart to the
 end-user npx path (which is the `kairos` skill's
-[install reference](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/kairos/references/install.md)).
+[install reference](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/kairos/references/install.md)).
 
 The authoritative narrative for contributors lives in
-[CONTRIBUTING.md](https://github.com/debian777/kairos-mcp/blob/main/CONTRIBUTING.md);
+[CONTRIBUTING.md](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/CONTRIBUTING.md);
 this reference is the agent-facing quick path. If they disagree, CONTRIBUTING.md
 wins.
 
@@ -50,7 +50,7 @@ Once the stack is up, follow the authoritative build/deploy/test contract in
 
 ## Cursor / MCP server ids
 
-The repository ships [`.agents/mcp.json`](https://github.com/debian777/kairos-mcp/blob/main/.agents/mcp.json)
+The repository ships [`.agents/mcp.json`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/mcp.json)
 with the `KAIROS-DEVELOPMENT` entry pointed at the local dev server. Cursor
 users configure the same entry in their own `.cursor/mcp.json` (see
 `docs/install/README.md#cursor-and-mcp`). If an MCP call fails to resolve a

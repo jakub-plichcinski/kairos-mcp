@@ -458,12 +458,12 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           node scripts/ci-github-step-summary.mjs "Install package from tgz" -- \
-            npm install "./artifact-npm/debian777-kairos-mcp-${VERSION}.tgz"
+            npm install "./artifact-npm/jakub-plichcinski-kairos-mcp-${VERSION}.tgz"
 
       - name: Expose installed package dist for CLI tests
         run: |
           rm -rf dist
-          cp -R node_modules/@debian777/kairos-mcp/dist ./dist
+          cp -R node_modules/@jakub-plichcinski/kairos-mcp/dist ./dist
 
       - name: Restore Qdrant test snapshot cache
         uses: actions/cache/restore@v6
@@ -602,12 +602,12 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           node scripts/ci-github-step-summary.mjs "Install package from tgz" -- \
-            npm install "./artifact-npm/debian777-kairos-mcp-${VERSION}.tgz"
+            npm install "./artifact-npm/jakub-plichcinski-kairos-mcp-${VERSION}.tgz"
 
       - name: Expose installed package dist for CLI tests
         run: |
           rm -rf dist
-          cp -R node_modules/@debian777/kairos-mcp/dist ./dist
+          cp -R node_modules/@jakub-plichcinski/kairos-mcp/dist ./dist
 
       - name: Start app (from installed package, simple mode)
         env:
@@ -726,12 +726,12 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           node scripts/ci-github-step-summary.mjs "Install package from tgz" -- \
-            npm install "./artifact-npm/debian777-kairos-mcp-${VERSION}.tgz"
+            npm install "./artifact-npm/jakub-plichcinski-kairos-mcp-${VERSION}.tgz"
 
       - name: Expose installed package dist for CLI tests
         run: |
           rm -rf dist
-          cp -R node_modules/@debian777/kairos-mcp/dist ./dist
+          cp -R node_modules/@jakub-plichcinski/kairos-mcp/dist ./dist
 
       - name: Run STDIO transport smoke tests
         env:
@@ -780,7 +780,7 @@ jobs:
       # Dependabot PRs do not receive DOCKER_* secrets; login with empty creds fails the step.
       - name: Login to Docker Hub
         if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.6.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -796,7 +796,7 @@ jobs:
           set -euo pipefail
           VERSION=$(jq -r .version package.json)
           mkdir -p .ci/docker
-          cp "dist/debian777-kairos-mcp-${VERSION}.tgz" .ci/docker/package.tgz
+          cp "dist/jakub-plichcinski-kairos-mcp-${VERSION}.tgz" .ci/docker/package.tgz
           node scripts/ci-github-step-summary.mjs "Docker build (release-equivalent)" -- \
             docker build --target runtime-ci --build-arg "PACKAGE_VERSION=${VERSION}" -t kairos-mcp:release-ci .
 

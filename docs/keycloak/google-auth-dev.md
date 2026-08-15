@@ -3,7 +3,7 @@
 **Not part of `docs/install/`.** For operators who already run Keycloak (or an
 equivalent IdP) **at their own discretion**. KAIROS talks to Keycloak for OIDC;
 below adds Google as a broker in the **`kairos`** realm. Layout and ports:
-[Infrastructure (project Wiki)](https://github.com/debian777/kairos-mcp/wiki).
+[Infrastructure (project Wiki)](https://github.com/jakub-plichcinski/kairos-mcp/wiki).
 
 ## Prerequisites
 

@@ -40,7 +40,7 @@ authoritative execution contract).
   [`references/`](.agents/skills/kairos-dev/references/).
 - **Code-derivable reference** (architecture, auth, storage, search, workflow
   engine, testing topology): the
-  [project Wiki](https://github.com/debian777/kairos-mcp/wiki).
+  [project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki).
 
 ## Runtime authority split
 

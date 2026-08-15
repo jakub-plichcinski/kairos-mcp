@@ -11,7 +11,6 @@ import { KEYCLOAK_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID, AUTH_CALLBACK_BASE_UR
 import { oidcStateStore } from '../services/oidc-state-store.js';
 import { structuredLogger } from '../utils/structured-logger.js';
 
-export type { OidcStateEntry } from '../services/oidc-state-store.js';
 
 export function buildOidcAuthorizationUrl(state: string, codeChallenge: string): string {
   if (!AUTH_CALLBACK_BASE_URL) {

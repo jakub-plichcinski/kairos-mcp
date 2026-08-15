@@ -32,7 +32,7 @@ When running **MCP-only** workflow tests (no shell, no filesystem except `report
 
 ## Related docs
 
-- [Architecture and adapter workflows (project Wiki)](https://github.com/debian777/kairos-mcp/wiki) — End-to-end flow (**activate** → **forward** → **reward**) and per-tool workflows.
+- [Architecture and adapter workflows (project Wiki)](https://github.com/jakub-plichcinski/kairos-mcp/wiki) — End-to-end flow (**activate** → **forward** → **reward**) and per-tool workflows.
 - [Workflow test README](../../tests/workflow-test/README.md) — Test harness and how to run.
 - Building KAIROS workflows is described in the tool descriptions for
   **`train`** and **`forward`**.

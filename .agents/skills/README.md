@@ -2,7 +2,7 @@
 
 Canonical path: **`.agents/skills/`**. Agent hosts load repo-scoped skills from
 **`.agents/`** and user-scoped skills from **`~/.agents/`**. The `skills` CLI
-also discovers this directory, so `npx skills add debian777/kairos-mcp` works.
+also discovers this directory, so `npx skills add jakub-plichcinski/kairos-mcp` works.
 
 This repository ships exactly **two** discoverable skills:
 

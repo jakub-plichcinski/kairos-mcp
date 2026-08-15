@@ -89,7 +89,7 @@ and `must_obey` fields in real runs.
 match `contract.type`.
 
 For a longer narrative, see the **Workflow Engine** pages in the
-[KAIROS wiki](https://github.com/debian777/kairos-mcp/wiki).
+[KAIROS wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki).
 
 ## What runs in this repository
 
@@ -142,7 +142,7 @@ Compose — install the package globally and point your host at `kairos serve`.
 ### Install
 
 ```bash
-npm install -g @debian777/kairos-mcp
+npm install -g @jakub-plichcinski/kairos-mcp
 kairos --help
 ```
 
@@ -233,22 +233,22 @@ This repository ships its agent skills under
 Install the user skill:
 
 ```bash
-npx skills add debian777/kairos-mcp --skill kairos
+npx skills add jakub-plichcinski/kairos-mcp --skill kairos
 ```
 
 List available skills:
 
 ```bash
-npx skills add debian777/kairos-mcp --list
+npx skills add jakub-plichcinski/kairos-mcp --list
 ```
 
 Popular global installs:
 
 | Agents | Command |
 |--------|---------|
-| Cursor | `npx skills add debian777/kairos-mcp --skill kairos -y -g -a cursor` |
-| Claude Code | `npx skills add debian777/kairos-mcp --skill kairos -y -g -a claude-code` |
-| Cursor + Claude Code | `npx skills add debian777/kairos-mcp --skill kairos -y -g -a cursor -a claude-code` |
+| Cursor | `npx skills add jakub-plichcinski/kairos-mcp --skill kairos -y -g -a cursor` |
+| Claude Code | `npx skills add jakub-plichcinski/kairos-mcp --skill kairos -y -g -a claude-code` |
+| Cursor + Claude Code | `npx skills add jakub-plichcinski/kairos-mcp --skill kairos -y -g -a cursor -a claude-code` |
 
 More detail: [.agents/skills/README.md](.agents/skills/README.md)
 
@@ -269,7 +269,7 @@ See [docs/install/helm.md](docs/install/helm.md) for deployment details.
 - [Install and environment](docs/install/README.md)
 - [Cursor and MCP](docs/install/README.md#cursor-and-mcp)
 - [CLI reference](docs/CLI.md)
-- [Architecture (KAIROS wiki)](https://github.com/debian777/kairos-mcp/wiki)
+- [Architecture (KAIROS wiki)](https://github.com/jakub-plichcinski/kairos-mcp/wiki)
 - [Adapter examples](docs/examples/README.md)
 - [Contributing](CONTRIBUTING.md)
 
@@ -322,8 +322,8 @@ kairos token --validate
 ## Support
 
 - [Documentation](docs/README.md)
-- [Issues](https://github.com/debian777/kairos-mcp/issues)
-- [Discussions](https://github.com/debian777/kairos-mcp/discussions)
+- [Issues](https://github.com/jakub-plichcinski/kairos-mcp/issues)
+- [Discussions](https://github.com/jakub-plichcinski/kairos-mcp/discussions)
 
 ## Trademark
 

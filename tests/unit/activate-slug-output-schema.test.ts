@@ -1,5 +1,5 @@
 /**
- * Regression: activate/search output schemas include per-choice slug (github.com/debian777/kairos-mcp#306).
+ * Regression: activate/search output schemas include per-choice slug (github.com/jakub-plichcinski/kairos-mcp#306).
  * Non-null slugs must satisfy {@link AUTHOR_SLUG_RE} (same as protocol frontmatter / train).
  * Valid examples are derived via {@link slugifyFromTitle} / {@link normalizeAuthorSlug} — not string literals.
  */

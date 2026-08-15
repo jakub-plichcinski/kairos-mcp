@@ -96,7 +96,7 @@ provides authentication, bulk adapter management, verification, and enables
 using KAIROS without adding MCP to your IDE.
 
 ```sh
-npm install -g @debian777/kairos-mcp
+npm install -g @jakub-plichcinski/kairos-mcp
 kairos --help
 ```
 
@@ -148,7 +148,7 @@ curl -sS "http://localhost:3000/health"
 ```
 
 - Discovery: `/.well-known/oauth-protected-resource`
-- Auth: [CLI](../CLI.md#authentication), [auth overview (project Wiki)](https://github.com/debian777/kairos-mcp/wiki)
+- Auth: [CLI](../CLI.md#authentication), [auth overview (project Wiki)](https://github.com/jakub-plichcinski/kairos-mcp/wiki)
 - Plugin: `integrations/cursor/plugin` often uses `http://localhost:3300/mcp`
 - Widgets: `spaces` and `forward` use MCP Apps on hosts that support them
 - Discovery scopes default to

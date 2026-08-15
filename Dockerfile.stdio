@@ -20,7 +20,7 @@ WORKDIR /app
 ARG PACKAGE_VERSION=4.4.0
 RUN test -n "$PACKAGE_VERSION"
 
-RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@debian777/kairos-mcp\":\"${PACKAGE_VERSION}\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.19\"}}" > package.json && \
+RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"${PACKAGE_VERSION}\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.19\"}}" > package.json && \
     npm install --omit=dev && \
     npm cache clean --force
 

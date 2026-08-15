@@ -77,13 +77,13 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.6.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Login to Quay
-        uses: docker/login-action@v4
+        uses: docker/login-action@v4.6.0
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
@@ -101,8 +101,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            debian777/kairos-mcp:latest
-            debian777/kairos-mcp:${{ steps.version.outputs.version }}
+            jakubplichcinski/kairos-mcp:latest
+            jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}
             quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:latest
             quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:${{ steps.version.outputs.version }}
           cache-from: type=gha
@@ -115,15 +115,16 @@ jobs:
         env:
           COSIGN_YES: "true"
         run: |
-          cosign sign "debian777/kairos-mcp:${{ steps.version.outputs.version }}"
-          cosign sign "debian777/kairos-mcp:latest"
-          cosign sign "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:${{ steps.version.outputs.version }}"
-          cosign sign "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:latest"
+          # cosign is idempotent: re-signing adds another valid signature
+          cosign sign --force "jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}"
+          cosign sign --force "jakubplichcinski/kairos-mcp:latest"
+          cosign sign --force "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:${{ steps.version.outputs.version }}"
+          cosign sign --force "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:latest"
 
       - name: Generate CycloneDX SBOM
         uses: anchore/sbom-action@v0
         with:
-          image: debian777/kairos-mcp:${{ steps.version.outputs.version }}
+          image: jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}
           format: cyclonedx-json
           output-file: kairos-mcp-${{ steps.version.outputs.version }}-sbom.cdx.json
           upload-artifact: false
@@ -138,7 +139,7 @@ jobs:
       - name: Trivy container scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: debian777/kairos-mcp:${{ steps.version.outputs.version }}
+          image-ref: jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}
           format: table
           exit-code: "1"
           severity: CRITICAL,HIGH

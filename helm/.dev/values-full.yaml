@@ -7,7 +7,7 @@ app:
   replicaCount: 2
   logFormat: json
   image:
-    repository: quay.io/debian777/kairos-mcp
+    repository: quay.io/jakub-plichcinski/kairos-mcp
   keycloakUrl: http://localhost/sso
   keycloakInternalUrl: http://keycloak-service:8080
   auth:

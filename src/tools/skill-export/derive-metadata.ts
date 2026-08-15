@@ -2,7 +2,6 @@
  * Derive skill frontmatter name, description, and directory slug from protocol markdown and labels.
  */
 
-import { extractMemoryBody } from '../../utils/memory-body.js';
 import { slugifyFromTitle } from '../../utils/protocol-slug.js';
 
 const FRONTMATTER_BLOCK = /^---\r?\n([\s\S]*?)\r?\n---\r?\n/;
@@ -109,4 +108,3 @@ export function stripLeadingFrontmatter(markdown: string): string {
   return t.slice(m[0].length).trim();
 }
 
-export { extractMemoryBody };

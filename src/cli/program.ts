@@ -14,7 +14,6 @@ import { tokenCommand } from './commands/token.js';
 import { serveCommand } from './commands/serve.js';
 import { getCliApiUrlDefault } from './config.js';
 
-export { createClientFromProgram, resolveClientOptions } from './client-factory.js';
 
 const loadPackageJson = createRequire(import.meta.url);
 const { version } = loadPackageJson('../../package.json') as { version: string };

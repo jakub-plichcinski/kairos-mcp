@@ -7,7 +7,7 @@ Keep both the KAIROS server/CLI and the installed agent skills current.
 Upgrade the globally installed package to the latest release:
 
 ```bash
-npm install -g @debian777/kairos-mcp@latest
+npm install -g @jakub-plichcinski/kairos-mcp@latest
 kairos --help
 ```
 
@@ -26,7 +26,7 @@ npx skills update
 To (re)install just the user skill by name:
 
 ```bash
-npx skills add debian777/kairos-mcp --skill kairos
+npx skills add jakub-plichcinski/kairos-mcp --skill kairos
 ```
 
 `kairos` is the only user-facing skill. The maintainer skill `kairos-dev` is

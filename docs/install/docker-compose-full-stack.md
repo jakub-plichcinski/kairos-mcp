@@ -86,4 +86,4 @@ healthy. Add MCP only for hosts that require a streamable HTTP endpoint.
 | [Simple stack](docker-compose-simple.md) | Recommended local path (app + Qdrant only) |
 | [Helm chart](helm.md) | Kubernetes production deployment |
 | [CLI](../CLI.md) | Primary interface for operations |
-| [`compose.yaml`](https://github.com/debian777/kairos-mcp/blob/main/compose.yaml) | Source Compose file |
+| [`compose.yaml`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/compose.yaml) | Source Compose file |

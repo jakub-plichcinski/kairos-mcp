@@ -3,7 +3,7 @@
 # Release images use Dockerfile and install from npm.
 # Base image stays on Node LTS; Node Current is covered in CI via setup-node, not a separate dev image.
 # Multi-arch support for x64 and ARM64
-FROM --platform=$BUILDPLATFORM node:26-alpine@sha256:e88a35be04478413b7c71c455cd9865de9b9360e1f43456be5951032d7ac1a66 AS builder
+FROM --platform=$BUILDPLATFORM node:26-alpine@sha256:233761595746769ebfdb6090f44fc7cdf818ae0ce62d2b37e0367723b9823e36 AS builder
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ COPY logo/ ./logo/
 ENV DOCKER_BUILD=1
 RUN npm run build
 
-FROM node:26-alpine@sha256:e88a35be04478413b7c71c455cd9865de9b9360e1f43456be5951032d7ac1a66 AS production
+FROM node:26-alpine@sha256:233761595746769ebfdb6090f44fc7cdf818ae0ce62d2b37e0367723b9823e36 AS production
 
 VOLUME /snapshots
 

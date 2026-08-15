@@ -21,7 +21,7 @@
 
 set -euo pipefail
 
-REPO_OWNER="debian777"
+REPO_OWNER="jakub-plichcinski"
 REPO_NAME="kairos-mcp"
 SOURCE_DIR="${SOURCE_DIR:-.qoder/repowiki/en/content}"
 

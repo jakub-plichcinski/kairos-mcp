@@ -66,7 +66,7 @@ function findPackageRoot(): string {
     if (existsSync(pkgJson)) {
       try {
         const pkg = JSON.parse(readFileSync(pkgJson, 'utf8')) as { name?: string };
-        if (pkg.name === '@debian777/kairos-mcp') {
+        if (pkg.name === '@jakub-plichcinski/kairos-mcp') {
           return dir;
         }
       } catch {

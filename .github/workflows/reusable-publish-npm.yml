@@ -51,7 +51,18 @@ jobs:
         with:
           node-version: "24"
           cache: "npm"
-          registry-url: "https://registry.npmjs.org"
+          # No registry-url: OIDC trusted publishing handles auth via
+          # ACTIONS_ID_TOKEN_REQUEST_TOKEN/URL. Setting registry-url would
+          # write a .npmrc _authToken entry that overrides OIDC auth.
+
+      - name: Remove empty _authToken so npm uses OIDC
+        run: |
+          # setup-node writes _authToken=${NODE_AUTH_TOKEN} to .npmrc.
+          # When no NPM_TOKEN secret exists, this is empty and blocks OIDC auth.
+          # Remove it so npm falls back to OIDC (ACTIONS_ID_TOKEN_REQUEST_TOKEN/URL).
+          sed -i '/_authToken/d' "$HOME/.npmrc" 2>/dev/null || true
+          echo "registry=https://registry.npmjs.org/" >> "$HOME/.npmrc"
+          cat "$HOME/.npmrc"
 
       - name: Set version and npm tag
         id: version
@@ -104,7 +115,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          out=$(npm publish ./dist/debian777-kairos-mcp-${{ steps.version.outputs.version }}.tgz --access public --tag ${{ steps.version.outputs.npm_tag }} 2>&1)
+          out=$(npm publish ./dist/jakub-plichcinski-kairos-mcp-${{ steps.version.outputs.version }}.tgz --access public --tag ${{ steps.version.outputs.npm_tag }} --provenance 2>&1)
           code=$?
           echo "$out"
           if [ $code -eq 0 ]; then exit 0; fi
@@ -116,11 +127,11 @@ jobs:
 
       - name: Publish to npm (strict)
         if: ${{ !inputs.allow-existing-version && !inputs.force-publish }}
-        run: npm publish ./dist/debian777-kairos-mcp-${{ steps.version.outputs.version }}.tgz --access public --tag ${{ steps.version.outputs.npm_tag }}
+        run: npm publish ./dist/jakub-plichcinski-kairos-mcp-${{ steps.version.outputs.version }}.tgz --access public --tag ${{ steps.version.outputs.npm_tag }} --provenance
 
       - name: Publish to npm (force)
         if: inputs.force-publish
-        run: npm publish ./dist/debian777-kairos-mcp-${{ steps.version.outputs.version }}.tgz --access public --tag ${{ steps.version.outputs.npm_tag }} --force
+        run: npm publish ./dist/jakub-plichcinski-kairos-mcp-${{ steps.version.outputs.version }}.tgz --access public --tag ${{ steps.version.outputs.npm_tag }} --force --provenance
 
       - name: Generate npm CycloneDX SBOM
         if: inputs.upload-sbom

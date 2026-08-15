@@ -234,4 +234,4 @@ and advanced usage.
 - Chart defaults: `helm/kairos-mcp/values.yaml`
 - Operator scripts: `helm/prerequisites/`
 - Dev profiles: `helm/.dev/`
-- Architecture: [project Wiki](https://github.com/debian777/kairos-mcp/wiki)
+- Architecture: [project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki)

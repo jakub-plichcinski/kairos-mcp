@@ -27,8 +27,8 @@ import {
   parseConfigFile,
   writeConfigShape,
 } from './config-file-internals.js';
-export { writeConfig, type WriteConfigInput } from './config-file-write.js';
-export { normalizeApiUrl, getConfigDir, getConfigPath } from './config-file-internals.js';
+export { writeConfig } from './config-file-write.js';
+export { normalizeApiUrl, getConfigPath } from './config-file-internals.js';
 
 export interface CliConfig {
   apiUrl?: string;

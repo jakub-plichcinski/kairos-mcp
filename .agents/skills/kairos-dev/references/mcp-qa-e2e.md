@@ -12,7 +12,7 @@ description: >-
 
 **Repository:** `kairos-mcp`. **Skill:** part of `kairos-dev` (developer,
 internal) — see
-[`.agents/skills/README.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/README.md). **Not** shipped via `npx skills add`
+[`.agents/skills/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/README.md). **Not** shipped via `npx skills add`
 (the user-facing `kairos` skill is).
 
 Use this skill for **structured end-to-end verification** of KAIROS MCP tools
@@ -29,7 +29,7 @@ their stated purposes.
 
 - **`KAIROS`**: Live. Treat it as authoritative for everything. When using it,
   you (the agent) act as a user and run workflows via the shipped
-  [`.agents/skills/kairos/SKILL.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md).
+  [`.agents/skills/kairos/SKILL.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md).
 - **`KAIROS-DEVELOPMENT`**: Local development server built from this worktree.
   Use it as a developer/QA to validate local code changes.
 - **`KAIROS-HELM-INTEGRATION`**: Kubernetes instance built from the Helm chart in
@@ -58,7 +58,7 @@ MCP bridge.
   host-required MCP discovery the IDE provides).
 - **Adapter-governed runs:** **`activate`** → **`forward`** (loop per
   `next_action`) → **`reward`**. Follow
-  [`.agents/skills/kairos/SKILL.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md) zero-drift rules.
+  [`.agents/skills/kairos/SKILL.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md) zero-drift rules.
   File paths, URIs, or payloads required **by the latest server response** are
   in scope for that run only.
 
@@ -97,7 +97,7 @@ MCP bridge.
 ### Report contents (mirror `kairos-bug-report` rigor)
 
 Match the **six-section** contract from
-[`.agents/skills/kairos/references/bug-report.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/kairos/references/bug-report.md):
+[`.agents/skills/kairos/references/bug-report.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/kairos/references/bug-report.md):
 
 1. **Summary** — one sentence: outcome + server id + tool/resource.
 2. **Calls and responses** — chronological **raw JSON** request then response
@@ -143,8 +143,8 @@ only.
 
 | Skill | Role |
 |-------|------|
-| [`.agents/skills/kairos/SKILL.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md) | Adapter execution order and zero drift. |
-| [`.agents/skills/kairos/references/bug-report.md`](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/kairos/references/bug-report.md) | Trace layout for phase 2 (public `reports/` path). |
+| [`.agents/skills/kairos/SKILL.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/kairos/SKILL.md) | Adapter execution order and zero drift. |
+| [`.agents/skills/kairos/references/bug-report.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/kairos/references/bug-report.md) | Trace layout for phase 2 (public `reports/` path). |
 | [`kmcp-dev-build-test`](build-test.md) | npm-only test contract. |
 | [`kmcp-dev-bugfix-ship`](bugfix-ship.md) | End-to-end bug fix to merge-ready. |
 

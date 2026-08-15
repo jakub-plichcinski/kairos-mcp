@@ -6,7 +6,7 @@ globally, then point your host at **`kairos serve`** — **no `--transport`
 flag**, because `serve` already defaults to **stdio**.
 
 This mirrors the user quick start in the repository
-[README](https://github.com/debian777/kairos-mcp/blob/main/README.md). If the
+[README](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/README.md). If the
 two ever disagree, the README is authoritative.
 
 ## Prerequisites
@@ -27,7 +27,7 @@ two ever disagree, the README is authoritative.
 ## Install
 
 ```bash
-npm install -g @debian777/kairos-mcp
+npm install -g @jakub-plichcinski/kairos-mcp
 kairos --help
 ```
 
@@ -87,7 +87,7 @@ kairos --help
 The default is stdio. If you instead need the HTTP server (`/mcp`, `/api/*`,
 `/ui`, `/health`), pass `--transport http` or set `TRANSPORT_TYPE=http`. That
 path is documented for developers in
-[CONTRIBUTING.md](https://github.com/debian777/kairos-mcp/blob/main/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/CONTRIBUTING.md).
 
 ## Troubleshooting
 

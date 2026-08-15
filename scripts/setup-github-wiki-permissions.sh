@@ -13,7 +13,7 @@
 
 set -euo pipefail
 
-REPO="${1:-debian777/kairos-mcp}"
+REPO="${1:-jakub-plichcinski/kairos-mcp}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'

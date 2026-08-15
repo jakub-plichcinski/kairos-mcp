@@ -7,7 +7,7 @@ The `kairos` CLI talks to a running KAIROS server over HTTP.
 Node.js 24 or later is required (Node 24 is the supported LTS baseline; 25 and 26 are exercised as advisory CI lanes).
 
 ```bash
-npm install -g @debian777/kairos-mcp
+npm install -g @jakub-plichcinski/kairos-mcp
 kairos --help
 ```
 
@@ -57,7 +57,7 @@ The root **`--url`** option applies to **client** commands (it sets `KAIROS_API_
 npm run test:package-local
 ```
 
-Same as `npm run build:tgz && npm run test:tgz` (installs `dist/debian777-kairos-mcp-<version>.tgz` into a temp directory and checks `kairos` / `kairos-mcp`).
+Same as `npm run build:tgz && npm run test:tgz` (installs `dist/jakub-plichcinski-kairos-mcp-<version>.tgz` into a temp directory and checks `kairos` / `kairos-mcp`).
 
 Set **`QDRANT_URL`**, **`QDRANT_COLLECTION`**, and an embedding backend (e.g. **`OPENAI_API_KEY`**) as for any server run.
 
@@ -359,7 +359,7 @@ Check Node.js version and reinstall:
 
 ```bash
 node --version
-npm install -g @debian777/kairos-mcp
+npm install -g @jakub-plichcinski/kairos-mcp
 ```
 
 ### Connection refused / timeout
@@ -396,5 +396,5 @@ one host/port pair (for example `http://localhost:3300`) is different from a tok
 - [Install index](install/README.md)
 - [Environment variables and secrets](install/prerequisites.md)
 - [Cursor and MCP](install/README.md#cursor-and-mcp)
-- [Architecture (project Wiki)](https://github.com/debian777/kairos-mcp/wiki)
+- [Architecture (project Wiki)](https://github.com/jakub-plichcinski/kairos-mcp/wiki)
 - [Adapter examples](examples/README.md)

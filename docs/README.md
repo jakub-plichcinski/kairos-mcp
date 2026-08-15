@@ -9,7 +9,7 @@ the single source of truth for those topics.
 
 - Product overview and quick start: root [README](../README.md)
 - Code-derivable reference (architecture, auth, workflows, search, logging,
-  deployment, testing): **[project Wiki](https://github.com/debian777/kairos-mcp/wiki)**
+  deployment, testing): **[project Wiki](https://github.com/jakub-plichcinski/kairos-mcp/wiki)**
 
 > Rule of one: a fact has exactly one home. Pages here link to the Wiki for
 > code-derivable topics instead of restating them. See the

@@ -347,4 +347,3 @@ export {
   buildAuditLine
 };
 export type { Request, Response };
-export type { Logger } from 'pino';

@@ -14,7 +14,7 @@ Generic info for **skill authors**: how the `.agents/skills/` folder is
 organized in this repo and where to author. We do not ship one skill per KAIROS
 protocol (agent skill slots are limited; protocols are unlimited). For **using**
 and installing skills, see
-[the skills README](https://github.com/debian777/kairos-mcp/blob/main/.agents/skills/README.md).
+[the skills README](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/README.md).
 
 ## References
 

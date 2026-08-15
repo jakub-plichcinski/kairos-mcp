@@ -143,7 +143,7 @@ use the CLI for authentication and operational checks.
 | Service | Purpose |
 |---------|---------|
 | `qdrant` | Vector database |
-| `app-prod` | KAIROS application (`debian777/kairos-mcp` image) |
+| `app-prod` | KAIROS application (`jakubplichcinski/kairos-mcp` image) |
 
 ---
 

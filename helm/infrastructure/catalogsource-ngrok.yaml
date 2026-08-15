@@ -7,4 +7,4 @@ spec:
   displayName: ngrok operator catalog
   publisher: ngrok
   sourceType: grpc
-  image: ghcr.io/debian777/ngrok-operator-catalog:latest
+  image: ghcr.io/jakub-plichcinski/ngrok-operator-catalog:latest
