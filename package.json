@@ -219,5 +219,8 @@
     "shell-quote": "^1.10.0",
     "react-router": "^8.3.0",
     "typescript": "^5.9.3"
+  },
+  "allowScripts": {
+    "puppeteer@25.4.0": true
   }
 }
