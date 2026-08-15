@@ -25,7 +25,7 @@ flowchart LR
   subgraph automation["Automation (virtual AI employee)"]
     AFX(CI failure auto-fix)
     ADM(Automerge dependabot and renovate PRs)
-    AUD(npm audit fix weekly)
+    AUD(npm audit fix daily)
     RBP(Rebase PRs on main)
   end
 
@@ -86,7 +86,7 @@ For the GitHub PR flow, treat these as hard rules:
 
 - **CI failure auto-fix (Copilot)** (`ci-failure-auto-fix.yml`): on a failed PR run of **Integration**/**Security**, collects failed jobs and log excerpts, creates a triage issue, and assigns the Copilot coding agent; when Copilot opens a fix PR and its CI is green, the workflow squash-merges it. Loop protection skips Copilot-authored branches and duplicate run ids. Requires Copilot coding agent enabled for the repository (otherwise the issue is left for manual triage).
 - **Automerge dependabot and renovate PRs** (`automerge-dependabot.yml`): arms GitHub auto-merge on every Dependabot/Renovate PR against `main` so bot PRs merge the moment required checks pass; `workflow_dispatch` mode arms already-open bot PRs. Renovate additionally sets `platformAutomerge` and automerges security patch/minor and non-security patch/digest updates itself (`renovate.json`).
-- **npm audit fix (weekly)** (`npm-audit-fix.yml`): weekly `npm audit fix` (never `--force`); when moderate-or-higher advisories are fixed it bumps the **patch** version and opens an auto-merge PR — on merge, **Release tag on version bump** ships the security patch. Policy: patch bumps only for security fixes, not routine dependency updates.
+- **npm audit fix (daily)** (`npm-audit-fix.yml`): daily `npm audit fix` (never `--force`); a patch release PR is opened **only when a fix actually changed** `package.json`/`package-lock.json` (clean runs exit no-op). The bump uses `npm run release:patch` per the release-semver skill contract (`version:sync` keeps skills/embed-docs/compose/helm aligned) and arms auto-merge — on merge, **Release tag on version bump** ships the security patch. Policy: patch bumps only for security fixes, not routine dependency updates.
 
 Dependabot **version updates** are disabled (`dependabot.yml` `updates: []`); Renovate is the single dependency manager. Dependabot security alerts stay enabled and reach Renovate via `osvVulnerabilityAlerts`. Every merge to `main` also triggers **Rebase PRs on main** (`rebase-prs-on-main.yml`), which rebases all open PRs onto the new base — so a merged fix cascades to pending PRs automatically.
 
@@ -159,7 +159,7 @@ flowchart TB
 | Publish Container | `publish` | — |
 | CI failure auto-fix (Copilot) | `triage` → `auto-merge-fix` | `auto-merge-fix` needs `triage` |
 | Automerge dependabot and renovate PRs | `automerge` | — |
-| npm audit fix (weekly) | `audit-fix` | — |
+| npm audit fix (daily) | `audit-fix` | — |
 | Rebase PRs on main | `rebase` | — |
 
 ## Integration workflow
