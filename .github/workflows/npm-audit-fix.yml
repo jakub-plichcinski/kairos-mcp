@@ -1,15 +1,18 @@
-# Virtual AI employee, part C: scheduled npm audit fix with patch releases.
-# Weekly: if npm audit reports fixable advisories, run npm audit fix (never
-# --force), bump the patch version, open an auto-merge PR. On merge,
+# Virtual AI employee, part C: daily npm audit fix with conditional patch releases.
+# Daily: if npm audit reports fixable advisories, run npm audit fix (never
+# --force). A patch-release PR is opened ONLY when a fix actually changed
+# package.json/package-lock.json; clean runs exit as a no-op. The bump uses
+# npm run release:patch per the release-semver skill contract (version:sync
+# keeps skills/embed-docs/compose/helm aligned). On merge,
 # release-tag-on-version-bump.yml tags and dispatches Release, so security
 # patches ship end-to-end unattended. Version-bump policy: patch bumps only
 # for security fixes, not for routine dependency updates.
 # Requires AUTO_MERGE_TOKEN (same secret as the other automation workflows).
-name: npm audit fix (weekly)
+name: npm audit fix (daily)
 
 on:
   schedule:
-    - cron: "0 6 * * 1"
+    - cron: "0 6 * * *"
   workflow_dispatch: {}
 
 concurrency:
@@ -26,6 +29,7 @@ jobs:
       contents: write
       pull-requests: write
     env:
+      HUSKY: 0
       GH_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN }}
       REPO: ${{ github.repository }}
     steps:
@@ -82,23 +86,27 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          npm version patch --no-git-tag-version
+          # Skill contract (kairos-dev/references/release-semver.md): bump via
+          # release:patch so version:sync updates skills/embed-docs/compose/helm.
+          npm run release:patch
+          VERSION=$(node -p "require('./package.json').version")
           datestamp=$(date -u +%Y%m%d)
           branch="chore/audit-fix-${datestamp}"
           git checkout -b "$branch"
-          git add package.json package-lock.json
-          git commit -m "fix(deps): npm audit fix + patch release"
+          git add package.json package-lock.json src/embed-docs/mem/ .agents/skills/ compose.yaml helm/kairos-mcp/
+          git commit -m "release: ${VERSION} (npm audit fix)"
           git push origin "$branch"
           {
-            echo "Automated weekly \`npm audit fix\` run resolved moderate-or-higher advisories."
+            echo "Automated daily \`npm audit fix\` run resolved moderate-or-higher advisories."
             echo ""
             echo '```'
             tail -n 30 audit-before.txt
             echo '```'
             echo ""
-            echo "Patch version bumped; on merge, Release tag on version bump tags and dispatches Release."
+            echo "Patch version bumped to ${VERSION} via release:patch (version:sync applied)."
+            echo "On merge, Release tag on version bump tags and dispatches Release."
           } > pr-body.md
           pr=$(gh pr create --base main --head "$branch" \
-            --title "fix(deps): npm audit fix + patch release (${datestamp})" \
+            --title "release: ${VERSION} (npm audit fix, ${datestamp})" \
             --body-file pr-body.md)
           gh pr merge "$pr" --auto --squash || echo "Could not arm auto-merge (token permission?)."
