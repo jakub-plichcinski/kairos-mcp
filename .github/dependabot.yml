@@ -1,27 +1,9 @@
-# Dependabot version updates — daily schedule for faster vulnerability response
-# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# Dependabot version updates are DISABLED: Renovate (renovate.json) is the
+# single dependency manager for npm, github-actions, docker, docker-compose,
+# and helm. Running both produced duplicate grouped PRs.
+# Keep Dependabot *security alerts* enabled in repo Settings -> Code security
+# and analysis; Renovate consumes them via osvVulnerabilityAlerts.
+# Also disable "Dependabot version updates" in that settings page so no new
+# Dependabot PRs are opened.
 version: 2
-updates:
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    # typescript-eslint 8.x peers typescript <6; keep TS 5 until a release widens the range.
-    ignore:
-      - dependency-name: "typescript"
-        update-types: ["version-update:semver-major"]
-    groups:
-      # Bundle all npm version updates into a single PR (branch/title: npm-dependencies)
-      npm-dependencies:
-        patterns:
-          - "*"
-
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "daily"
+updates: []
