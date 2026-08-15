@@ -22,9 +22,17 @@ flowchart LR
     PCONT(Publish Container)
   end
 
+  subgraph automation["Automation (virtual AI employee)"]
+    AFX(CI failure auto-fix)
+    ADM(Automerge dependabot and renovate PRs)
+    AUD(npm audit fix weekly)
+    RBP(Rebase PRs on main)
+  end
+
   PR --> INT
   PUSH --> INT
   PUSH --> RTAG
+  PUSH --> RBP
   TAG --> INT
   TAG --> REL
   RTAG -->|"if version > latest tag"| TAG
@@ -33,13 +41,19 @@ flowchart LR
   MANUAL --> INT
   MANUAL --> PNPM
   MANUAL --> PCONT
+  INT -->|"PR run failed"| AFX
+  PR -->|"bot PR"| ADM
+  AUD -->|"patch PR, auto-merge"| PR
+  AFX -->|"fix merged"| PUSH
 
   classDef trigger fill:#e2e8f0,stroke:#64748b,color:#1e293b
   classDef integration fill:#dcfce7,stroke:#16a34a,color:#166534
   classDef release fill:#fef3c7,stroke:#d97706,color:#92400e
+  classDef automation fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
   class PR,PUSH,TAG,MANUAL trigger
   class INT integration
   class RTAG,REL,PNPM,PIMG,PCONT release
+  class AFX,ADM,AUD,RBP automation
 ```
 
 **Release path (normal flow):** Version-bump PR merged to main → **Release tag on version bump** runs; if `package.json` version &gt; latest tag, it pushes that tag → **Release** runs on tag push (publish npm → publish Docker → create GitHub Release).
@@ -68,7 +82,13 @@ For the GitHub PR flow, treat these as hard rules:
 - If skip instructions are used but checks still run, verify the latest commit
   message first, then verify required checks in branch protection settings.
 
-**Dependabot:** Auto-merge is enabled at repository level (Settings → General → Pull Requests → Allow auto-merge). On each Dependabot PR, use **Enable auto-merge**; the PR will merge when required status checks pass. No workflow is used for this.
+**Bot and AI automation (virtual AI employee):** Auto-merge must be allowed at repository level (Settings → General → Pull Requests → Allow auto-merge). Three workflows then run dependency/CI upkeep unattended, all keyed on the `AUTO_MERGE_TOKEN` secret (a token able to satisfy branch protection; `GITHUB_TOKEN` cannot):
+
+- **CI failure auto-fix (Copilot)** (`ci-failure-auto-fix.yml`): on a failed PR run of **Integration**/**Security**, collects failed jobs and log excerpts, creates a triage issue, and assigns the Copilot coding agent; when Copilot opens a fix PR and its CI is green, the workflow squash-merges it. Loop protection skips Copilot-authored branches and duplicate run ids. Requires Copilot coding agent enabled for the repository (otherwise the issue is left for manual triage).
+- **Automerge dependabot and renovate PRs** (`automerge-dependabot.yml`): arms GitHub auto-merge on every Dependabot/Renovate PR against `main` so bot PRs merge the moment required checks pass; `workflow_dispatch` mode arms already-open bot PRs. Renovate additionally sets `platformAutomerge` and automerges security patch/minor and non-security patch/digest updates itself (`renovate.json`).
+- **npm audit fix (weekly)** (`npm-audit-fix.yml`): weekly `npm audit fix` (never `--force`); when moderate-or-higher advisories are fixed it bumps the **patch** version and opens an auto-merge PR — on merge, **Release tag on version bump** ships the security patch. Policy: patch bumps only for security fixes, not routine dependency updates.
+
+Dependabot **version updates** are disabled (`dependabot.yml` `updates: []`); Renovate is the single dependency manager. Dependabot security alerts stay enabled and reach Renovate via `osvVulnerabilityAlerts`. Every merge to `main` also triggers **Rebase PRs on main** (`rebase-prs-on-main.yml`), which rebases all open PRs onto the new base — so a merged fix cascades to pending PRs automatically.
 
 **Manual-only:** Publish npm and Publish Container are for ad-hoc republish/debug; they use `package.json` version when not run from a tag.
 
@@ -137,6 +157,10 @@ flowchart TB
 | Publish npm | `publish` | — |
 | Publish image (in Release) | `publish-docker` | after `publish-npm` |
 | Publish Container | `publish` | — |
+| CI failure auto-fix (Copilot) | `triage` → `auto-merge-fix` | `auto-merge-fix` needs `triage` |
+| Automerge dependabot and renovate PRs | `automerge` | — |
+| npm audit fix (weekly) | `audit-fix` | — |
+| Rebase PRs on main | `rebase` | — |
 
 ## Integration workflow
 

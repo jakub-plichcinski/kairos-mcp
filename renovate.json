@@ -4,6 +4,7 @@
   "schedule": [
     "before 10am"
   ],
+  "platformAutomerge": true,
   "osvVulnerabilityAlerts": true,
   "openPullRequestsLimit": 10,
   "vulnerabilityAlerts": {
@@ -39,6 +40,16 @@
     }
   ],
   "packageRules": [
+    {
+      "description": "Keep TypeScript on its current major: typescript-eslint peers a narrower TS range (carried over from disabled dependabot ignore)",
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
     {
       "description": "Group npm updates into one PR",
       "matchManagers": [
@@ -130,6 +141,17 @@
       "matchUpdateTypes": [
         "patch",
         "minor"
+      ],
+      "automerge": true
+    },
+    {
+      "description": "Automerge all non-security patch updates when CI is green (minors/majors stay manual-review)",
+      "matchCategories": [
+        "!security"
+      ],
+      "matchUpdateTypes": [
+        "patch",
+        "digest"
       ],
       "automerge": true
     }

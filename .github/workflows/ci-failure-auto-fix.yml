@@ -1,0 +1,216 @@
+# Virtual AI employee, part A: pipeline error handler.
+# When PR CI (Integration/Security) fails, collect failure context, hand it to
+# Copilot coding agent via issue assignment, then auto-merge the resulting fix
+# PR once its own CI is green. Merging to main fires rebase-prs-on-main.yml,
+# which cascades the fix to all pending PRs.
+# Loop protection: Copilot-authored branches and duplicate run ids are skipped.
+# Requires: AUTO_MERGE_TOKEN secret (token able to satisfy branch protection)
+# and Copilot coding agent enabled for the repository.
+name: CI failure auto-fix (Copilot)
+
+on:
+  workflow_run:
+    workflows: [Integration, Security]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Failed workflow run id to triage (dry-run mode)"
+        required: true
+
+concurrency:
+  group: ci-failure-auto-fix-${{ github.event.workflow_run.id || inputs.run_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  triage:
+    name: Triage failure and assign Copilot
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pull-requests: read
+      issues: write
+    outputs:
+      issue: ${{ steps.assign.outputs.issue }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Resolve failed run and originating PR
+        id: run
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            run_id="${{ inputs.run_id }}"
+          else
+            run_id="${{ github.event.workflow_run.id }}"
+            conclusion="${{ github.event.workflow_run.conclusion }}"
+            event="${{ github.event.workflow_run.event }}"
+            if [ "$conclusion" != "failure" ] || [ "$event" != "pull_request" ]; then
+              echo "Not a failed PR run (conclusion=$conclusion event=$event); skipping."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          run_json=$(gh api "repos/${REPO}/actions/runs/${run_id}")
+          head_branch=$(printf '%s' "$run_json" | jq -r '.head_branch')
+          # Loop protection: never auto-fix Copilot's own fix PRs.
+          case "$head_branch" in
+            copilot/*) echo "Copilot-authored branch; skipping."
+              echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0 ;;
+          esac
+          # Dedupe: one triage issue per failing run id.
+          marker="workflow run ${run_id}"
+          existing=$(gh issue list --state open --limit 100 --search "in:title \"${marker}\"" --json number --jq 'length')
+          if [ "$existing" != "0" ]; then
+            echo "Issue already exists for run ${run_id}; skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          pr_number=$(printf '%s' "$run_json" | jq -r '.pull_requests[0].number // empty')
+          if [ -z "$pr_number" ]; then
+            pr_number=$(gh api "repos/${REPO}/actions/runs/${run_id}/pulls" --jq '.[0].number // empty')
+          fi
+          if [ -z "$pr_number" ]; then
+            echo "No PR associated with run ${run_id}; skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
+          echo "pr=${pr_number}" >> "$GITHUB_OUTPUT"
+          echo "sha=$(printf '%s' "$run_json" | jq -r '.head_sha')" >> "$GITHUB_OUTPUT"
+          echo "name=$(printf '%s' "$run_json" | jq -r '.name')" >> "$GITHUB_OUTPUT"
+
+      - name: Collect failed jobs and log excerpts
+        if: steps.run.outputs.skip != 'true'
+        id: logs
+        run: |
+          set -euo pipefail
+          run_id="${{ steps.run.outputs.run_id }}"
+          gh api "repos/${REPO}/actions/runs/${run_id}/jobs?per_page=100" --paginate \
+            --jq '.jobs[] | select(.conclusion=="failure") | "- \(.name): \(.html_url)"' > failed-jobs.txt || true
+          if [ ! -s failed-jobs.txt ]; then
+            echo "(no failed jobs resolved via API)" > failed-jobs.txt
+          fi
+          : > logs.txt
+          gh api "repos/${REPO}/actions/runs/${run_id}/jobs?per_page=100" --paginate \
+            --jq '.jobs[] | select(.conclusion=="failure") | .id' | while read -r job_id; do
+            echo "### Job ${job_id}" >> logs.txt
+            gh api "repos/${REPO}/actions/jobs/${job_id}/logs" 2>/dev/null \
+              | grep -a -i -E "error|fail|✖|fatal" | tail -n 60 >> logs.txt || true
+          done
+          head -c 51200 logs.txt > logs-trimmed.txt || true
+          echo "Log excerpt bytes: $(wc -c < logs-trimmed.txt)"
+
+      - name: Create triage issue and assign Copilot coding agent
+        if: steps.run.outputs.skip != 'true'
+        id: assign
+        run: |
+          set -euo pipefail
+          run_id="${{ steps.run.outputs.run_id }}"
+          pr="${{ steps.run.outputs.pr }}"
+          {
+            echo "Failing workflow run: https://github.com/${REPO}/actions/runs/${run_id}"
+            echo "Workflow: ${{ steps.run.outputs.name }}"
+            echo "Pull request: #${pr}"
+            echo "Head SHA: ${{ steps.run.outputs.sha }}"
+            echo ""
+            echo "Failed jobs:"
+            cat failed-jobs.txt
+            echo ""
+            echo "Log excerpts (trimmed):"
+            echo ""
+            echo '```'
+            cat logs-trimmed.txt
+            echo '```'
+            echo ""
+            echo "Copilot: analyze the failure, implement a minimal fix, and open a PR that references this issue."
+          } > body.md
+          issue=$(gh issue create \
+            --title "CI failure on PR #${pr} (workflow run ${run_id})" \
+            --body-file body.md)
+          issue_num="${issue##*/}"
+          # Assigning the Copilot coding agent hands the issue to the agent;
+          # it opens the fix PR. If assignment fails (agent not enabled for
+          # this repo), leave a comment instead of failing silently.
+          if ! gh api -X POST "repos/${REPO}/issues/${issue_num}/assignees" -f "assignees[]=Copilot" >/dev/null 2>&1; then
+            gh issue comment "$issue_num" --body "Could not assign Copilot coding agent (not enabled for this repository?). Manual triage required."
+            exit 0
+          fi
+          echo "issue=${issue_num}" >> "$GITHUB_OUTPUT"
+
+  auto-merge-fix:
+    name: Wait for Copilot fix PR and auto-merge
+    needs: triage
+    if: needs.triage.outputs.issue != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Wait for Copilot fix PR linked to the triage issue
+        id: wait_pr
+        timeout-minutes: 120
+        run: |
+          set -euo pipefail
+          issue="${{ needs.triage.outputs.issue }}"
+          for _ in $(seq 1 120); do
+            pr=$(gh pr list --state open --limit 100 --json number,author,body,title \
+              --jq ".[] | select(.author.login == \"Copilot\" or (.title + .body | test(\"#${issue}\\\\b\"))) | .number" \
+              | head -n1 || true)
+            if [ -n "$pr" ]; then
+              echo "pr=${pr}" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 60
+          done
+          echo "Timed out waiting for a Copilot fix PR."
+          echo "pr=" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for fix PR checks to go green
+        if: steps.wait_pr.outputs.pr != ''
+        id: checks
+        timeout-minutes: 90
+        run: |
+          set -euo pipefail
+          pr="${{ steps.wait_pr.outputs.pr }}"
+          for _ in $(seq 1 90); do
+            summary=$(gh pr view "$pr" --json statusCheckRollup \
+              --jq '[.statusCheckRollup[]? | (.conclusion // .state // "PENDING")] | group_by(.) | map({(.[0]): length}) | add | tostring')
+            echo "Checks: ${summary}"
+            if ! printf '%s' "$summary" | grep -qE 'PENDING|QUEUED|IN_PROGRESS|WAITING|REQUESTED'; then
+              if printf '%s' "$summary" | grep -q 'FAILURE\|CANCELLED\|TIMED_OUT\|ACTION_REQUIRED\|STARTUP_FAILURE'; then
+                echo "result=failure" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              echo "result=success" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 60
+          done
+          echo "result=timeout" >> "$GITHUB_OUTPUT"
+
+      - name: Merge fix PR
+        if: steps.checks.outputs.result == 'success'
+        run: |
+          set -euo pipefail
+          pr="${{ steps.wait_pr.outputs.pr }}"
+          gh pr merge "$pr" --squash --delete-branch || gh pr merge "$pr" --squash --delete-branch --admin
+          echo "Merged Copilot fix PR #${pr}."
+
+      - name: Report blocker on triage issue
+        if: steps.wait_pr.outputs.pr == '' || steps.checks.outputs.result != 'success'
+        env:
+          GH_REPORT_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          issue="${{ needs.triage.outputs.issue }}"
+          pr="${{ steps.wait_pr.outputs.pr }}"
+          result="${{ steps.checks.outputs.result }}"
+          GH_TOKEN="$GH_REPORT_TOKEN" gh issue comment "$issue" \
+            --body "Auto-merge not performed (pr=${pr:-none}, result=${result:-no-pr}). Manual follow-up required."
