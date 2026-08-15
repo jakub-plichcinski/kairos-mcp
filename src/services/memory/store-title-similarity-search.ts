@@ -30,16 +30,18 @@ export async function searchAdapterTitlesBySimilarity(params: {
     ...baseFilter,
     must_not: [{ key: 'slug', match: { any: [KAIROS_REFINING_PROTOCOL_SLUG, KAIROS_CREATION_PROTOCOL_SLUG] } }]
   };
-  const points = await params.client.search(params.collection, {
-    vector: { name: titleVectorName, vector: queryVector },
+  const queryResponse = await params.client.query(params.collection, {
+    query: queryVector,
+    using: titleVectorName,
     limit: params.limit,
     filter,
     params: { quantization: { rescore: true } },
     with_payload: true,
     with_vector: false
   });
+  const points = queryResponse?.points ?? [];
 
-  const filtered = (points ?? [])
+  const filtered = points
     .map((point: any) => {
       const memory = params.mapPointToMemory({ id: String(point.id), payload: point.payload || {} });
       const score = typeof point.score === 'number' ? point.score : 0;
