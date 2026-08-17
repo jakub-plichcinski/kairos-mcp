@@ -1,10 +1,9 @@
 # Virtual AI employee, part A: pipeline error handler.
 # When PR CI (Integration/Security) fails, collect failure context, hand it to
-# Copilot coding agent via issue assignment, then auto-merge the resulting fix
-# PR once its own CI is green. Merging to main fires rebase-prs-on-main.yml,
-# which cascades the fix to all pending PRs.
+# Copilot coding agent via issue assignment. The resulting fix PR goes through
+# normal review (only dependabot and security PRs auto-merge per policy).
 # Loop protection: Copilot-authored branches and duplicate run ids are skipped.
-# Requires: AUTO_MERGE_TOKEN secret (token able to satisfy branch protection)
+# Requires: GH_PAT secret (user-to-server token for Copilot assignment)
 # and Copilot coding agent enabled for the repository.
 name: CI failure auto-fix (Copilot)
 
@@ -116,7 +115,7 @@ jobs:
         env:
           # The Copilot assignment API only accepts user-to-server tokens
           # (PAT / GitHub App user token); GITHUB_TOKEN is not accepted.
-          GH_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN || github.token }}
+          GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
         run: |
           set -euo pipefail
           run_id="${{ steps.run.outputs.run_id }}"
@@ -154,76 +153,3 @@ jobs:
             exit 0
           fi
           echo "issue=${issue_num}" >> "$GITHUB_OUTPUT"
-
-  auto-merge-fix:
-    name: Wait for Copilot fix PR and auto-merge
-    needs: triage
-    if: needs.triage.outputs.issue != ''
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    env:
-      GH_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN }}
-      REPO: ${{ github.repository }}
-    steps:
-      - name: Wait for Copilot fix PR linked to the triage issue
-        id: wait_pr
-        timeout-minutes: 120
-        run: |
-          set -euo pipefail
-          issue="${{ needs.triage.outputs.issue }}"
-          for _ in $(seq 1 120); do
-            pr=$(gh pr list --state open --limit 100 --json number,author,body,title \
-              --jq ".[] | select(.author.login == \"copilot-swe-agent[bot]\" or (.title + .body | test(\"#${issue}\\b\"))) | .number" \
-              | head -n1 || true)
-            if [ -n "$pr" ]; then
-              echo "pr=${pr}" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            sleep 60
-          done
-          echo "Timed out waiting for a Copilot fix PR."
-          echo "pr=" >> "$GITHUB_OUTPUT"
-
-      - name: Wait for fix PR checks to go green
-        if: steps.wait_pr.outputs.pr != ''
-        id: checks
-        timeout-minutes: 90
-        run: |
-          set -euo pipefail
-          pr="${{ steps.wait_pr.outputs.pr }}"
-          for _ in $(seq 1 90); do
-            summary=$(gh pr view "$pr" --json statusCheckRollup \
-              --jq '[.statusCheckRollup[]? | (.conclusion // .state // "PENDING")] | group_by(.) | map({(.[0]): length}) | add | tostring')
-            echo "Checks: ${summary}"
-            if ! printf '%s' "$summary" | grep -qE 'PENDING|QUEUED|IN_PROGRESS|WAITING|REQUESTED'; then
-              if printf '%s' "$summary" | grep -q 'FAILURE\|CANCELLED\|TIMED_OUT\|ACTION_REQUIRED\|STARTUP_FAILURE'; then
-                echo "result=failure" >> "$GITHUB_OUTPUT"
-                exit 0
-              fi
-              echo "result=success" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            sleep 60
-          done
-          echo "result=timeout" >> "$GITHUB_OUTPUT"
-
-      - name: Merge fix PR
-        if: steps.checks.outputs.result == 'success'
-        run: |
-          set -euo pipefail
-          pr="${{ steps.wait_pr.outputs.pr }}"
-          gh pr merge "$pr" --squash --delete-branch || gh pr merge "$pr" --squash --delete-branch --admin
-          echo "Merged Copilot fix PR #${pr}."
-
-      - name: Report blocker on triage issue
-        if: steps.wait_pr.outputs.pr == '' || steps.checks.outputs.result != 'success'
-        env:
-          GH_REPORT_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          issue="${{ needs.triage.outputs.issue }}"
-          pr="${{ steps.wait_pr.outputs.pr }}"
-          result="${{ steps.checks.outputs.result }}"
-          GH_TOKEN="$GH_REPORT_TOKEN" gh issue comment "$issue" \
-            --body "Auto-merge not performed (pr=${pr:-none}, result=${result:-no-pr}). Manual follow-up required."

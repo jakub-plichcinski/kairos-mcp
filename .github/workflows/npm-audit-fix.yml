@@ -30,7 +30,7 @@ jobs:
       pull-requests: write
     env:
       HUSKY: 0
-      GH_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_PAT }}
       REPO: ${{ github.repository }}
     steps:
       - name: Checkout
@@ -109,4 +109,4 @@ jobs:
           pr=$(gh pr create --base main --head "$branch" \
             --title "release: ${VERSION} (npm audit fix, ${datestamp})" \
             --body-file pr-body.md)
-          gh pr merge "$pr" --auto --squash || echo "Could not arm auto-merge (token permission?)."
+          gh pr merge "$pr" --auto --squash

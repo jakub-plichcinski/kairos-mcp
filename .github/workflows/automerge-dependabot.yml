@@ -24,7 +24,7 @@ jobs:
        (github.event.pull_request.user.login == 'dependabot[bot]' ||
         github.event.pull_request.user.login == 'renovate[bot]'))
     env:
-      GH_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN }}
+      GH_TOKEN: ${{ secrets.GH_PAT }}
       REPO: ${{ github.repository }}
     steps:
       - name: Arm auto-merge on bot PR(s)
