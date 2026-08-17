@@ -1,6 +1,6 @@
 # Virtual AI employee, part B1: zero-click dependency updates.
 # Enables GitHub auto-merge on Dependabot and Renovate PRs so they merge the
-# moment required checks pass — no manual clicking. Requires AUTO_MERGE_TOKEN
+# moment required checks pass — no manual clicking. Requires GH_PAT
 # (a token able to satisfy branch protection; GITHUB_TOKEN cannot).
 # workflow_dispatch mode arms auto-merge on all already-open bot PRs.
 name: Automerge dependabot and renovate PRs
@@ -27,6 +27,11 @@ jobs:
       GH_TOKEN: ${{ secrets.GH_PAT }}
       REPO: ${{ github.repository }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
       - name: Arm auto-merge on bot PR(s)
         run: |
           set -uo pipefail
