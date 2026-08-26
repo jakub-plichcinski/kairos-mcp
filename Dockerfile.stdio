@@ -13,6 +13,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     zlib1g \
   && rm -rf /var/lib/apt/lists/*
 
+# The base Node image ships npm with bundled tar 7.5.19, so patch npm's vendored copy
+# until the upstream npm release line bundles tar >= 7.5.21.
+RUN cd /tmp && \
+    npm pack tar@7.5.21 --silent && \
+    rm -rf /usr/local/lib/node_modules/npm/node_modules/tar && \
+    mkdir -p /usr/local/lib/node_modules/npm/node_modules/tar && \
+    tar -xzf tar-7.5.21.tgz -C /usr/local/lib/node_modules/npm/node_modules/tar --strip-components=1 && \
+    rm tar-7.5.21.tgz
+
 RUN groupadd -g 1001 nodejs && useradd -u 1001 -g nodejs -m -s /usr/sbin/nologin kairos
 
 WORKDIR /app
