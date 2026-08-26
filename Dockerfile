@@ -17,9 +17,10 @@ VOLUME /snapshots
 RUN apk update && apk upgrade --no-cache
 
 # Pin global npm to a newer release than the default in the base image (bundled deps drift with the CLI).
-# npm 11.18.0 bundles tar 7.5.19 (CVE-2026-59873/CVE-2026-59874) but still ships:
+# npm 11.18.0 bundles tar 7.5.19 (CVE-2026-73566) and other deps that need patching:
 #   - brace-expansion 5.0.7  → patched to 5.0.9 (CVE-2026-14257, CVE-2026-69152)
 #   - ip-address 10.2.0      → patched to 10.3.1 (CVE-2026-69192)
+#   - tar 7.5.19             → patched to 7.5.21 (CVE-2026-73566)
 # until an npm release bundles the fixes.
 RUN npm install -g npm@11.18.0 && \
     cd /tmp && \
@@ -32,7 +33,12 @@ RUN npm install -g npm@11.18.0 && \
     rm -rf /usr/local/lib/node_modules/npm/node_modules/ip-address && \
     mkdir -p /usr/local/lib/node_modules/npm/node_modules/ip-address && \
     tar -xzf ip-address-10.3.1.tgz -C /usr/local/lib/node_modules/npm/node_modules/ip-address --strip-components=1 && \
-    rm ip-address-10.3.1.tgz && cd /
+    rm ip-address-10.3.1.tgz && \
+    npm pack tar@7.5.21 --silent && \
+    rm -rf /usr/local/lib/node_modules/npm/node_modules/tar && \
+    mkdir -p /usr/local/lib/node_modules/npm/node_modules/tar && \
+    tar -xzf tar-7.5.21.tgz -C /usr/local/lib/node_modules/npm/node_modules/tar --strip-components=1 && \
+    rm tar-7.5.21.tgz && cd /
 
 ARG PACKAGE_VERSION
 RUN test -n "$PACKAGE_VERSION" || (echo "Build-arg PACKAGE_VERSION is required" && exit 1)
@@ -44,14 +50,14 @@ WORKDIR /app
 
 FROM base AS deps-registry
 ARG PACKAGE_VERSION
-RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"${PACKAGE_VERSION}\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.19\",\"typescript\":\"5.9.3\"}}" > package.json && \
+RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"${PACKAGE_VERSION}\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.21\",\"typescript\":\"5.9.3\"}}" > package.json && \
     npm install --omit=dev && \
     npm cache clean --force && \
     chown -R kairos:nodejs /app
 
 FROM base AS deps-local
 COPY .ci/docker/package.tgz /tmp/pkg.tgz
-RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"file:/tmp/pkg.tgz\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.19\",\"typescript\":\"5.9.3\"}}" > package.json && \
+RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"file:/tmp/pkg.tgz\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.21\",\"typescript\":\"5.9.3\"}}" > package.json && \
     npm install --omit=dev && \
     npm cache clean --force && \
     chown -R kairos:nodejs /app
