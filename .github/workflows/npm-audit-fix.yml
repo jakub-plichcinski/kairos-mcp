@@ -76,10 +76,13 @@ jobs:
         if: steps.dedupe.outputs.skip != 'true' && steps.assess.outputs.skip == 'false'
         run: |
           set -euo pipefail
-          if npm audit fix 2>&1 | tee audit-fix.txt; then
+          set +e
+          npm audit fix 2>&1 | tee audit-fix.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -eq 0 ]; then
             echo "mode=standard" >> "$GITHUB_OUTPUT"
           else
-            status=$?
             if grep -q 'ERESOLVE unable to resolve dependency tree' audit-fix.txt; then
               echo "npm audit fix hit ERESOLVE; retrying with --force."
               npm audit fix --force 2>&1 | tee -a audit-fix.txt
