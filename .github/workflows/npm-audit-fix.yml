@@ -85,7 +85,11 @@ jobs:
           else
             if grep -q 'ERESOLVE unable to resolve dependency tree' audit-fix.txt; then
               echo "npm audit fix hit ERESOLVE; retrying with --force."
+              set +e
               npm audit fix --force 2>&1 | tee -a audit-fix.txt
+              status=${PIPESTATUS[0]}
+              set -e
+              [ "$status" -eq 0 ] || exit "$status"
               echo "mode=force" >> "$GITHUB_OUTPUT"
             else
               exit "$status"
