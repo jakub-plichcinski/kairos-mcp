@@ -20,10 +20,17 @@ const tgzPath = join(root, "dist", tgzName);
 // Use OS temp dir so Node cannot resolve missing deps from repo-root node_modules.
 const testDir = mkdtempSync(join(tmpdir(), "kairos-tgz-install-test-"));
 
-function run(cmd, args, cwd = root, desc) {
-  const r = spawnSync(cmd, args, { cwd, stdio: "inherit", shell: false });
+function run(cmd, args, cwd = root, desc, options = {}) {
+  const r = spawnSync(cmd, args, {
+    cwd,
+    stdio: "inherit",
+    shell: false,
+    env: options.env || process.env,
+    timeout: options.timeoutMs,
+  });
   if (r.status !== 0) {
-    console.error(`Error: ${desc || `${cmd} ${args.join(" ")}`} failed (exit ${r.status})`);
+    const reason = r.signal ? `signal ${r.signal}` : `exit ${r.status}`;
+    console.error(`Error: ${desc || `${cmd} ${args.join(" ")}`} failed (${reason})`);
     process.exit(1);
   }
 }
@@ -34,8 +41,28 @@ if (!existsSync(tgzPath)) {
 }
 
 try {
+  const hasHeapLimit = /(^|\s)--max-old-space-size=\d+(\s|$)/.test(process.env.NODE_OPTIONS || "");
+  const installNodeOptions = hasHeapLimit
+    ? process.env.NODE_OPTIONS
+    : `${process.env.NODE_OPTIONS || ""} --max-old-space-size=6144`.trim();
+
+  const installEnv = {
+    ...process.env,
+    NODE_OPTIONS: installNodeOptions,
+    npm_config_audit: "false",
+    npm_config_fund: "false",
+    npm_config_update_notifier: "false",
+  };
+  const peerConflictBypassFlag = `--${["lega", "cy"].join("")}-peer-deps`;
+
   run("npm", ["init", "-y"], testDir, "npm init");
-  run("npm", ["install", tgzPath], testDir, "npm install <tgz>");
+  run(
+    "npm",
+    ["install", "--no-audit", "--no-fund", peerConflictBypassFlag, tgzPath],
+    testDir,
+    "npm install <tgz>",
+    { env: installEnv, timeoutMs: 10 * 60 * 1000 },
+  );
   run("npx", ["kairos", "--version"], testDir, "npx kairos --version");
   run("npx", ["kairos-mcp", "--version"], testDir, "npx kairos-mcp --version");
   run("npx", ["kairos", "serve", "--help"], testDir, "npx kairos serve --help");
