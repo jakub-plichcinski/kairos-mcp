@@ -83,7 +83,7 @@ jobs:
           if [ "$status" -eq 0 ]; then
             echo "mode=standard" >> "$GITHUB_OUTPUT"
           else
-            if grep -q 'ERESOLVE unable to resolve dependency tree' audit-fix.txt; then
+            if grep -q '\<ERESOLVE\>' audit-fix.txt; then
               echo "npm audit fix hit ERESOLVE; retrying with --force."
               set +e
               npm audit fix --force 2>&1 | tee -a audit-fix.txt
