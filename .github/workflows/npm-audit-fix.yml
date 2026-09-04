@@ -1,9 +1,11 @@
 # Virtual AI employee, part C: daily npm audit fix with conditional patch releases.
-# Daily: if npm audit reports fixable advisories, run npm audit fix (never
-# --force). A patch-release PR is opened ONLY when a fix actually changed
-# package.json/package-lock.json; clean runs exit as a no-op. The bump uses
-# npm run release:patch per the release-semver skill contract (version:sync
-# keeps skills/embed-docs/compose/helm aligned). On merge,
+# Daily: if npm audit reports fixable advisories, run npm audit fix. When npm's
+# resolver blocks on a peer-dependency tree conflict, retry once with
+# --force so the automation can still open the patch-release PR instead of
+# requiring a manual retry. A patch-release PR is opened ONLY when a fix
+# actually changed package.json/package-lock.json; clean runs exit as a no-op.
+# The bump uses npm run release:patch per the release-semver skill contract
+# (version:sync keeps skills/embed-docs/compose/helm aligned). On merge,
 # release-tag-on-version-bump.yml tags and dispatches Release, so security
 # patches ship end-to-end unattended. Version-bump policy: patch bumps only
 # for security fixes, not for routine dependency updates.
@@ -74,7 +76,18 @@ jobs:
         if: steps.dedupe.outputs.skip != 'true' && steps.assess.outputs.skip == 'false'
         run: |
           set -euo pipefail
-          npm audit fix
+          if npm audit fix 2>&1 | tee audit-fix.txt; then
+            echo "mode=standard" >> "$GITHUB_OUTPUT"
+          else
+            status=$?
+            if grep -q 'ERESOLVE unable to resolve dependency tree' audit-fix.txt; then
+              echo "npm audit fix hit ERESOLVE; retrying with --force."
+              npm audit fix --force 2>&1 | tee -a audit-fix.txt
+              echo "mode=force" >> "$GITHUB_OUTPUT"
+            else
+              exit "$status"
+            fi
+          fi
           npm audit --audit-level=moderate
           git diff --quiet -- package-lock.json package.json && { echo "audit fix changed nothing; skipping."; echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0; }
           echo "skip=false" >> "$GITHUB_OUTPUT"
@@ -98,6 +111,10 @@ jobs:
           git push origin "$branch"
           {
             echo "Automated daily \`npm audit fix\` run resolved moderate-or-higher advisories."
+            if [ "${{ steps.fix.outputs.mode }}" = "force" ]; then
+              echo ""
+              echo "> NOTE: the workflow retried with \`npm audit fix --force\` after npm reported an \`ERESOLVE\` dependency-tree conflict."
+            fi
             echo ""
             echo '```'
             tail -n 30 audit-before.txt
