@@ -35,6 +35,10 @@ const config: KnipConfig = {
     ignoreDependencies: [
         // Loaded via createRequire in src/cli/keyring.ts (dynamic require for ESM)
         '@napi-rs/keyring',
+        // Optional @tiptap/react peers pinned as direct runtime dependencies so the
+        // published package cannot resolve a mixed-version TipTap peer graph.
+        '@tiptap/extension-bubble-menu',
+        '@tiptap/extension-floating-menu',
         // Runtime tools used in scripts/shell, not imported directly
         'dotenv-cli',
         'pino-pretty',
