@@ -1,6 +1,6 @@
 # Project name research
 
-Status: work in progress. Started 2026-09-09 UTC.
+Status: research completed with a conditional recommendation: [Tacitloom](RECOMMENDATION.md). Started 2026-09-09 UTC.
 Source snapshot: `5fe75d74dd5a5bf4ee18cde7c7c48154424f080c`.
 
 ## Objective
@@ -28,4 +28,6 @@ Sources at the snapshot above: [README](https://github.com/jakub-plichcinski/kai
 
 1. Research branch created before writing artifacts.
 2. Product purpose and existing distribution surfaces inspected.
-3. Candidate generation and availability checks are next.
+3. Twelve independent candidates screened; strongest three received extended checks.
+4. Finalist checked across domains, GitHub, npm, Docker Hub, Quay, MCP Registry, Artifact Hub, PyPI, and crates.io, with positive controls.
+5. Recommendation and unresolved registration checks are preserved in [RECOMMENDATION.md](RECOMMENDATION.md). No product changes or registrations.
