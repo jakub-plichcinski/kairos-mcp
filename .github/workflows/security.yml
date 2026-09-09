@@ -80,7 +80,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      # Same Hub account as publish-container; without login, pulls are anonymous and share CI IP limits (429).
+      # Same Hub account as the Release workflow's publish-container job; without login, pulls are anonymous and share CI IP limits (429).
       # Dependabot PRs do not receive DOCKER_* secrets; login with empty creds fails the step.
       - name: Login to Docker Hub
         if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'

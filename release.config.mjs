@@ -3,8 +3,10 @@
  *
  * Design (see .github/AI_CI_RELEASE_REDESIGN.md):
  * - `main` is the only permanent integration/release branch; no permanent
- *   `dev`/`next` branch. Prereleases are dispatched from validated refs via a
- *   generated config that extends this one (see .github/workflows/release.yml).
+ *   `dev`/`next` branch. Prereleases are dispatched from validated non-main
+ *   refs by the Release workflow, which sets KAIROS_PRERELEASE_BRANCH and
+ *   KAIROS_PRERELEASE_CHANNEL here (env-driven instead of `--extends` so this
+ *   discovered config's `branches` can never override the prerelease branch).
  * - The version is computed exactly once here; npm publish, container tags,
  *   Helm chart, git tag, and the GitHub Release all consume that version.
  * - `@semantic-release/npm` is intentionally NOT used: npm publication stays a
@@ -19,9 +21,16 @@
  *   `@semantic-release/github` and semantic-release core.
  */
 
+const prereleaseBranch = process.env.KAIROS_PRERELEASE_BRANCH || '';
+const prereleaseChannel = process.env.KAIROS_PRERELEASE_CHANNEL || 'beta';
+
+const branches = prereleaseBranch
+  ? ['main', { name: prereleaseBranch, prerelease: true, channel: prereleaseChannel }]
+  : ['main'];
+
 /** @type {import('semantic-release').GlobalConfig} */
 const config = {
-  branches: ['main'],
+  branches,
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',

@@ -1,74 +1,380 @@
-# Single release pipeline: on version tag push, publish npm then Docker.
-# Only acceptable final output: npm package in registry, Docker image on Docker Hub and Quay.
-# Triggered by release-tag-on-version-bump after merge of a version-bump PR to main.
+# Unified release pipeline (AI_CI_RELEASE_REDESIGN.md): ONE manual dispatch publishes
+# npm + container images (Docker Hub + Quay) + Helm OCI chart + git tag + GitHub Release
+# from ONE SemVer version computed by semantic-release (release.config.mjs).
+#
+# Dispatch rules:
+#   stable     - dispatch from `main` only; version derives from commit history.
+#   prerelease - dispatch from a CI-green non-main branch; version gets `-<channel>.N`.
+#   dry-run    - previews the next version; nothing is published.
+#   republish  - recovery: tolerates already-published npm/chart versions and falls back
+#                to the latest tag when semantic-release has nothing to release.
+#
+# Jobs:
+#   validate          - ref eligibility (stable=>main, prerelease=>non-main),
+#                       .trivyignore expiry guard, green Integration run required on
+#                       the exact head SHA (dispatch controls timing, not validation).
+#   release           - semantic-release computes the version, bumps + syncs + builds +
+#                       consumer-tests the tgz in-workspace (prepareCmd), creates the git
+#                       tag and GitHub Release, publishes npm via OIDC trusted publishing.
+#   publish-container - ONE build-push for all aliases on both registries (single digest).
+#   publish-helm      - chart version/appVersion/image tag = release version; helm push
+#                       OCI to Quay (SemVer identity, immutable).
+#   finalize          - attaches SBOMs to the GitHub Release + job summary.
+#
+# Secrets: DOCKER_USERNAME/DOCKER_PASSWORD, QUAY_USERNAME/QUAY_PASSWORD (Quay image + chart).
+# Vars: QUAY_NAMESPACE. The `release` environment guards every publish job (approvals optional).
+# npm auth is OIDC trusted publishing (id-token: write, no NPM_TOKEN secret); the trusted
+# publisher entry must point at .github/workflows/release.yml + environment `release`.
+# Tags are pushed with GITHUB_TOKEN (does not trigger workflows).
+# Future security-release automation should dispatch THIS workflow via the API (GH_PAT)
+# instead of introducing a second release mechanism.
+# See .github/workflows/README.md for setup and the dispatch runbook.
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-      - 'v*.*.*-*'
   workflow_dispatch:
     inputs:
-      ref:
-        description: 'Tag to release (e.g. v3.0.1-beta.5). Leave empty when triggered by tag push.'
+      release-type:
+        description: 'stable (from main) or prerelease (from a CI-green non-main branch)'
+        required: true
+        type: choice
+        default: stable
+        options:
+          - stable
+          - prerelease
+      channel:
+        description: 'Prerelease channel: version suffix, npm dist-tag and image tag (e.g. beta)'
         required: false
+        type: string
+        default: beta
+      dry-run:
+        description: 'Preview the next version; publish nothing'
+        required: false
+        type: boolean
+        default: false
+      republish:
+        description: 'Recovery: tolerate already-published versions; fall back to latest tag'
+        required: false
+        type: boolean
+        default: false
 
+# Serialize every release-pipeline run: the version authority, npm dist-tags and the
+# git tag must never race between two concurrent dispatches. Never cancel in progress.
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-pipeline
   cancel-in-progress: false
 
 jobs:
-  trivyignore-expiry:
-    name: Trivy ignore expiry guard
+  validate:
+    name: Validate release ref
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      TRIVYIGNORE_EXPIRY_WARNING_DAYS: "45"
+      actions: read
+      checks: read
     steps:
+      - name: Check ref eligibility
+        env:
+          RELEASE_TYPE: ${{ inputs.release-type }}
+          CHANNEL: ${{ inputs.channel }}
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          REF: ${{ github.ref }}
+        run: |
+          set -euo pipefail
+          if [ "$REF_TYPE" != "branch" ]; then
+            echo "::error::Release must be dispatched from a branch ref (got ref_type=${REF_TYPE}, ref=${REF})."
+            exit 1
+          fi
+          if [ "$RELEASE_TYPE" = "stable" ]; then
+            if [ "$REF_NAME" != "main" ]; then
+              echo "::error::Stable releases must be dispatched from 'main' (got ref ${REF})."
+              echo "Dispatch from main, or use release-type=prerelease from a CI-green branch."
+              exit 1
+            fi
+          else
+            if [ "$REF_NAME" = "main" ]; then
+              echo "::error::Prereleases must be dispatched from a non-main branch (got ref ${REF})."
+              echo "Use release-type=stable for main."
+              exit 1
+            fi
+            if ! printf '%s' "$CHANNEL" | grep -Eq '^[a-z][a-z0-9-]*$' || [ "$CHANNEL" = "latest" ]; then
+              echo "::error::Invalid prerelease channel '${CHANNEL}': use lowercase letters/digits/hyphens; must not be 'latest'."
+              exit 1
+            fi
+          fi
+          echo "Ref eligibility OK: release-type=${RELEASE_TYPE} ref=${REF_NAME} channel=${CHANNEL}"
+
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.ref }}
+
       - name: Validate .trivyignore expiry dates
+        env:
+          TRIVYIGNORE_EXPIRY_WARNING_DAYS: "45"
         run: |
           python3 scripts/ci-check-trivyignore-expiry.py \
             --file .trivyignore \
             --warning-days "$TRIVYIGNORE_EXPIRY_WARNING_DAYS"
 
-  publish-npm:
-    name: Publish npm
-    needs: trivyignore-expiry
-    permissions:
-      contents: read
-      id-token: write
-    uses: ./.github/workflows/reusable-publish-npm.yml
-    with:
-      ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.ref }}
-      sync-version-from-ref: true
-      allow-existing-version: true
-      force-publish: false
-      upload-sbom: true
-    secrets: inherit
+      # The dispatched ref must have a successful Integration run on its exact head SHA:
+      # dispatching controls timing only, never validation (AI_CI_RELEASE_REDESIGN.md).
+      - name: Require Integration success on head SHA
+        env:
+          HEAD_SHA: ${{ github.sha }}
+          HEAD_BRANCH: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          attempts=10
+          sleep_seconds=15
+          for attempt in $(seq 1 "$attempts"); do
+            json=$(curl -sSf -H "Authorization: Bearer ${GH_TOKEN}" -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/${REPO}/actions/runs?head_sha=${HEAD_SHA}&per_page=100")
 
-  publish-docker:
-    name: Publish Docker image
-    needs: publish-npm
+            integration=$(printf '%s' "$json" | jq -r '.workflow_runs[] | select(.name=="Integration" and .head_branch=="'"${HEAD_BRANCH}"'") | .conclusion' | head -n1)
+
+            echo "Attempt ${attempt}/${attempts}: Integration=${integration:-missing}"
+
+            if [ "${integration:-}" = "success" ]; then
+              exit 0
+            fi
+
+            if [ "${integration:-}" = "failure" ] || [ "${integration:-}" = "cancelled" ]; then
+              echo "Required integration workflow failed/cancelled on HEAD SHA ${HEAD_SHA}"
+              exit 1
+            fi
+
+            if [ "$attempt" -lt "$attempts" ]; then
+              sleep "$sleep_seconds"
+            fi
+          done
+
+          echo "Timed out waiting for Integration success on SHA ${HEAD_SHA}"
+          echo "Dispatch the Integration workflow on this ref, wait for it to pass, then re-dispatch."
+          exit 1
+
+  release:
+    name: Compute version and publish npm
+    needs: validate
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write
-
+      contents: write  # semantic-release: git tag push + GitHub Release
+      id-token: write  # npm OIDC trusted publishing + provenance
+    environment: release
+    outputs:
+      version: ${{ steps.resolve.outputs.version }}
+      dist-tag: ${{ steps.resolve.outputs.dist-tag }}
+      skip: ${{ steps.resolve.outputs.skip }}
+      recovered: ${{ steps.resolve.outputs.recovered }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.ref || github.ref }}
+          fetch-depth: 0
+          fetch-tags: true
+          # persist-credentials (default): semantic-release pushes the tag with GITHUB_TOKEN.
 
-      - name: Extract version from tag
-        id: version
-        run: echo "version=${{ needs.publish-npm.outputs.version }}" >> "$GITHUB_OUTPUT"
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: "npm"
+          # No registry-url: OIDC trusted publishing handles auth via
+          # ACTIONS_ID_TOKEN_REQUEST_TOKEN/URL. Setting registry-url would
+          # write a .npmrc _authToken entry that overrides OIDC auth.
+
+      - name: Remove empty _authToken so npm uses OIDC
+        run: |
+          # setup-node writes _authToken=${NODE_AUTH_TOKEN} to .npmrc.
+          # When no NPM_TOKEN secret exists, this is empty and blocks OIDC auth.
+          # Remove it so npm falls back to OIDC (ACTIONS_ID_TOKEN_REQUEST_TOKEN/URL).
+          sed -i '/_authToken/d' "$HOME/.npmrc" 2>/dev/null || true
+          echo "registry=https://registry.npmjs.org/" >> "$HOME/.npmrc"
+          cat "$HOME/.npmrc"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Set up Python (skills-ref)
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+
+      - name: Install skills-ref and validate skills
+        run: |
+          python -m pip install --upgrade pip
+          pip install "skills-ref @ git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref"
+          npm run lint:skills
+
+      - name: Knip
+        run: npm run knip
+
+      # semantic-release computes the version exactly once. Its exec plugin's
+      # prepareCmd bumps package.json, re-syncs skills/compose/helm in-workspace and
+      # builds + consumer-tests the packed tgz (prepare:publish); publishCmd appends
+      # version/channel/type to $GITHUB_OUTPUT, which become this step's outputs.
+      # In dry-run mode semantic-release skips prepare/publish entirely, so no
+      # version output is written; with no releasable commits it exits 0 with no
+      # output (no-op) and resolve decides skip vs. republish recovery below.
+      - name: Run semantic-release
+        id: sr
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          KAIROS_PRERELEASE_BRANCH: ${{ inputs.release-type == 'prerelease' && github.ref_name || '' }}
+          KAIROS_PRERELEASE_CHANNEL: ${{ inputs.release-type == 'prerelease' && inputs.channel || 'beta' }}
+        run: |
+          set -euo pipefail
+          args=""
+          if [ "${{ inputs.dry-run }}" = "true" ]; then
+            args="--dry-run"
+            echo "Dry-run: previewing the next version without publishing."
+          fi
+          npx semantic-release $args
+
+      - name: Resolve version, dist-tag, and skip
+        id: resolve
+        env:
+          SR_VERSION: ${{ steps.sr.outputs.version }}
+          SR_CHANNEL: ${{ steps.sr.outputs.channel }}
+          SR_TYPE: ${{ steps.sr.outputs.type }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          REPUBLISH: ${{ inputs.republish }}
+          CHANNEL: ${{ inputs.channel }}
+        run: |
+          set -euo pipefail
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "Dry-run preview only; nothing was published."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "version=" >> "$GITHUB_OUTPUT"
+            echo "dist-tag=" >> "$GITHUB_OUTPUT"
+            echo "recovered=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ -n "$SR_VERSION" ]; then
+            version="$SR_VERSION"
+            recovered=false
+          elif [ "$REPUBLISH" = "true" ]; then
+            version="$(git describe --tags --abbrev=0)"
+            version="${version#v}"
+            recovered=true
+            echo "::warning::semantic-release had nothing to release; republish recovery fell back to the latest tag reachable from HEAD: v${version}"
+          else
+            echo "semantic-release found no releasable commits since the last tag; nothing to release."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "version=" >> "$GITHUB_OUTPUT"
+            echo "dist-tag=" >> "$GITHUB_OUTPUT"
+            echo "recovered=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if printf '%s' "$version" | grep -q '-'; then
+            dist_tag="$CHANNEL"
+          else
+            dist_tag="latest"
+          fi
+
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "dist-tag=${dist_tag}" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "recovered=${recovered}" >> "$GITHUB_OUTPUT"
+          echo "Resolved: version=${version} dist-tag=${dist_tag} recovered=${recovered} (channel=${SR_CHANNEL:-none} type=${SR_TYPE:-none})"
+
+      # Recovery path only: semantic-release no-op'd, so the workspace was never
+      # bumped/synced/packed. Re-run the exact prepareCmd sequence for the
+      # version recovered from the latest tag.
+      - name: Recovery prepare (republish fallback)
+        if: steps.resolve.outputs.recovered == 'true'
+        run: |
+          set -euo pipefail
+          npm version "${{ steps.resolve.outputs.version }}" --no-git-tag-version --allow-same-version
+          npm run version:sync
+          npm run prepare:publish
+
+      - name: Publish to npm (strict)
+        if: steps.resolve.outputs.skip != 'true' && inputs.republish != true
+        run: npm publish ./dist/jakub-plichcinski-kairos-mcp-${{ steps.resolve.outputs.version }}.tgz --access public --provenance --tag ${{ steps.resolve.outputs.dist-tag }}
+
+      # republish: npm versions are immutable; re-publishing an already-published
+      # version is tolerated only in explicit recovery mode.
+      - name: Publish to npm (allow existing)
+        if: steps.resolve.outputs.skip != 'true' && inputs.republish == true
+        run: |
+          set +e
+          out=$(npm publish ./dist/jakub-plichcinski-kairos-mcp-${{ steps.resolve.outputs.version }}.tgz --access public --provenance --tag ${{ steps.resolve.outputs.dist-tag }} 2>&1)
+          code=$?
+          echo "$out"
+          if [ $code -eq 0 ]; then exit 0; fi
+          if echo "$out" | grep -q "You cannot publish over the previously published versions"; then
+            echo "Version already on npm; continuing (republish mode)."
+            exit 0
+          fi
+          exit 1
+
+      - name: Generate npm CycloneDX SBOM
+        if: steps.resolve.outputs.skip != 'true'
+        run: npx @cyclonedx/cyclonedx-npm@latest --output-file kairos-mcp-${{ steps.resolve.outputs.version }}-npm-sbom.cdx.json --output-format json
+
+      - name: Upload npm SBOM
+        if: steps.resolve.outputs.skip != 'true'
+        uses: actions/upload-artifact@v5
+        with:
+          name: npm-sbom-${{ steps.resolve.outputs.version }}
+          path: kairos-mcp-${{ steps.resolve.outputs.version }}-npm-sbom.cdx.json
+          if-no-files-found: error
+
+  publish-container:
+    name: Publish container image (Docker Hub + Quay)
+    needs: release
+    if: needs.release.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # cosign keyless signing
+    environment: release
+    outputs:
+      digest: ${{ steps.build_push.outputs.digest }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      # Tag scheme from the single release version:
+      #   stable      X.Y.Z, X.Y, X, latest
+      #   prerelease  X.Y.Z-<channel>.N, <channel>  (never latest)
+      - name: Compute image tag scheme
+        id: tags
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          major="${VERSION%%.*}"
+          minor="${VERSION#*.}"; minor="${minor%%.*}"
+          if printf '%s' "$VERSION" | grep -q '-'; then
+            stable=false
+          else
+            stable=true
+          fi
+          echo "major=${major}" >> "$GITHUB_OUTPUT"
+          echo "minor=${major}.${minor}" >> "$GITHUB_OUTPUT"
+          echo "stable=${stable}" >> "$GITHUB_OUTPUT"
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            jakubplichcinski/kairos-mcp
+            quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp
+          tags: |
+            type=raw,value=${{ needs.release.outputs.version }}
+            type=raw,value=${{ steps.tags.outputs.minor }},enable=${{ steps.tags.outputs.stable == 'true' }}
+            type=raw,value=${{ steps.tags.outputs.major }},enable=${{ steps.tags.outputs.stable == 'true' }}
+            type=raw,value=latest,enable=${{ steps.tags.outputs.stable == 'true' }}
+            type=raw,value=${{ needs.release.outputs.dist-tag }},enable=${{ steps.tags.outputs.stable == 'false' }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -89,6 +395,8 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
+      # Single build-push for ALL aliases on BOTH registries: every tag points at the
+      # same digest (single-digest invariant). Never rebuild per tag.
       - name: Build and push
         id: build_push
         uses: docker/build-push-action@v7
@@ -97,90 +405,188 @@ jobs:
           file: ./Dockerfile
           target: runtime
           build-args: |
-            PACKAGE_VERSION=${{ steps.version.outputs.version }}
+            PACKAGE_VERSION=${{ needs.release.outputs.version }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            jakubplichcinski/kairos-mcp:latest
-            jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}
-            quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:latest
-            quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:${{ steps.version.outputs.version }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
 
+      # Keyless signing of the immutable digest in both registries; tag aliases share
+      # the digest, so one signature per registry covers every alias.
       - name: Sign images (keyless)
         env:
           COSIGN_YES: "true"
+          DIGEST: ${{ steps.build_push.outputs.digest }}
         run: |
-          # cosign is idempotent: re-signing adds another valid signature
-          cosign sign "jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}"
-          cosign sign "jakubplichcinski/kairos-mcp:latest"
-          cosign sign "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:${{ steps.version.outputs.version }}"
-          cosign sign "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:latest"
+          cosign sign "jakubplichcinski/kairos-mcp@${DIGEST}"
+          cosign sign "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp@${DIGEST}"
 
       - name: Generate CycloneDX SBOM
         uses: anchore/sbom-action@v0
         with:
-          image: jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}
+          image: jakubplichcinski/kairos-mcp:${{ needs.release.outputs.version }}
           format: cyclonedx-json
-          output-file: kairos-mcp-${{ steps.version.outputs.version }}-sbom.cdx.json
+          output-file: kairos-mcp-${{ needs.release.outputs.version }}-sbom.cdx.json
           upload-artifact: false
 
       - name: Upload CycloneDX SBOM
         uses: actions/upload-artifact@v5
         with:
-          name: cyclonedx-sbom-${{ steps.version.outputs.version }}
-          path: kairos-mcp-${{ steps.version.outputs.version }}-sbom.cdx.json
+          name: cyclonedx-sbom-${{ needs.release.outputs.version }}
+          path: kairos-mcp-${{ needs.release.outputs.version }}-sbom.cdx.json
           if-no-files-found: error
 
       - name: Trivy container scan
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}
+          image-ref: jakubplichcinski/kairos-mcp:${{ needs.release.outputs.version }}
           format: table
           exit-code: "1"
           severity: CRITICAL,HIGH
           trivyignores: .trivyignore
 
-  create-release:
-    name: Create GitHub Release
-    needs: [publish-npm, publish-docker]
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.ref != '')
+  publish-helm:
+    name: Publish Helm chart (Quay OCI)
+    needs: release
+    if: needs.release.outputs.skip != 'true'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-
+      contents: read
+    environment: release
     steps:
-      - name: Set tag name and prerelease flag
-        id: tag
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ github.event.inputs.ref }}" ]; then
-            tag_name="${{ github.event.inputs.ref }}"
-          else
-            tag_name="${{ github.ref_name }}"
-          fi
-          echo "tag_name=${tag_name}" >> "$GITHUB_OUTPUT"
-          # Tag with hyphen (e.g. v3.1.0-pre.0, v3.0.1-beta.1) => prerelease; GitHub then shows latest stable as "Latest release"
-          case "${tag_name}" in
-            *-*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
-            *)   echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
-          esac
+      - name: Checkout
+        uses: actions/checkout@v7
 
-      - name: Download npm SBOM
+      - name: Set up Helm
+        uses: azure/setup-helm@v5
+        with:
+          version: v4.0.5
+
+      - name: Login to Quay (Helm OCI)
+        env:
+          QUAY_USERNAME: ${{ secrets.QUAY_USERNAME }}
+          QUAY_PASSWORD: ${{ secrets.QUAY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          echo "${QUAY_PASSWORD}" | helm registry login quay.io --username "${QUAY_USERNAME}" --password-stdin
+
+      # Chart release identity derives from the single semantic-release version
+      # (version + appVersion + app.image.tag); the in-repo values are only the
+      # last synced baseline.
+      - name: Set chart version to release version
+        run: node scripts/helm-set-release-version.mjs ${{ needs.release.outputs.version }}
+
+      - name: Add helm repos (chart dependencies)
+        run: |
+          helm repo add qdrant https://qdrant.github.io/qdrant-helm
+          helm repo add valkey https://valkey.io/valkey-helm/
+
+      - name: Helm dependency build
+        run: helm dependency build helm/kairos-mcp
+
+      - name: Helm lint (strict)
+        run: helm lint helm/kairos-mcp --strict
+
+      - name: Helm package
+        run: helm package helm/kairos-mcp
+
+      # Helm OCI release identity is chart SemVer and immutable. An already-published
+      # version is a hard error unless the operator explicitly chose republish.
+      - name: Push chart to Quay OCI registry
+        env:
+          REPUBLISH: ${{ inputs.republish }}
+        run: |
+          set +e
+          out=$(helm push "kairos-mcp-${{ needs.release.outputs.version }}.tgz" "oci://quay.io/${{ vars.QUAY_NAMESPACE }}" 2>&1)
+          code=$?
+          echo "$out"
+          if [ $code -eq 0 ]; then exit 0; fi
+          if echo "$out" | grep -qi "already exist"; then
+            if [ "$REPUBLISH" = "true" ]; then
+              echo "::notice::Chart version already published to Quay; tolerated (republish mode)."
+              exit 0
+            fi
+            echo "::error::Chart version already exists (Helm OCI tags are immutable). Re-run with republish=true only if this is an intentional recovery."
+          fi
+          exit 1
+
+  finalize:
+    name: Finalize release (SBOMs + summary)
+    needs: [release, publish-container, publish-helm]
+    # Runs on success AND on the nothing-to-release skip (downstream publish jobs are
+    # skipped, which must not skip the summary); never runs when something failed.
+    if: ${{ !failure() && !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # attach SBOM assets to the GitHub Release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download SBOM artifacts
+        if: needs.release.outputs.skip != 'true'
         uses: actions/download-artifact@v8
         with:
-          name: npm-sbom
+          pattern: '*-sbom-${{ needs.release.outputs.version }}'
+          path: sboms
 
-      - name: Create GitHub Release
+      - name: Attach SBOMs to GitHub Release
+        if: needs.release.outputs.skip != 'true'
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ steps.tag.outputs.tag_name }}
-          name: ${{ steps.tag.outputs.tag_name }}
-          generate_release_notes: true
-          draft: false
-          # Hyphenated tags (v*.*.*-*) must be pre-releases so "Latest" stays on last stable
-          prerelease: ${{ steps.tag.outputs.prerelease == 'true' }}
-          files: npm-sbom/*.cdx.json
+          tag_name: v${{ needs.release.outputs.version }}
+          prerelease: ${{ contains(needs.release.outputs.version, '-') }}
+          files: sboms/**/*.cdx.json
+
+      - name: Write job summary
+        env:
+          RELEASE_TYPE: ${{ inputs.release-type }}
+          VERSION: ${{ needs.release.outputs.version }}
+          DIST_TAG: ${{ needs.release.outputs.dist-tag }}
+          SKIP: ${{ needs.release.outputs.skip }}
+          RECOVERED: ${{ needs.release.outputs.recovered }}
+          DIGEST: ${{ needs.publish-container.outputs.digest }}
+          DRY_RUN: ${{ inputs.dry-run }}
+          REPUBLISH: ${{ inputs.republish }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/v${{ needs.release.outputs.version }}
+        run: |
+          set -euo pipefail
+          {
+            echo "| Field | Value |"
+            echo "|---|---|"
+            echo "| release-type | ${RELEASE_TYPE} |"
+            if [ "$SKIP" = "true" ]; then
+              if [ "$DRY_RUN" = "true" ]; then
+                echo "| result | dry-run preview only — nothing was published |"
+              else
+                echo "| result | nothing to release (no releasable commits since the last tag) |"
+              fi
+            else
+              echo "| version | ${VERSION} |"
+              echo "| npm dist-tag | ${DIST_TAG} |"
+              echo "| GitHub Release | [v${VERSION}](${RELEASE_URL}) |"
+              if [ -n "$DIGEST" ]; then
+                echo "| image digest | \`${DIGEST}\` |"
+              fi
+              echo "| SBOM artifacts | [run artifacts](${RUN_URL}) |"
+            fi
+          } > release-summary.md
+          if [ "$RECOVERED" = "true" ]; then
+            {
+              echo ""
+              echo "> warning: **Recovery mode:** semantic-release had nothing to release; version ${VERSION} was recovered from the latest tag reachable from HEAD (republish=true)."
+            } >> release-summary.md
+          fi
+          if [ "$REPUBLISH" = "true" ] && [ "$RECOVERED" != "true" ]; then
+            {
+              echo ""
+              echo "> note: **republish mode:** already-published npm/chart versions are tolerated on this run."
+            } >> release-summary.md
+          fi
+          node scripts/ci-github-step-summary.mjs "Release summary" -- cat release-summary.md
