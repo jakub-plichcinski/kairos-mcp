@@ -1,9 +1,11 @@
 # Virtual AI employee, part C: daily npm audit fix with conditional patch releases.
-# Daily: if npm audit reports fixable advisories, run npm audit fix (never
-# --force). A patch-release PR is opened ONLY when a fix actually changed
-# package.json/package-lock.json; clean runs exit as a no-op. The bump uses
-# npm run release:patch per the release-semver skill contract (version:sync
-# keeps skills/embed-docs/compose/helm aligned). On merge,
+# Daily: if npm audit reports fixable advisories, run npm audit fix. When npm's
+# resolver blocks on a peer-dependency tree conflict, or the standard fix
+# succeeds but leaves advisories that explicitly require --force, retry once
+# with --force. A patch-release PR is opened ONLY when a fix
+# actually changed package.json/package-lock.json; clean runs exit as a no-op.
+# The bump uses npm run release:patch per the release-semver skill contract
+# (version:sync keeps skills/embed-docs/compose/helm aligned). On merge,
 # release-tag-on-version-bump.yml tags and dispatches Release, so security
 # patches ship end-to-end unattended. Version-bump policy: patch bumps only
 # for security fixes, not for routine dependency updates.
@@ -74,8 +76,7 @@ jobs:
         if: steps.dedupe.outputs.skip != 'true' && steps.assess.outputs.skip == 'false'
         run: |
           set -euo pipefail
-          npm audit fix
-          npm audit --audit-level=moderate
+          bash scripts/npm-audit-fix.sh
           git diff --quiet -- package-lock.json package.json && { echo "audit fix changed nothing; skipping."; echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0; }
           echo "skip=false" >> "$GITHUB_OUTPUT"
           npm run build
@@ -98,6 +99,10 @@ jobs:
           git push origin "$branch"
           {
             echo "Automated daily \`npm audit fix\` run resolved moderate-or-higher advisories."
+            if [ "${{ steps.fix.outputs.mode }}" = "force" ]; then
+              echo ""
+              echo "> NOTE: the workflow retried with \`npm audit fix --force\` after the standard fix could not clear all fixable advisories."
+            fi
             echo ""
             echo '```'
             tail -n 30 audit-before.txt
