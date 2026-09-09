@@ -116,10 +116,10 @@ jobs:
           COSIGN_YES: "true"
         run: |
           # cosign is idempotent: re-signing adds another valid signature
-          cosign sign --force "jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}"
-          cosign sign --force "jakubplichcinski/kairos-mcp:latest"
-          cosign sign --force "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:${{ steps.version.outputs.version }}"
-          cosign sign --force "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:latest"
+          cosign sign "jakubplichcinski/kairos-mcp:${{ steps.version.outputs.version }}"
+          cosign sign "jakubplichcinski/kairos-mcp:latest"
+          cosign sign "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:${{ steps.version.outputs.version }}"
+          cosign sign "quay.io/${{ vars.QUAY_NAMESPACE }}/kairos-mcp:latest"
 
       - name: Generate CycloneDX SBOM
         uses: anchore/sbom-action@v0
