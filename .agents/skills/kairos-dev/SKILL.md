@@ -47,7 +47,7 @@ Docker Compose full stack via npm scripts.
 | Build, deploy, run the test suite | [build-test.md](references/build-test.md) |
 | Phased end-to-end MCP QA against KAIROS-DEVELOPMENT | [mcp-qa-e2e.md](references/mcp-qa-e2e.md) |
 | Fix a reported bug from reproduction to merge-ready PR | [bugfix-ship.md](references/bugfix-ship.md) |
-| Cut a semver release (RC / patch / minor / major) | [release-semver.md](references/release-semver.md) |
+| Cut a release or prerelease (dispatch Release workflow) | [release-semver.md](references/release-semver.md) |
 | Human-facing UI/UX specs and accessibility for `src/ui/` | [ui-spec.md](references/ui-spec.md) |
 | Run Git without spawning a blocking editor | [git-editor-safe.md](references/git-editor-safe.md) |
 | Recover a corrupted Git index / `write-tree` failure | [git-index-repair.md](references/git-index-repair.md) |
