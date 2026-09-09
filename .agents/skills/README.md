@@ -29,7 +29,7 @@ Depth lives in each skill's `references/` (progressive disclosure); keep each
 | Build, deploy, test (npm-only; `dev:deploy` before `dev:test`) | [build-test.md](kairos-dev/references/build-test.md) |
 | Phased E2E MCP QA against **KAIROS-DEVELOPMENT** | [mcp-qa-e2e.md](kairos-dev/references/mcp-qa-e2e.md) |
 | Bug reproduce → failing test → fix → PR → CI → merge-ready | [bugfix-ship.md](kairos-dev/references/bugfix-ship.md) |
-| Semver bump, `release/*` branch, tag policy | [release-semver.md](kairos-dev/references/release-semver.md) |
+| Releases/prereleases, semver levels, tag policy | [release-semver.md](kairos-dev/references/release-semver.md) |
 | Human-facing `src/ui/` UX/spec, a11y, tokens | [ui-spec.md](kairos-dev/references/ui-spec.md) |
 | Git without opening a blocking editor | [git-editor-safe.md](kairos-dev/references/git-editor-safe.md) |
 | Git index / `write-tree` repair | [git-index-repair.md](kairos-dev/references/git-index-repair.md) |

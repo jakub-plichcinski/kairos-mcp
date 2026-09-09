@@ -1,4 +1,4 @@
-# Integration workflow: build npm tgz, then verify in parallel (UI/static, npm+infra tests, Docker+Trivy).
+# Integration workflow: build npm tgz, then verify in parallel (UI/static, npm+infra tests, Docker+Trivy, Helm).
 # Secrets: OPENAI_API_KEY (from GitHub secrets). Infra/dev secrets are generated in verify-integration-primary each run.
 # See .github/workflows/README.md for gh secret/variable setup.
 #
@@ -9,7 +9,8 @@
 # verify-integration-primary — Node 24 only; needs build-primary; scenario contracts (e.g. http-auth) follow scripts/deploy-run-env.sh and the workflows README matrix.
 # verify-integration-advisory — Node 25/26; needs build-advisory; advisory only.
 # verify-docker — release-equivalent image + Trivy; needs build-primary.
-# integration-pass — gates only on Node-24 primary jobs + verify-docker (no advisory UI/build/integration).
+# verify-helm — chart lint/unittest/ct/kubeconform; replaces the former helm-chart.yml workflow.
+# integration-pass — gates only on Node-24 primary jobs + verify-docker + verify-helm (no advisory UI/build/integration).
 name: Integration
 
 on:
@@ -18,17 +19,15 @@ on:
   merge_group:
   push:
     branches: [main]
-    tags:
-      - 'v*.*.*'
   workflow_dispatch:
 
 # Path filtering (Pattern B): the `changes` job inspects modified paths and sets `code=true` only when
 # files that affect build/test outcomes are touched. Heavy jobs gate on `needs.changes.outputs.code == 'true'`,
-# so docs-only / wiki-only / helm-only PRs skip the expensive work while `integration-pass`
+# so docs-only / wiki-only PRs skip the expensive work while `integration-pass`
 # still reports a successful status (required-check compatible).
 #
-# Forced run (code=true regardless of paths) for: workflow_dispatch, merge_group, tag pushes,
-# and pushes to `ci/**` branches (via workflow_dispatch).
+# Forced run (code=true regardless of paths) for: workflow_dispatch, merge_group,
+# and runs on `ci/**` branches (via workflow_dispatch).
 
 jobs:
   changes:
@@ -40,6 +39,7 @@ jobs:
     outputs:
       code: ${{ steps.combine.outputs.code }}
       image: ${{ steps.combine.outputs.image }}
+      helm: ${{ steps.combine.outputs.helm }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -53,6 +53,7 @@ jobs:
           # Files that can affect build, lint, or integration outcomes (auth full + simple/stdio smoke).
           # `code` is the master switch for build + UI/static + integration jobs.
           # `image` narrows the Docker/Trivy job so non-image code changes skip the image build.
+          # `helm` narrows the chart validation job to chart-affecting changes.
           filters: |
             code:
               - 'src/**'
@@ -83,6 +84,10 @@ jobs:
               - 'package.json'
               - 'package-lock.json'
               - '.github/workflows/integration.yml'
+            helm:
+              - 'helm/kairos-mcp/**'
+              - 'ct.yaml'
+              - '.github/workflows/integration.yml'
 
       - name: Combine with forced-run events
         id: combine
@@ -91,19 +96,21 @@ jobs:
           REF: ${{ github.ref }}
           FILTER_CODE: ${{ steps.filter.outputs.code }}
           FILTER_IMAGE: ${{ steps.filter.outputs.image }}
+          FILTER_HELM: ${{ steps.filter.outputs.helm }}
         run: |
           set -euo pipefail
           if [ "$EVENT_NAME" = "workflow_dispatch" ] \
              || [ "$EVENT_NAME" = "merge_group" ] \
-             || [[ "$REF" == refs/tags/* ]] \
              || [[ "$REF" == refs/heads/ci/* ]]; then
-            echo "Forcing code=true image=true for event=$EVENT_NAME ref=$REF"
+            echo "Forcing code=true image=true helm=true for event=$EVENT_NAME ref=$REF"
             echo "code=true" >> "$GITHUB_OUTPUT"
             echo "image=true" >> "$GITHUB_OUTPUT"
+            echo "helm=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Filter result: code=$FILTER_CODE image=$FILTER_IMAGE"
+            echo "Filter result: code=$FILTER_CODE image=$FILTER_IMAGE helm=$FILTER_HELM"
             echo "code=$FILTER_CODE" >> "$GITHUB_OUTPUT"
             echo "image=$FILTER_IMAGE" >> "$GITHUB_OUTPUT"
+            echo "helm=$FILTER_HELM" >> "$GITHUB_OUTPUT"
           fi
 
   build-primary:
@@ -815,14 +822,75 @@ jobs:
           severity: CRITICAL,HIGH
           trivyignores: .trivyignore
 
-  # Merge gate: Node 24 primary jobs only (build, UI/static, integration, Docker). Node 26
+  verify-helm:
+    # Helm chart validation: lint, values schema, helm-unittest, chart-testing (ct),
+    # kubeconform on rendered manifests. Replaces the former standalone helm-chart.yml
+    # workflow; publication (helm push OCI) happens only in the Release workflow.
+    name: Helm chart (lint, unittest, ct, kubeconform)
+    needs: [changes]
+    if: needs.changes.outputs.helm == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v5
+        with:
+          version: v4.0.5
+
+      - name: Add helm repos (chart dependencies)
+        run: |
+          helm repo add qdrant https://qdrant.github.io/qdrant-helm
+          helm repo add valkey https://valkey.io/valkey-helm/
+
+      - name: Helm dependency build
+        run: helm dependency build helm/kairos-mcp
+
+      - name: Helm lint (strict)
+        run: helm lint helm/kairos-mcp --strict
+
+      - name: Install helm-unittest plugin
+        run: helm plugin install https://github.com/helm-unittest/helm-unittest --version v1.0.3 --verify=false
+
+      - name: helm unittest
+        run: helm unittest helm/kairos-mcp
+
+      - name: Run chart-testing (ct)
+        uses: helm/chart-testing-action@v2.8.0
+        with:
+          version: v3.14.0
+
+      - name: ct lint
+        run: ct lint --config ct.yaml --all
+
+      - name: Install kubeconform
+        env:
+          KUBECONFORM_VERSION: v0.6.7
+        run: |
+          set -euo pipefail
+          curl -sSL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" | tar xz
+          sudo mv kubeconform /usr/local/bin/
+
+      - name: kubeconform (rendered manifests)
+        run: |
+          set -euo pipefail
+          helm template kairos-mcp helm/kairos-mcp | kubeconform \
+            -strict \
+            -kubernetes-version 1.30.0 \
+            -ignore-missing-schemas \
+            -summary
+
+  # Merge gate: Node 24 primary jobs only (build, UI/static, integration, Docker, Helm). Node 26
   # advisory jobs (build-advisory, verify-ui-advisory, verify-integration-advisory) are omitted
   # from needs: so they cannot fail this check or block PR merge.
-  # When `changes.code == 'false'` (docs-only / wiki / helm PR), the heavy jobs are skipped
+  # When `changes.code == 'false'` (docs-only / wiki PR), the heavy jobs are skipped
   # and this gate passes immediately so required status checks still report success.
   integration-pass:
     name: Integration workflow passed
-    needs: [changes, build-primary, verify-ui-primary, verify-integration-primary, verify-integration-simple-smoke, verify-integration-stdio-smoke, verify-docker]
+    needs: [changes, build-primary, verify-ui-primary, verify-integration-primary, verify-integration-simple-smoke, verify-integration-stdio-smoke, verify-docker, verify-helm]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -830,6 +898,7 @@ jobs:
         env:
           CHANGES_CODE: ${{ needs.changes.outputs.code }}
           CHANGES_IMAGE: ${{ needs.changes.outputs.image }}
+          CHANGES_HELM: ${{ needs.changes.outputs.helm }}
           CHANGES_RESULT: ${{ needs.changes.result }}
           BUILD_PRIMARY: ${{ needs.build-primary.result }}
           VERIFY_UI: ${{ needs.verify-ui-primary.result }}
@@ -837,11 +906,12 @@ jobs:
           VERIFY_SIMPLE_SMOKE: ${{ needs.verify-integration-simple-smoke.result }}
           VERIFY_STDIO_SMOKE: ${{ needs.verify-integration-stdio-smoke.result }}
           VERIFY_DOCKER: ${{ needs.verify-docker.result }}
+          VERIFY_HELM: ${{ needs.verify-helm.result }}
         run: |
           set -euo pipefail
-          echo "changes.result=$CHANGES_RESULT changes.code=$CHANGES_CODE changes.image=$CHANGES_IMAGE"
+          echo "changes.result=$CHANGES_RESULT changes.code=$CHANGES_CODE changes.image=$CHANGES_IMAGE changes.helm=$CHANGES_HELM"
           echo "build-primary=$BUILD_PRIMARY verify-ui-primary=$VERIFY_UI verify-integration-primary=$VERIFY_INTEGRATION"
-          echo "verify-integration-simple-smoke=$VERIFY_SIMPLE_SMOKE verify-integration-stdio-smoke=$VERIFY_STDIO_SMOKE verify-docker=$VERIFY_DOCKER"
+          echo "verify-integration-simple-smoke=$VERIFY_SIMPLE_SMOKE verify-integration-stdio-smoke=$VERIFY_STDIO_SMOKE verify-docker=$VERIFY_DOCKER verify-helm=$VERIFY_HELM"
 
           # Fail fast if the changes job itself broke.
           if [ "$CHANGES_RESULT" != "success" ]; then
@@ -849,21 +919,30 @@ jobs:
             exit 1
           fi
 
-          if [ "$CHANGES_CODE" != "true" ]; then
-            echo "No relevant code changes detected — skipping integration is OK."
+          if [ "$CHANGES_CODE" != "true" ] && [ "$CHANGES_HELM" != "true" ]; then
+            echo "No relevant code or chart changes detected — skipping integration is OK."
             exit 0
           fi
 
-          test "$BUILD_PRIMARY" = "success"
-          test "$VERIFY_UI" = "success"
-          test "$VERIFY_INTEGRATION" = "success"
-          test "$VERIFY_SIMPLE_SMOKE" = "success"
-          test "$VERIFY_STDIO_SMOKE" = "success"
+          if [ "$CHANGES_CODE" = "true" ]; then
+            test "$BUILD_PRIMARY" = "success"
+            test "$VERIFY_UI" = "success"
+            test "$VERIFY_INTEGRATION" = "success"
+            test "$VERIFY_SIMPLE_SMOKE" = "success"
+            test "$VERIFY_STDIO_SMOKE" = "success"
+          fi
 
           # verify-docker only runs when image-affecting files change; otherwise it is skipped.
           if [ "$CHANGES_IMAGE" = "true" ]; then
             test "$VERIFY_DOCKER" = "success"
           else
             echo "No image-affecting changes — verify-docker skip is OK (result=$VERIFY_DOCKER)."
+          fi
+
+          # verify-helm only runs when chart-affecting files change; otherwise it is skipped.
+          if [ "$CHANGES_HELM" = "true" ]; then
+            test "$VERIFY_HELM" = "success"
+          else
+            echo "No chart-affecting changes — verify-helm skip is OK (result=$VERIFY_HELM)."
           fi
           echo "All required integration jobs passed."

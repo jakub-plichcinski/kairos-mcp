@@ -1,14 +1,14 @@
-# Virtual AI employee, part C: daily npm audit fix with conditional patch releases.
+# Virtual AI employee, part C: daily npm audit fix (plain dependency-fix PR).
 # Daily: if npm audit reports fixable advisories, run npm audit fix. When npm's
 # resolver blocks on a peer-dependency tree conflict, or the standard fix
 # succeeds but leaves advisories that explicitly require --force, retry once
-# with --force. A patch-release PR is opened ONLY when a fix
+# with --force. A PR is opened ONLY when a fix
 # actually changed package.json/package-lock.json; clean runs exit as a no-op.
-# The bump uses npm run release:patch per the release-semver skill contract
-# (version:sync keeps skills/embed-docs/compose/helm aligned). On merge,
-# release-tag-on-version-bump.yml tags and dispatches Release, so security
-# patches ship end-to-end unattended. Version-bump policy: patch bumps only
-# for security fixes, not for routine dependency updates.
+# The PR is a plain dependency fix: no version bump, no release automation on
+# merge. The commit uses a conventional `fix(deps):` type so semantic-release
+# ships it as a patch the next time the Release workflow is dispatched
+# (AI_CI_RELEASE_REDESIGN.md). Automated end-to-end security releases are a
+# documented extension point (dispatch Release via API).
 # Requires AUTO_MERGE_TOKEN (same secret as the other automation workflows).
 name: npm audit fix (daily)
 
@@ -81,21 +81,19 @@ jobs:
           echo "skip=false" >> "$GITHUB_OUTPUT"
           npm run build
 
-      - name: Open patch-release PR with auto-merge
+      - name: Open dependency-fix PR with auto-merge
         if: steps.dedupe.outputs.skip != 'true' && steps.assess.outputs.skip == 'false' && steps.fix.outputs.skip == 'false'
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Skill contract (kairos-dev/references/release-semver.md): bump via
-          # release:patch so version:sync updates skills/embed-docs/compose/helm.
-          npm run release:patch
-          VERSION=$(node -p "require('./package.json').version")
+          # Plain dependency fix, no version bump: semantic-release versions it
+          # at the next Release workflow dispatch (conventional fix type).
           datestamp=$(date -u +%Y%m%d)
           branch="chore/audit-fix-${datestamp}"
           git checkout -b "$branch"
-          git add package.json package-lock.json src/embed-docs/mem/ .agents/skills/ compose.yaml helm/kairos-mcp/
-          git commit -m "release: ${VERSION} (npm audit fix)"
+          git add package.json package-lock.json
+          git commit -m "fix(deps): npm audit fix (${datestamp})"
           git push origin "$branch"
           {
             echo "Automated daily \`npm audit fix\` run resolved moderate-or-higher advisories."
@@ -108,10 +106,9 @@ jobs:
             tail -n 30 audit-before.txt
             echo '```'
             echo ""
-            echo "Patch version bumped to ${VERSION} via release:patch (version:sync applied)."
-            echo "On merge, Release tag on version bump tags and dispatches Release."
+            echo "Plain dependency fix (no version bump); the next Release workflow dispatch versions it."
           } > pr-body.md
           pr=$(gh pr create --base main --head "$branch" \
-            --title "release: ${VERSION} (npm audit fix, ${datestamp})" \
+            --title "fix(deps): npm audit fix (${datestamp})" \
             --body-file pr-body.md)
           gh pr merge "$pr" --auto --squash
