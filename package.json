@@ -1,6 +1,6 @@
 {
   "name": "@jakub-plichcinski/kairos-mcp",
-  "version": "4.8.5",
+  "version": "4.8.6",
   "description": "MCP server for agent automation: persistent memory and deterministic workflow execution for AI agents and chats",
   "type": "module",
   "main": "dist/index.js",
