@@ -1,0 +1,121 @@
+{
+  "observations": [
+    {
+      "checked_at_utc": "2026-09-09T09:59:15.141204+00:00",
+      "http_status": 401,
+      "surface": "npm_user",
+      "url": "https://registry.npmjs.org/-/user/org.couchdb.user:tacitloom"
+    },
+    {
+      "checked_at_utc": "2026-09-09T09:59:15.142056+00:00",
+      "http_status": 401,
+      "surface": "npm_user_control",
+      "url": "https://registry.npmjs.org/-/user/org.couchdb.user:isaacs"
+    },
+    {
+      "checked_at_utc": "2026-09-09T09:59:15.143121+00:00",
+      "error": "Scope not found",
+      "http_status": 404,
+      "surface": "npm_org",
+      "url": "https://registry.npmjs.org/-/org/tacitloom/user"
+    },
+    {
+      "checked_at_utc": "2026-09-09T09:59:15.143759+00:00",
+      "http_status": 200,
+      "surface": "npm_org_control",
+      "url": "https://registry.npmjs.org/-/org/types/user"
+    },
+    {
+      "checked_at_utc": "2026-09-09T09:59:15.144704+00:00",
+      "http_status": 200,
+      "servers_count": 5,
+      "surface": "mcp_control",
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=filesystem&limit=5"
+    },
+    {
+      "checked_at_utc": "2026-09-09T09:59:15.146927+00:00",
+      "http_status": 200,
+      "packages_count": 2,
+      "surface": "artifact_control",
+      "url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=cert-manager&limit=2&offset=0"
+    }
+  ],
+  "blocked_checks": [
+    {
+      "surface": "domain_io",
+      "url": "https://rdap.nic.io/domain/tacitloom.io",
+      "observation": "HTTP 502; unusable"
+    },
+    {
+      "surface": "domain_io",
+      "url": "https://rdap.identitydigital.services/rdap/domain/tacitloom.io",
+      "observation": "HTTP 403; unusable"
+    },
+    {
+      "surface": "domain_io",
+      "url": "https://www.iana.org/domains/root/db/io.html",
+      "observation": "IANA lists whois.nic.io. Both tacitloom.io and github.io control failed DNS resolution for WHOIS host in this environment at 2026-09-09T09:58:38Z; .io remains unknown."
+    },
+    {
+      "surface": "npm_org_page",
+      "url": "https://www.npmjs.com/org/tacitloom",
+      "observation": "HTTP 403. Separate npm registry organization lookup returned Scope not found; see observations."
+    },
+    {
+      "surface": "npm_user_page",
+      "url": "https://www.npmjs.com/~tacitloom",
+      "observation": "HTTP 403. Public package/scope absence does not prove no unpublished user reserves the same name."
+    },
+    {
+      "surface": "registrar_checkout",
+      "url": "https://www.name.com/domain/search/tacitloom.com",
+      "observation": "HTTP 403. Registrar price, premium/reserved status, and checkout acceptance not verified."
+    }
+  ],
+  "method_notes": [
+    "Quay user GET /api/v1/users/{username} was verified against live OpenAPI and Project Quay source, with smarterclayton returning 200. A generic 404 for a candidate is a valid missing-user response at this endpoint.",
+    "Quay organization GET returned 404 for finalists; projectquay control returned 200.",
+    "Quay image lookup returned 401, which is not evidence of either availability or occupancy.",
+    "MCP Registry and Artifact Hub search endpoints returned positive control results, so finalist empty results are meaningful.",
+    "GitHub user and organization accounts share one global login namespace. Team names are organization-local.",
+    "No registrations, purchases, credential changes, or product renames were performed."
+  ],
+  "web_screening": [
+    {
+      "queries": [
+        "\"praxory\"",
+        "\"knowloom\""
+      ],
+      "finding": "Reject related-product collisions",
+      "sources": [
+        "https://praxory.app/",
+        "https://github.com/wang09904/KnowLoom"
+      ]
+    },
+    {
+      "queries": [
+        "\"tacitloom\"",
+        "\"Tacit Loom\"",
+        "\"Tacitloom\" software",
+        "\"Tacitloom\" trademark company",
+        "\"tacitloom\" (site:github.com OR site:npmjs.com OR site:hub.docker.com OR site:quay.io)",
+        "\"Tacitloom\" site:skills.sh OR site:smithery.ai OR site:glama.ai OR site:marketplace.visualstudio.com"
+      ],
+      "finding": "No exact-name software/product collision surfaced. Search included unrelated Tacit consultancy pages and newspaper OCR fragments. This is preliminary public screening, not trademark database clearance."
+    },
+    {
+      "queries": [
+        "\"tacitloom\" site:euipo.europa.eu OR site:dpma.de OR site:wipo.int OR site:uspto.gov"
+      ],
+      "finding": "No indexed result; native trademark databases were not fully searched and legal clearance remains unverified."
+    }
+  ],
+  "official_references": [
+    "https://data.iana.org/rdap/dns.json",
+    "https://quay.io/api/v1/discovery",
+    "https://github.com/quay/quay/blob/master/endpoints/api/user.py",
+    "https://docs.docker.com/reference/api/hub/latest.yaml",
+    "https://docs.npmjs.com/about-scopes",
+    "https://modelcontextprotocol.io/registry/authentication"
+  ]
+}
