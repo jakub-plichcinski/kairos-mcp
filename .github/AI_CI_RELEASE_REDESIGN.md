@@ -58,6 +58,8 @@ Publication remains intentionally manual for now via `workflow_dispatch`:
 
 The implementation must prevent a manual dispatch from bypassing validation or releasing arbitrary untrusted code.
 
+The human/operator chooses **when** to release and whether the release is stable or prerelease. The human does **not** choose the SemVer number. `semantic-release` derives that from the accepted commit history.
+
 ### Future security-release automation
 
 A major design goal is eventually allowing security dependency/fix PRs to move from trusted detection -> validation -> merge -> release automatically so security fixes reach users quickly.
