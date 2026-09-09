@@ -75,6 +75,7 @@ jobs:
               - '.env.dev_simple'
               - '.env.dev_stdio'
               - '.github/workflows/integration.yml'
+              - '.github/workflows/npm-audit-fix.yml'
             image:
               - 'Dockerfile*'
               - 'compose.yaml'
@@ -264,6 +265,9 @@ jobs:
 
       - name: Install dependencies
         run: node scripts/ci-github-step-summary.mjs "Install dependencies" -- npm ci
+
+      - name: Audit-fix workflow regression
+        run: node scripts/ci-github-step-summary.mjs "Audit-fix workflow regression" -- npm run test:audit-fix-workflow
 
       # Static spec-parity gate: no infra, no OpenAI. Fails fast on tool-surface drift
       # (MCP registry / HTTP routes / CLI / embedded docs) before the heavy steps below.
