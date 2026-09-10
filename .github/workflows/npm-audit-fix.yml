@@ -34,6 +34,7 @@ jobs:
       HUSKY: 0
       GH_TOKEN: ${{ secrets.GH_PAT }}
       REPO: ${{ github.repository }}
+      AUDIT_LOG_DIR: .local/npm-audit-fix
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -63,12 +64,13 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
-          if npm audit --audit-level=moderate > audit-before.txt 2>&1; then
+          mkdir -p "$AUDIT_LOG_DIR"
+          if npm audit --audit-level=moderate > "$AUDIT_LOG_DIR/audit-before.txt" 2>&1; then
             echo "No moderate-or-higher advisories; nothing to do."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
-            tail -n 30 audit-before.txt
+            tail -n 30 "$AUDIT_LOG_DIR/audit-before.txt"
           fi
 
       - name: Apply fixes and verify
@@ -93,6 +95,7 @@ jobs:
           VERSION=$(node -p "require('./package.json').version")
           datestamp=$(date -u +%Y%m%d)
           branch="chore/audit-fix-${datestamp}"
+          pr_body="$AUDIT_LOG_DIR/pr-body.md"
           git checkout -b "$branch"
           git add package.json package-lock.json src/embed-docs/mem/ .agents/skills/ compose.yaml helm/kairos-mcp/
           git commit -m "release: ${VERSION} (npm audit fix)"
@@ -105,13 +108,13 @@ jobs:
             fi
             echo ""
             echo '```'
-            tail -n 30 audit-before.txt
+            tail -n 30 "$AUDIT_LOG_DIR/audit-before.txt"
             echo '```'
             echo ""
             echo "Patch version bumped to ${VERSION} via release:patch (version:sync applied)."
             echo "On merge, Release tag on version bump tags and dispatches Release."
-          } > pr-body.md
+          } > "$pr_body"
           pr=$(gh pr create --base main --head "$branch" \
             --title "release: ${VERSION} (npm audit fix, ${datestamp})" \
-            --body-file pr-body.md)
+            --body-file "$pr_body")
           gh pr merge "$pr" --auto --squash
