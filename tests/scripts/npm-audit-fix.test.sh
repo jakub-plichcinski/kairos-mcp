@@ -79,6 +79,25 @@ diff -u <(printf '%s\n' \
   'audit fix' \
   'audit --audit-level=moderate') "${test_root}/standard/calls"
 
+default_log_dir="${test_root}/default-log-dir"
+mkdir -p "$default_log_dir"
+: > "${default_log_dir}/calls"
+: > "${default_log_dir}/output"
+(
+  cd "$default_log_dir"
+  MOCK_SCENARIO=standard \
+    MOCK_CALLS="${default_log_dir}/calls" \
+    MOCK_STATE="${default_log_dir}/state" \
+    NPM_BIN="$mock_npm" \
+    GITHUB_OUTPUT="${default_log_dir}/output" \
+    bash "${repo_root}/scripts/npm-audit-fix.sh"
+)
+grep -Fxq 'mode=standard' "${default_log_dir}/output"
+test -f "${default_log_dir}/.local/npm-audit-fix/audit-fix.txt"
+test -f "${default_log_dir}/.local/npm-audit-fix/audit-after-standard.txt"
+test ! -e "${default_log_dir}/audit-fix.txt"
+test ! -e "${default_log_dir}/audit-after-standard.txt"
+
 run_case eresolve
 grep -Fxq 'mode=force' "${test_root}/eresolve/output"
 diff -u <(printf '%s\n' \
