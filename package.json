@@ -222,7 +222,10 @@
     "markdown-it": "^14.2.0",
     "shell-quote": "^1.10.0",
     "react-router": "^8.3.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "markdownlint-cli2": {
+      "smol-toml": "1.8.0"
+    }
   },
   "allowScripts": {
     "puppeteer@25.4.0": true
