@@ -5,7 +5,7 @@ set -euo pipefail
 : "${GITHUB_OUTPUT:?GITHUB_OUTPUT must be set}"
 
 npm_bin=${NPM_BIN:-npm}
-log_dir=${AUDIT_LOG_DIR:-.}
+log_dir=${AUDIT_LOG_DIR:-.local/npm-audit-fix}
 fix_log="${log_dir}/audit-fix.txt"
 after_standard_log="${log_dir}/audit-after-standard.txt"
 
