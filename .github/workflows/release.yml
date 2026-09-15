@@ -233,6 +233,8 @@ jobs:
             args="--dry-run"
             echo "Dry-run: previewing the next version without publishing."
           fi
+          # Disable local hooks — semantic-release needs to push tags.
+          git config core.hooksPath /dev/null
           npx semantic-release $args
 
       - name: Resolve version, dist-tag, and skip
