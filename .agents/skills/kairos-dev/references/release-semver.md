@@ -1,63 +1,49 @@
 ---
 name: kmcp-dev-release-semver
 description: >-
-  kairos-mcp: deterministic semver release. Inspect commits since last stable v*
-  tag; recommend patch/minor/major with evidence; user confirms; release/* branch,
-  npm run release:<type>, PR to main, no manual v* tag (CI tags after merge).
-  Triggers: bump version, bump RC, bump prerelease, pre release, cut release, version-bump PR,
-  release branch, next version, semver bump, release:rc, release:minor, release:patch,
-  release:major, release:pre, npm version, version bump, bump to rc, bump to beta.
+  kairos-mcp: releases via semantic-release dispatch. Conventional commits since the
+  last tag decide the SemVer level (feat=minor, fix=patch, breaking=major); dispatch
+  the Release workflow from main (stable) or a CI-green branch (prerelease); no local
+  tags, no version-bump PRs, no manual version choice.
+  Triggers: cut release, release, ship release, prerelease, beta release, rc, next
+  version, bump version, semver bump, version bump, publish release, dispatch release,
+  release workflow, release:type, npm version.
 ---
 
-# Version bump and release (kairos-mcp)
+# Releases (kairos-mcp)
 
 **Repository:** `kairos-mcp`. **Skill index:** [`.agents/skills/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/README.md).
-**Tag automation:** `.github/workflows/release-tag-on-version-bump.yml` (see
-**[`.github/workflows/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.github/workflows/README.md)**).
+**Release workflow:** `.github/workflows/release.yml` (see **[`.github/workflows/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.github/workflows/README.md)**).
 **Build/test after merge:** [`kmcp-dev-build-test`](build-test.md).
 
-Releases work **with or without** stepping through every narrative below.
-
-- **Minimal path:** `npm version <type> --no-git-tag-version` or **`npm run release:<type>`**, then **`npm run version:sync`** when you did not use a **`release:*`** script → branch, commit, push, open PR yourself. (Each **`release:*`** script already runs **`version:sync`** for you.)
-- **Full skill path:** judgment on semver → confirmation → scripted branch + PR + explicit “no local tag” reminder.
+The version is computed by **semantic-release** (`release.config.mjs`) from commit history — the user chooses **when** to release and whether it is stable or a prerelease; nobody chooses the number. Humans never edit `package.json` version for releases and never create `refs/tags/v*` (the pre-push hook blocks manual tags; the Release workflow pushes the tag).
 
 ---
 
-## 1. Choose next version type (evidence first)
+## 1. Evidence first (what would release)
 
-Inspect commits since the latest **stable** tag (or all commits when none):
+Inspect commits since the latest tag:
 
 ```bash
-STABLE_TAG=$(git tag --sort=-v:refname | rg '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
-[ -n "$STABLE_TAG" ] && git log "${STABLE_TAG}..HEAD" --oneline || git log --oneline
+TAG=$(git tag --sort=-v:refname | rg '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' | head -n 1)
+[ -n "$TAG" ] && git log "${TAG}..HEAD" --oneline || git log --oneline
 ```
 
-Deliver before any bump:
+| Signal | Level |
+|--------|-------|
+| `BREAKING CHANGE` / `feat!:` / `fix!:` | **major** |
+| `feat:` | **minor** |
+| `fix:` | **patch** |
+| `docs:` / `chore:` / `refactor:` / `ci:` / `test:` / `perf:` | no release on its own |
+| prerelease ask | same level, suffixed `-<channel>.N` |
 
-1. **Verified facts** — commit categories, API/MCP schema surface changes, release-note signals.
-2. **Inference** — why **`patch`**, **`minor`**, or **`major`** (or prerelease).
+Deliver before any dispatch:
+
+1. **Verified facts** — commit categories since the last tag, API/MCP schema surface changes.
+2. **Inference** — why **patch**/**minor**/**major** (or prerelease).
 3. **Uncertainty** — what would change the call.
 
-| Signal | Type | npm target |
-|--------|------|------------|
-| `BREAKING CHANGE` / `feat!:` / `fix!:` | **major** | `release:major` |
-| `feat:` (backward-compatible) | **minor** | `release:minor` |
-| `fix:` / `docs:` / `chore:` / `refactor:` / `ci:` / `test:` | **patch** | `release:patch` / `release:bug` |
-| Prerelease ask | **rc** / **beta** / **pre** | `release:rc` / `release:beta` / `release:pre` |
-
-**Pre-release vs beta — these are not interchangeable:**
-
-| User says | Script | Suffix | When to use |
-|-----------|--------|--------|-------------|
-| "pre release" | `release:pre` | `-pre.N` | General pre-release on `main` (e.g. feature preview, early access) |
-| "beta" | `release:beta` | `-beta.N` | Beta on non-main branches only (see §5); requires merged PR to trigger auto-tag |
-| "RC" | `release:rc` | `-rc.N` | Release candidate, close to stable |
-
-Never substitute `beta` when the user says "pre release". They are distinct flavors in this project's semver scheme.
-
-“Next RC” without level → recommend level first; prefer **`minor`** when new capability ships, **`major`** when contract likely breaks; ask only if still ambiguous.
-
-Never present a bump as fact without commit evidence.
+Never present a level as fact without commit evidence. Only `feat:`/`fix:`/breaking commits are releasable — if history is chore/docs-only, say so: the dispatch will end "nothing to release" (green no-op).
 
 ---
 
@@ -65,160 +51,71 @@ Never present a bump as fact without commit evidence.
 
 One-line format:
 
-`Recommended: <patch|minor|major> because <impact>.`
-
-Confirm semver level and prerelease flavor if any. After confirmation, run **§3** without re-asking.
+`Recommended release: <patch|minor|major>[ as <channel> prerelease] because <impact>.`
 
 ---
 
-## 3. Automated steps (post-confirmation)
+## 3. Dispatch the Release workflow
 
-From **repo root**, in order.
+### 3.1 Stable (from main)
 
-### 3.1 Sync main
-
-```bash
-git fetch origin main
-git checkout main
-git pull origin main
-```
-
-### 3.2 Release branch + npm target
+1. Merge conventional-commit PRs to **main**; wait for **Integration** green on the main head.
+2. Dispatch:
 
 ```bash
-git checkout -b release/next
-npm run release:<type>
+gh workflow run release.yml --ref main -f release-type=stable
 ```
 
-`<type>`: `major` | `minor` | `patch` | `bug` | `rc` | `pre` | `beta`.
+### 3.2 Prerelease (from a CI-green branch)
+
+Integration triggers automatically only for PRs/pushes to main, so validate the branch first, then dispatch Release from the same ref:
 
 ```bash
-VERSION=$(node -p "require('./package.json').version")
-git branch -m release/next "release/$VERSION"
+gh workflow run integration.yml --ref <branch>
+gh run list --workflow=integration.yml --limit 1   # wait for success
+gh workflow run release.yml --ref <branch> -f release-type=prerelease -f channel=beta
 ```
 
-### 3.3 Commit, push, PR
+The channel (default `beta`) becomes the version suffix, the npm dist-tag, and an image tag — never `latest`.
+
+### 3.3 Preview without publishing
 
 ```bash
-git add package.json package-lock.json src/embed-docs/mem/ .agents/skills/ compose.yaml helm/kairos-mcp/
-git commit -m "release: $VERSION"
-git push -u origin "release/$VERSION"
-gh pr create --base main --head "release/$VERSION" \
-  --title "release: $VERSION" \
-  --body "Version bump to $VERSION."
+gh workflow run release.yml --ref main -f release-type=stable -f dry-run=true
 ```
 
-Present the **PR URL** clearly. Optional:
-
-```bash
-gh pr view --json url -q .url
-```
-
-**Do not create or push `refs/tags/v*`.** Tags are created after merge when Integration succeeds; **pre-push** blocks manual tags.
+Dry-run shows the next version only; nothing is prepared or published.
 
 ---
 
-## 4. What `version:sync` does
+## 4. What the workflow does
 
-Each **`release:*`** script runs **`npm run version:sync`**, which chains three
-syncs and is why the staging set above includes `compose.yaml` and
-`helm/kairos-mcp/`:
+- **validate** — ref rules (stable ⇒ main; prerelease ⇒ non-main branch), `.trivyignore` expiry, and a **green Integration run on the exact head SHA**. Dispatch controls timing, never validation.
+- **release** — semantic-release computes the version once, bumps and syncs the workspace, consumer-tests the packed tgz, publishes npm via OIDC trusted publishing (dist-tag `latest`/channel), pushes the git tag, and creates the GitHub Release.
+- **publish-container / publish-helm** — one image build for every alias on Docker Hub **and** Quay (single digest, cosign, SBOM, Trivy gate); Helm chart version/appVersion/image tag = the release version, pushed to `oci://quay.io/<namespace>`.
+- **finalize** — SBOMs attached to the GitHub Release plus a run summary.
 
-1. **`version:sync-skills`** — `scripts/build-sync-skill-versions.mjs` (below).
-2. **`compose:sync-app-tag`** — updates the `jakub-plichcinski/kairos-mcp:` image tag in **`compose.yaml`**.
-3. **`helm:sync-app-version`** — `scripts/helm-sync-app-version.mjs` updates **`helm/kairos-mcp/Chart.yaml`** and **`helm/kairos-mcp/values.yaml`**.
-
-### `version:sync-skills`
-
-Implementation: **`scripts/build-sync-skill-versions.mjs`** (also **`prebuild`**).
-
-1. **`src/embed-docs/mem/*.md`** — frontmatter **`version:`** ← **`package.json`** (including prerelease).
-2. **`.agents/skills/<top-level>/SKILL.md`** (immediate children of **`.agents/skills/`**) — metadata **`version:`** and optional **`references/KAIROS.md`** frontmatter, using the **greater** of **`package.json`** version and latest **stable** `vX.Y.Z` tag (see script for edge cases).
-
-**Scope:** Only **`.agents/skills/<name>/`** direct children (e.g. **`kairos`**); **`kairos-dev`** has no version field and is skipped.
-
-**Check:** **`npm run version:check-skills`** (also pre-commit when relevant paths staged).
+One version propagates everywhere: npm, both registries, the chart, `v<version>` tag, GitHub Release.
 
 ---
 
-## 5. Beta release on a non-main branch
-
-The auto-release workflow (`release-tag-on-version-bump.yml`) has three trigger paths:
-
-| Trigger | When | Branches |
-|---------|------|----------|
-| `workflow_run` | Integration/Integration Simple succeed | `main`, `ci/**` |
-| `pull_request` (closed) | `release/*beta*` PR merged | **any** target branch |
-| `workflow_dispatch` | Manual trigger | any ref (beta only) |
-
-**Non-main branches only allow beta versions** (version must contain `-beta.`).
-
-### 5.1 Automatic path: PR merge triggers release
-
-When a `release/*beta*` branch PR is merged into **any** branch (e.g. `next/v4.8`),
-the workflow fires automatically via the `pull_request` trigger. No manual steps needed.
-
-The workflow:
-1. Verifies the PR was merged (not just closed).
-2. Verifies the head branch matches `release/*beta*`.
-3. Checks out the target branch, creates and pushes the tag.
-4. Dispatches the Release workflow.
-
-### 5.2 Create the version bump PR targeting the non-main branch
+## 5. Verify
 
 ```bash
-# From the target branch (e.g. next/v4.8)
-git checkout next/v4.8
-git pull origin next/v4.8
-git checkout -b release/<version>       # e.g. release/4.8.0-beta.1
-npm run release:beta                     # bumps to next -beta.N
-VERSION=$(node -p "require('./package.json').version")
-git branch -m release/beta "release/$VERSION"
-git add package.json package-lock.json src/embed-docs/mem/ .agents/skills/ compose.yaml helm/kairos-mcp/
-git commit -m "release: $VERSION"
-git push -u origin "release/$VERSION"
-gh pr create --base next/v4.8 --head "release/$VERSION" \
-  --title "release: $VERSION" \
-  --body "Version bump to $VERSION."
-```
-
-After merge, the release workflow triggers automatically.
-
-### 5.3 Fallback: manual `workflow_dispatch`
-
-If the automatic trigger fails or you need to re-release from a branch without a new PR:
-
-```bash
-gh workflow run release-tag-on-version-bump.yml \
-  --ref <branch> -f ref=<branch>
-# Example:
-gh workflow run release-tag-on-version-bump.yml \
-  --ref next/v4.8 -f ref=next/v4.8
-```
-
-### 5.4 Verify
-
-```bash
-# Check the tag workflow run
-gh run list --workflow=release-tag-on-version-bump.yml --limit 3
-# Check the release workflow run
 gh run list --workflow=release.yml --limit 3
-# Verify the release
 gh release view v<version>
+npm dist-tag ls @jakub-plichcinski/kairos-mcp
 ```
-
-**Do not create or push `refs/tags/v*` locally.** Tags are created by the
-workflow; pre-push hooks block manual tags.
 
 ---
 
 ## 6. Edge cases
 
-- **Dirty tree** — stash or commit unrelated work first.
-- **Existing `release/*`** — confirm reuse vs delete with the user.
-- **Prerelease → stable** — often **`npm run release:patch`** from an `-rc` line (npm semantics apply).
-- **`version:check-skills` fails** — `git fetch --tags`; **`npm run version:sync-skills`**; re-stage **`skills/`**, **`src/embed-docs/mem/`**, version files; re-run check.
-- **New skill under `skills/<dir>/`** — ensure **`version:`** metadata line exists where the script expects.
+- **Nothing to release** — only chore/docs commits since the last tag: the run ends green with a "nothing to release" summary; add a `feat:`/`fix:` or skip.
+- **Run failed after the tag existed** — re-dispatch with `republish=true`: it falls back to the latest tag reachable from HEAD and tolerates already-published npm/chart versions (both immutable). Investigate the original failure first; always tell the user republish re-uses the existing tag.
+- **Wrong ref** — stable dispatched from a non-main branch (or prerelease from main): `validate` fails fast; re-dispatch from the correct ref.
+- **Channel name** — must be lowercase letters/digits/hyphens and never `latest`.
+- **Version in `package.json` looks stale** — that is the last synced baseline, not the next version; semantic-release decides the next version from tags + commits.
 
 ---
 

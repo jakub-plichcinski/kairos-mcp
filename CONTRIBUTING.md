@@ -388,14 +388,14 @@ scripts/           Build and utility scripts
 
 ## Commit conventions
 
-Use these prefixes:
+Use [Conventional Commits](https://www.conventionalcommits.org/) — semantic-release derives release versions from these types (`release.config.mjs`):
 
-- `Add:` — new feature
-- `Fix:` — bug fix
-- `Update:` — change to an existing feature
-- `Refactor:` — internal restructuring without behavior change
-- `Docs:` — documentation only
-- `Test:` — test additions or changes
+- `feat:` — new feature (releases a **minor**)
+- `fix:` — bug fix (releases a **patch**)
+- `feat!:` / `fix!:` or a `BREAKING CHANGE:` footer — breaking change (releases a **major**)
+- `docs:` / `chore:` / `refactor:` / `ci:` / `test:` / `perf:` — housekeeping; never releases on its own
+
+Scope suffixes are encouraged for readability, e.g. `feat(ui):`, `fix(ci):`.
 
 ## PR requirements
 
@@ -423,29 +423,19 @@ The integration workflow (`.github/workflows/integration.yml`) already triggers 
 
 ## Releases
 
-Releases are driven by **version in `package.json`**. Do not create git tags manually; the tag is created when a version-bump PR is merged to main.
+Releases are **dispatched manually and versioned automatically**. [semantic-release](https://semantic-release.gitbook.io/semantic-release/) computes the version from conventional commits since the last tag; the Release workflow publishes npm, Docker Hub + Quay images, the Helm OCI chart, the git tag, and the GitHub Release from that single version. Do not create git tags, and do not open version-bump PRs — the pre-push hook blocks manual tags.
 
-**Flow:** Bump version → open PR to main → merge → [Release tag on version bump](.github/workflows/README.md#release-tag-on-version-bump) creates tag if `package.json` version > latest tag → [Release](.github/workflows/README.md#release-workflow-tag--npm--docker) runs on tag push (publish npm → Docker → GitHub Release).
+**Flow:** Merge conventional-commit PRs to main (`feat:` → minor, `fix:` → patch, breaking → major) → Integration green → dispatch [Release](.github/workflows/README.md#release-workflow-manual-dispatch) from main with `release-type=stable`.
 
 ### How to cut a release
 
-1. **Check latest version:** `git tag -l 'v*' | sort -V | tail -1` or use `package.json`.
-2. **Bump version** (do not create a git tag):
+1. **Check what will release:** `git log "$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)..HEAD" --oneline` — only `feat:`/`fix:`/breaking commits count; chore-only history releases nothing.
+2. **Preview (optional):** Actions → Release → Run workflow → branch `main`, `release-type=stable`, `dry-run=true` — shows the next version without publishing.
+3. **Dispatch the stable release:** Actions → Release → Run workflow → branch `main`, `release-type=stable`. CLI: `gh workflow run release.yml --ref main -f release-type=stable`.
+4. **Prerelease (from a CI-green branch):** dispatch Integration on the branch first (Actions → Integration → Run workflow), wait for green, then `gh workflow run release.yml --ref <branch> -f release-type=prerelease -f channel=beta`. The prerelease gets an `-<channel>.N` version suffix, a matching npm dist-tag, and never the `latest` image tag.
+5. **Recovery:** if a run fails after the tag exists, re-dispatch with `republish=true` (falls back to the latest tag and tolerates already-published npm/chart versions).
 
-- **Prerelease** (e.g. `3.0.1-beta.18` → `3.0.1-beta.19`):  
-   `npm version prerelease --preid=beta --no-git-tag-version`
-- **Stable** (e.g. `3.0.1` → `3.0.2`):  
-  `npm version patch --no-git-tag-version` (or `minor` / `major` as appropriate).
-
-1. **Sync skill/embed-docs version:**
-  `npm run version:sync-skills`  
-   Commit the changed files (e.g. `src/embed-docs/mem/*.md`) together with `package.json` and `package-lock.json`.
-2. **Open a version-bump PR to main:**
-  Use a branch named `release/<version>` (e.g. `release/3.0.2`).  
-   Example: `git checkout -b release/3.0.2`, commit, push, then `gh pr create --base main --head release/3.0.2`.
-3. **Merge the PR.** After merge, the workflow creates the tag and runs the Release workflow (npm publish, Docker, GitHub Release). Ensure repository secret `GH_PAT` is set so the tag push triggers Release; see [workflows README](.github/workflows/README.md#release-tag-on-version-bump).
-
-Full pipeline details, secrets, and manual publish options: [.github/workflows/README.md](.github/workflows/README.md).
+Full pipeline details, dispatch gates, setup (release environment, npm trusted publisher), and secrets: [.github/workflows/README.md](.github/workflows/README.md).
 
 ## Code style
 

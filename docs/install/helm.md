@@ -172,22 +172,20 @@ the Keycloak Admin UI or via the Realm API after deployment.
 
 ## Versioning policy
 
-The chart maintains three independent versioning lanes:
+Chart release identity derives from the repository's **single release version**, computed once by semantic-release in the Release workflow (see `.github/workflows/README.md`):
 
 | Lane | What | Updated by |
-|------|------|-----------|
-| **App release** | `Chart.yaml` `appVersion` + default `app.image.tag` in `values.yaml` | Stable repo release (`release:major/minor/patch`) |
-| **Dependencies** | `Chart.yaml` `dependencies[].version`, third-party image tags (Percona, Ollama, etc.) | Renovate PRs |
-| **Chart version** | `Chart.yaml` `version` | Bot auto-bump on every PR that touches `helm/kairos-mcp/` |
+|------|------|------------|
+| **Chart release identity** | `Chart.yaml` `version` + `appVersion` + default `app.image.tag` in `values.yaml` | Release workflow `publish-helm` job: `scripts/helm-set-release-version.mjs` sets all three to the exact release version (prereleases included) before pushing to `oci://quay.io/<namespace>/kairos-mcp` |
+| **In-repo baseline** | Committed `Chart.yaml` / `values.yaml` values | `npm run version:sync` (stable releases only); the committed values are the last synced baseline, not the next version |
+| **Dependencies** | `Chart.yaml` `dependencies[].version`, third-party image tags (Percona, Ollama, etc.) | Renovate PRs (`deps(helm)` and `deps(helm-images)` groups) |
 
-**Chart version bump rules:**
-
-- **Minor** bump when the PR is a stable app release (syncs `appVersion`).
-- **Patch** bump for all other chart changes (including Renovate dependency updates).
-
-A CI guardrail enforces that `Chart.yaml` `version` is always incremented when
-chart files change. Override `app.image.tag` in your values to pin a specific
-release independently of the chart default.
+Published chart versions are immutable (Helm OCI SemVer identity; re-publishing the
+same version is rejected unless the Release workflow runs in explicit `republish`
+recovery mode). Chart PRs are validated by the Integration workflow's `verify-helm`
+job (lint, unittest, chart-testing, kubeconform) — there is no chart auto-bump bot
+and no "chart version must exceed main" guardrail. Override `app.image.tag` in
+your values to pin a specific release independently of the chart default.
 
 ---
 
