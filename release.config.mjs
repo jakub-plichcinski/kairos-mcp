@@ -25,7 +25,7 @@ const prereleaseBranch = process.env.KAIROS_PRERELEASE_BRANCH || '';
 const prereleaseChannel = process.env.KAIROS_PRERELEASE_CHANNEL || 'beta';
 
 const branches = prereleaseBranch
-  ? ['main', { name: prereleaseBranch, prerelease: true, channel: prereleaseChannel }]
+  ? ['main', { name: prereleaseBranch, prerelease: 'beta', channel: prereleaseChannel }]
   : ['main'];
 
 /** @type {import('semantic-release').GlobalConfig} */
