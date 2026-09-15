@@ -224,6 +224,9 @@ jobs:
         id: sr
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          GIT_CONFIG_COUNT: 1
+          GIT_CONFIG_KEY_0: core.hooksPath
+          GIT_CONFIG_VALUE_0: /dev/null
           KAIROS_PRERELEASE_BRANCH: ${{ inputs.release-type == 'prerelease' && github.ref_name || '' }}
           KAIROS_PRERELEASE_CHANNEL: ${{ inputs.release-type == 'prerelease' && inputs.channel || 'beta' }}
         run: |
@@ -233,8 +236,6 @@ jobs:
             args="--dry-run"
             echo "Dry-run: previewing the next version without publishing."
           fi
-          # Disable local hooks — semantic-release needs to push tags.
-          git config core.hooksPath /dev/null
           npx semantic-release $args
 
       - name: Resolve version, dist-tag, and skip
