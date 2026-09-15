@@ -565,6 +565,12 @@ jobs:
           prerelease: ${{ contains(needs.release.outputs.version, '-') }}
           files: sboms/**/*.cdx.json
 
+      - name: Publish GitHub Release (draft → published)
+        if: needs.release.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "v${{ needs.release.outputs.version }}" --draft=false --repo ${{ github.repository }}
+
       - name: Write job summary
         env:
           RELEASE_TYPE: ${{ inputs.release-type }}

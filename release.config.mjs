@@ -34,7 +34,7 @@ const config = {
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
-    '@semantic-release/github',
+    ['@semantic-release/github', { draftRelease: true }],
     [
       '@semantic-release/exec',
       {
