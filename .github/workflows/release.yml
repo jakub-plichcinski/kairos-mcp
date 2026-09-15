@@ -330,6 +330,14 @@ jobs:
           path: kairos-mcp-${{ steps.resolve.outputs.version }}-npm-sbom.cdx.json
           if-no-files-found: error
 
+      - name: Upload npm package tgz
+        if: steps.resolve.outputs.skip != 'true'
+        uses: actions/upload-artifact@v5
+        with:
+          name: npm-package-${{ steps.resolve.outputs.version }}
+          path: dist/jakub-plichcinski-kairos-mcp-${{ steps.resolve.outputs.version }}.tgz
+          if-no-files-found: error
+
   publish-container:
     name: Publish container image (Docker Hub + Quay)
     needs: release
@@ -398,6 +406,17 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
 
+      - name: Download npm package artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-package-${{ needs.release.outputs.version }}
+          path: dist
+
+      - name: Stage package.tgz for local Docker install
+        run: |
+          mkdir -p .ci/docker
+          cp "dist/jakub-plichcinski-kairos-mcp-${{ needs.release.outputs.version }}.tgz" .ci/docker/package.tgz
+
       # Single build-push for ALL aliases on BOTH registries: every tag points at the
       # same digest (single-digest invariant). Never rebuild per tag.
       - name: Build and push
@@ -406,7 +425,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          target: runtime
+          target: runtime-ci
           build-args: |
             PACKAGE_VERSION=${{ needs.release.outputs.version }}
           platforms: linux/amd64,linux/arm64
