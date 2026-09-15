@@ -8,6 +8,7 @@ const config: KnipConfig = {
         'src/metrics-server.ts',  // Standalone metrics server
         'src/ui/main.tsx',        // UI entry (Vite)
         'scripts/**/*.{ts,mjs}',  // Build-time scripts
+        'release.config.mjs',     // semantic-release configuration
         'eslint.config.cjs',      // ESLint entry (loads @typescript-eslint/*)
         'eslint/flat-config.cjs',
     ],
