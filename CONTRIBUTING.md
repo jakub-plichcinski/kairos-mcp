@@ -425,15 +425,15 @@ The integration workflow (`.github/workflows/integration.yml`) already triggers 
 
 Releases are **dispatched manually and versioned automatically**. [semantic-release](https://semantic-release.gitbook.io/semantic-release/) computes the version from conventional commits since the last tag; the Release workflow publishes npm, Docker Hub + Quay images, the Helm OCI chart, the git tag, and the GitHub Release from that single version. Do not create git tags, and do not open version-bump PRs — the pre-push hook blocks manual tags.
 
-**Flow:** Merge conventional-commit PRs to main (`feat:` → minor, `fix:` → patch, breaking → major) → Integration green → dispatch [Release](.github/workflows/README.md#release-workflow-manual-dispatch) from main with `release-type=stable`.
+**Flow:** Merge conventional-commit PRs to main (`feat:` → minor, `fix:` → patch, breaking → major) → Integration green → dispatch [Release](.github/workflows/README.md#release-workflow-manual-dispatch) from main (branch choice alone decides the release type).
 
 ### How to cut a release
 
 1. **Check what will release:** `git log "$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)..HEAD" --oneline` — only `feat:`/`fix:`/breaking commits count; chore-only history releases nothing.
-2. **Preview (optional):** Actions → Release → Run workflow → branch `main`, `release-type=stable`, `dry-run=true` — shows the next version without publishing.
-3. **Dispatch the stable release:** Actions → Release → Run workflow → branch `main`, `release-type=stable`. CLI: `gh workflow run release.yml --ref main -f release-type=stable`.
-4. **Prerelease (from a CI-green branch):** dispatch Integration on the branch first (Actions → Integration → Run workflow), wait for green, then `gh workflow run release.yml --ref <branch> -f release-type=prerelease -f channel=beta`. The prerelease gets an `-<channel>.N` version suffix, a matching npm dist-tag, and never the `latest` image tag.
-5. **Recovery:** if a run fails after the tag exists, re-dispatch with `republish=true` (falls back to the latest tag and tolerates already-published npm/chart versions).
+2. **Preview (optional):** Actions → Release → Run workflow → branch `main`, `dry-run=true` — shows the next version without publishing.
+3. **Dispatch the stable release:** Actions → Release → Run workflow → branch `main`. CLI: `gh workflow run release.yml --ref main`.
+4. **Prerelease (from a CI-green branch):** dispatch Integration on the branch first (Actions → Integration → Run workflow), wait for green, then `gh workflow run release.yml --ref <branch>`. Dispatching from any non-main branch makes it a prerelease automatically: it gets an `-<branch-id>.N` version suffix derived from the sanitized branch name, a matching npm dist-tag, and never the `latest` image tag.
+5. **Recovery:** if a run fails after the tag exists, just re-dispatch the same branch — no flag. The run falls back to the latest tag and always tolerates already-published npm/chart versions, so re-running is idempotent.
 
 Full pipeline details, dispatch gates, setup (release environment, npm trusted publisher), and secrets: [.github/workflows/README.md](.github/workflows/README.md).
 

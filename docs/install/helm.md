@@ -180,9 +180,9 @@ Chart release identity derives from the repository's **single release version**,
 | **In-repo baseline** | Committed `Chart.yaml` / `values.yaml` values | `npm run version:sync` (stable releases only); the committed values are the last synced baseline, not the next version |
 | **Dependencies** | `Chart.yaml` `dependencies[].version`, third-party image tags (Percona, Ollama, etc.) | Renovate PRs (`deps(helm)` and `deps(helm-images)` groups) |
 
-Published chart versions are immutable (Helm OCI SemVer identity; re-publishing the
-same version is rejected unless the Release workflow runs in explicit `republish`
-recovery mode). Chart PRs are validated by the Integration workflow's `verify-helm`
+Published chart versions are immutable (Helm OCI SemVer identity); the Release
+workflow tolerates an already-published chart version, so re-running a release is
+idempotent and needs no recovery flag. Chart PRs are validated by the Integration workflow's `verify-helm`
 job (lint, unittest, chart-testing, kubeconform) — there is no chart auto-bump bot
 and no "chart version must exceed main" guardrail. Override `app.image.tag` in
 your values to pin a specific release independently of the chart default.
