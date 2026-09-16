@@ -1,4 +1,4 @@
-# Unified release pipeline (AI_CI_RELEASE_REDESIGN.md): ONE manual dispatch publishes
+# Unified release pipeline: ONE manual dispatch publishes
 # npm + container images (Docker Hub + Quay) + Helm OCI chart + git tag + GitHub Release
 # from ONE SemVer version computed by semantic-release (release.config.mjs).
 #
@@ -83,7 +83,7 @@ jobs:
             --warning-days "$TRIVYIGNORE_EXPIRY_WARNING_DAYS"
 
       # The dispatched ref must have a successful Integration run on its exact head SHA:
-      # dispatching controls timing only, never validation (AI_CI_RELEASE_REDESIGN.md).
+      # dispatching controls timing only, never validation.
       - name: Require Integration success on head SHA
         env:
           HEAD_SHA: ${{ github.sha }}

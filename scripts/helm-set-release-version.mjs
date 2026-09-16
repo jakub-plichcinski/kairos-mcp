@@ -6,7 +6,7 @@
  *
  * Used only by the Release workflow's publish-helm job: the chart's release
  * identity derives from the single semantic-release version instead of an
- * independently bumped chart version (AI_CI_RELEASE_REDESIGN.md). For in-repo
+ * independently bumped chart version. For in-repo
  * baseline maintenance use scripts/helm-sync-app-version.mjs instead.
  *
  * Usage: node scripts/helm-set-release-version.mjs <version>

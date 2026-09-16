@@ -82,7 +82,7 @@ Dependabot **version updates** are disabled (`dependabot.yml` `updates: []`); Re
 
 ## Workflow classification
 
-The redesign (`.github/AI_CI_RELEASE_REDESIGN.md`) collapsed release responsibility into **Integration** (validation) + **Release** (publication).
+Release responsibility is split across **Integration** (validation) and **Release** (publication).
 
 | Workflow | File | Role |
 |----------|------|------|
@@ -208,7 +208,7 @@ To run a single scenario explicitly (after the matching stack is up):
 
 ## Release workflow (manual dispatch)
 
-**Release** (`release.yml`) is `workflow_dispatch`-only and is the **only** path that publishes anything. It implements the canonical pipeline from `.github/AI_CI_RELEASE_REDESIGN.md`.
+**Release** (`release.yml`) is `workflow_dispatch`-only and is the **only** path that publishes anything.
 
 **Version authority:** [semantic-release](https://semantic-release.gitbook.io/semantic-release/) with `release.config.mjs` at the repo root. Conventional commits since the last tag decide the version (`fix:` → patch, `feat:` → minor, `feat!:`/`BREAKING CHANGE:` → major); the operator chooses **when** to release, never the number. The stable lane is `main`; prereleases run from any CI-green non-main branch via `KAIROS_PRERELEASE_BRANCH`, whose sanitized branch name becomes both the semver prerelease identifier and the npm dist-tag (no permanent `dev`/`next` branch, and no channel to choose). semantic-release pushes the git tag (`vX.Y.Z`, GITHUB_TOKEN) and creates the GitHub Release; its exec plugin `prepareCmd` bumps `package.json`, re-syncs skills/compose/helm **in the job workspace only**, and builds + consumer-tests the packed tgz before anything is published. The in-repo `package.json`/skills/compose/helm versions remain the *last synced baseline* — they are not bumped by release PRs anymore.
 

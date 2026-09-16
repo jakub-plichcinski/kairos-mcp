@@ -1,7 +1,7 @@
 /**
  * semantic-release configuration — the single SemVer authority for KAIROS.
  *
- * Design (see .github/AI_CI_RELEASE_REDESIGN.md):
+ * Design:
  * - `main` is the only permanent integration/release branch; no permanent
  *   `dev`/`next` branch. KAIROS_PRERELEASE_BRANCH is set by the workflow when
  *   dispatched from non-main; the branch name is sanitized into the semver
