@@ -1,0 +1,427 @@
+{
+  "observations": [
+    {
+      "body_sha256": "3934320483352cd8e2ec5a12804b27d101be7b0bfafc7a357138e3366ff0292d",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:28.881586+00:00",
+      "content_type": "application/rdap+json; charset=utf-8",
+      "final_url": "https://pubapi.registry.google/rdap/domain/tacitloom.dev",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "tacitloom.dev not found"
+        ],
+        "errorCode": 404,
+        "title": "Not Found"
+      },
+      "surface": "domain_dev_rdap",
+      "url": "https://pubapi.registry.google/rdap/domain/tacitloom.dev"
+    },
+    {
+      "body_sha256": "1499ed5cb99e6e986818e5d66549f19fce2b7c9c44554519c91e2a7c329e8da1",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:28.882582+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.publicinterestregistry.org/rdap/domain/tacitloom.org",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "Object not found"
+        ],
+        "errorCode": 404,
+        "title": "Object not found"
+      },
+      "surface": "domain_org_rdap",
+      "url": "https://rdap.publicinterestregistry.org/rdap/domain/tacitloom.org"
+    },
+    {
+      "body_sha256": "6827f80499cb0ad71a0f8706cfb74c206579bf545393137cc88c3bcd22380b23",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:28.883869+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.identitydigital.services/rdap/domain/tacitloom.ai",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "Object not found"
+        ],
+        "errorCode": 404,
+        "title": "Object not found"
+      },
+      "surface": "domain_ai_rdap",
+      "url": "https://rdap.identitydigital.services/rdap/domain/tacitloom.ai"
+    },
+    {
+      "body_sha256": "12b7420efa43c19b61ecb62fee635afd245a4cc3889a6185dae96ab4c394666e",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:28.885564+00:00",
+      "content_type": "application/json",
+      "final_url": "https://hub.docker.com/v2/users/tacitloom/",
+      "http_status": 404,
+      "response_summary": {
+        "message": "User not found"
+      },
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/tacitloom/"
+    },
+    {
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:28.891445+00:00",
+      "content_type": "application/json",
+      "final_url": "https://quay.io/api/v1/organization/tacitloom",
+      "http_status": 404,
+      "response_summary": {
+        "detail": "Not Found",
+        "title": "not_found"
+      },
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/tacitloom"
+    },
+    {
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:28.892129+00:00",
+      "content_type": "application/json",
+      "final_url": "https://quay.io/api/v1/users/tacitloom",
+      "http_status": 404,
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      },
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/tacitloom"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:37.561606+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/tacitloom-mcp",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_mcp",
+      "url": "https://registry.npmjs.org/tacitloom-mcp"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:37.562316+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/@tacitloom%2Fmcp",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_scope_package",
+      "url": "https://registry.npmjs.org/@tacitloom%2Fmcp"
+    },
+    {
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:37.752790+00:00",
+      "content_type": "application/json",
+      "final_url": "https://pypi.org/pypi/tacitloom/json",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/tacitloom/json"
+    },
+    {
+      "body_sha256": "1d6e81192949508e72cc03e5be52a3ff634a593d642ed99917b457e02847bd44",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:54:38.420111+00:00",
+      "content_type": "application/json",
+      "final_url": "https://crates.io/api/v1/crates/tacitloom",
+      "http_status": 404,
+      "response_summary": {},
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/tacitloom"
+    },
+    {
+      "body_sha256": "475e49201e725d73403e4b6e41930cb40a51f9e50419736650457d0a702d042c",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:39.253347+00:00",
+      "content_type": "application/rdap+json; charset=utf-8",
+      "final_url": "https://pubapi.registry.google/rdap/domain/praxelet.dev",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "praxelet.dev not found"
+        ],
+        "errorCode": 404,
+        "title": "Not Found"
+      },
+      "surface": "domain_dev_rdap",
+      "url": "https://pubapi.registry.google/rdap/domain/praxelet.dev"
+    },
+    {
+      "body_sha256": "d54391831ca65d6f38bc516ed711cd3de60162281119463d6e6beb863b15ab80",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:40.402313+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.publicinterestregistry.org/rdap/domain/praxelet.org",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "Object not found"
+        ],
+        "errorCode": 404,
+        "title": "Object not found"
+      },
+      "surface": "domain_org_rdap",
+      "url": "https://rdap.publicinterestregistry.org/rdap/domain/praxelet.org"
+    },
+    {
+      "body_sha256": "8681515e48dadc6c947ff5285964f8dbc460b6661b8f0a7c3b2558123c83d86b",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:45.092817+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.identitydigital.services/rdap/domain/praxelet.ai",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "Object not found"
+        ],
+        "errorCode": 404,
+        "title": "Object not found"
+      },
+      "surface": "domain_ai_rdap",
+      "url": "https://rdap.identitydigital.services/rdap/domain/praxelet.ai"
+    },
+    {
+      "body_sha256": "931c3fba77a5b3459a7a2efd54851c50c7437f74b2be34ce22e0110f07662945",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:45.175770+00:00",
+      "content_type": "application/json",
+      "final_url": "https://hub.docker.com/v2/users/praxelet/",
+      "http_status": 404,
+      "response_summary": {
+        "message": "User not found"
+      },
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/praxelet/"
+    },
+    {
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:45.538881+00:00",
+      "content_type": "application/json",
+      "final_url": "https://quay.io/api/v1/organization/praxelet",
+      "http_status": 404,
+      "response_summary": {
+        "detail": "Not Found",
+        "title": "not_found"
+      },
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/praxelet"
+    },
+    {
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:48.847799+00:00",
+      "content_type": "application/json",
+      "final_url": "https://quay.io/api/v1/users/praxelet",
+      "http_status": 404,
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      },
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/praxelet"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:49.679188+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/praxelet-mcp",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_mcp",
+      "url": "https://registry.npmjs.org/praxelet-mcp"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:49.869262+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/@praxelet%2Fmcp",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_scope_package",
+      "url": "https://registry.npmjs.org/@praxelet%2Fmcp"
+    },
+    {
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:52.579934+00:00",
+      "content_type": "application/json",
+      "final_url": "https://pypi.org/pypi/praxelet/json",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/praxelet/json"
+    },
+    {
+      "body_sha256": "f6bbe3a668ed25a86bf8f0bbeb1e0fb5d87048fb1e6bf7623115be615c34e0a9",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:54:52.975347+00:00",
+      "content_type": "application/json",
+      "final_url": "https://crates.io/api/v1/crates/praxelet",
+      "http_status": 404,
+      "response_summary": {},
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/praxelet"
+    },
+    {
+      "body_sha256": "cea654faf6c7ed3eaf08fefb7f8b868c7831ee7139e8dcbb104b377b7f1055a4",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:54:53.137485+00:00",
+      "content_type": "application/rdap+json; charset=utf-8",
+      "final_url": "https://pubapi.registry.google/rdap/domain/enactloom.dev",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "enactloom.dev not found"
+        ],
+        "errorCode": 404,
+        "title": "Not Found"
+      },
+      "surface": "domain_dev_rdap",
+      "url": "https://pubapi.registry.google/rdap/domain/enactloom.dev"
+    },
+    {
+      "body_sha256": "0f15f14096d60e39ea4e465c70142f708129d4cc252e547ada4f8306572bbaa5",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:54:53.344263+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.publicinterestregistry.org/rdap/domain/enactloom.org",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "Object not found"
+        ],
+        "errorCode": 404,
+        "title": "Object not found"
+      },
+      "surface": "domain_org_rdap",
+      "url": "https://rdap.publicinterestregistry.org/rdap/domain/enactloom.org"
+    },
+    {
+      "body_sha256": "fddb5cf2be458abd9fe7168ad909af89076f594e52a17756c1a4bfad89c6d923",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:54:57.214523+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.identitydigital.services/rdap/domain/enactloom.ai",
+      "http_status": 404,
+      "response_summary": {
+        "description": [
+          "Object not found"
+        ],
+        "errorCode": 404,
+        "title": "Object not found"
+      },
+      "surface": "domain_ai_rdap",
+      "url": "https://rdap.identitydigital.services/rdap/domain/enactloom.ai"
+    },
+    {
+      "body_sha256": "1ef81dc242415dffd63a22ff6c74249e38bf5808588562ecaa2a4f77b7bc1f51",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:54:57.286854+00:00",
+      "content_type": "application/json",
+      "final_url": "https://hub.docker.com/v2/users/enactloom/",
+      "http_status": 404,
+      "response_summary": {
+        "message": "User not found"
+      },
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/enactloom/"
+    },
+    {
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:54:59.342499+00:00",
+      "content_type": "application/json",
+      "final_url": "https://quay.io/api/v1/organization/enactloom",
+      "http_status": 404,
+      "response_summary": {
+        "detail": "Not Found",
+        "title": "not_found"
+      },
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/enactloom"
+    },
+    {
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:54:59.777934+00:00",
+      "content_type": "application/json",
+      "final_url": "https://quay.io/api/v1/users/enactloom",
+      "http_status": 404,
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      },
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/enactloom"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:55:00.950208+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/enactloom-mcp",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_mcp",
+      "url": "https://registry.npmjs.org/enactloom-mcp"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:55:02.801089+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/@enactloom%2Fmcp",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_scope_package",
+      "url": "https://registry.npmjs.org/@enactloom%2Fmcp"
+    },
+    {
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:55:03.999179+00:00",
+      "content_type": "application/json",
+      "final_url": "https://pypi.org/pypi/enactloom/json",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/enactloom/json"
+    },
+    {
+      "body_sha256": "c8ec18c8571db594ed0a93ffb9f86ba575b3f6825a4fd5add0bffcfddaa95493",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:55:05.016949+00:00",
+      "content_type": "application/json",
+      "final_url": "https://crates.io/api/v1/crates/enactloom",
+      "http_status": 404,
+      "response_summary": {},
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/enactloom"
+    }
+  ]
+}
