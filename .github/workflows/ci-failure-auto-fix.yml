@@ -83,10 +83,12 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
-          echo "pr=${pr_number}" >> "$GITHUB_OUTPUT"
-          echo "sha=$(printf '%s' "$run_json" | jq -r '.head_sha')" >> "$GITHUB_OUTPUT"
-          echo "name=$(printf '%s' "$run_json" | jq -r '.name')" >> "$GITHUB_OUTPUT"
+          {
+            echo "run_id=${run_id}"
+            echo "pr=${pr_number}"
+            echo "sha=$(printf '%s' "$run_json" | jq -r '.head_sha')"
+            echo "name=$(printf '%s' "$run_json" | jq -r '.name')"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Collect failed jobs and log excerpts
         if: steps.run.outputs.skip != 'true'

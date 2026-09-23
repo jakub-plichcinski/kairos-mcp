@@ -60,6 +60,9 @@ assert.equal(renovate.automerge, false);
 assert.equal(renovate.osvVulnerabilityAlerts, false);
 assert.equal(renovate.vulnerabilityAlerts.enabled, false);
 
+if (spawnSync('shellcheck', ['--version'], { stdio: 'ignore' }).status !== 0) {
+  throw new Error('ShellCheck is required for complete workflow validation');
+}
 const files = readdirSync(directory).filter(file => /\.ya?ml$/.test(file)).map(file => `${directory}/${file}`);
 const result = spawnSync('go', ['run', 'github.com/rhysd/actionlint/cmd/actionlint@v1.7.7', '-color', ...files], {
   stdio: 'inherit', env: { ...process.env, GO111MODULE: 'on' },

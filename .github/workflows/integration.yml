@@ -5,9 +5,8 @@
 # build-primary — Node 24 only (npm ci + pack); artifact npm-package-node24 (merge gate).
 # build-advisory — single Node Current pin (26), continue-on-error (not in integration-pass needs).
 # verify-ui-primary — static + UI tests, Node 24 only; parallel with build jobs (no tgz); merge gate.
-# verify-ui-advisory — same steps on Node 25/26 matrix; continue-on-error; not in integration-pass needs.
+# verify-ui-advisory — same steps on Node 26; continue-on-error; not in integration-pass needs.
 # verify-integration-primary — Node 24 only; needs build-primary; scenario contracts (e.g. http-auth) follow scripts/deploy-run-env.sh and the workflows README matrix.
-# verify-integration-advisory — Node 25/26; needs build-advisory; advisory only.
 # verify-docker — release-equivalent image + Trivy; needs build-primary.
 # verify-helm — chart lint/unittest/ct/kubeconform; replaces the former helm-chart.yml workflow.
 # integration-pass — gates only on Node-24 primary jobs + verify-docker + verify-helm (no advisory UI/build/integration).
@@ -29,8 +28,7 @@ permissions:
 # so docs-only / wiki-only PRs skip the expensive work while `integration-pass`
 # still reports a successful status (required-check compatible).
 #
-# Forced run (code=true regardless of paths) for: workflow_dispatch, merge_group,
-# and runs on `ci/**` branches (via workflow_dispatch).
+# Main pushes, workflow_dispatch and merge_group force full code/image/Helm validation.
 
 jobs:
   changes:
@@ -117,14 +115,18 @@ jobs:
              || [ "$EVENT_NAME" = "push" ] \
              || [[ "$REF" == refs/heads/ci/* ]]; then
             echo "Forcing code=true image=true helm=true for event=$EVENT_NAME ref=$REF"
-            echo "code=true" >> "$GITHUB_OUTPUT"
-            echo "image=true" >> "$GITHUB_OUTPUT"
-            echo "helm=true" >> "$GITHUB_OUTPUT"
+            {
+              echo "code=true"
+              echo "image=true"
+              echo "helm=true"
+            } >> "$GITHUB_OUTPUT"
           else
             echo "Filter result: code=$FILTER_CODE image=$FILTER_IMAGE helm=$FILTER_HELM"
-            echo "code=$FILTER_CODE" >> "$GITHUB_OUTPUT"
-            echo "image=$FILTER_IMAGE" >> "$GITHUB_OUTPUT"
-            echo "helm=$FILTER_HELM" >> "$GITHUB_OUTPUT"
+            {
+              echo "code=$FILTER_CODE"
+              echo "image=$FILTER_IMAGE"
+              echo "helm=$FILTER_HELM"
+            } >> "$GITHUB_OUTPUT"
           fi
 
   build-primary:
@@ -393,8 +395,8 @@ jobs:
         run: |
           mkdir -p .cache/docker-infra
           # Only save images for services we start (valkey, qdrant, postgres, keycloak); config --images includes app image which is not pulled
-          IMAGES=$(docker compose -p kairos-mcp --env-file .env --profile fullstack config --format json | jq -r '.services | to_entries[] | select(.key | test("^(valkey|qdrant|postgres|keycloak)$")) | .value.image')
-          docker save -o .cache/docker-infra/images.tar $IMAGES
+          mapfile -t images < <(docker compose -p kairos-mcp --env-file .env --profile fullstack config --format json | jq -r '.services | to_entries[] | select(.key | test("^(valkey|qdrant|postgres|keycloak)$")) | .value.image')
+          docker save -o .cache/docker-infra/images.tar "${images[@]}"
 
       - name: Cache infra Docker images
         uses: actions/cache/save@v6
@@ -471,9 +473,9 @@ jobs:
         run: |
           mkdir -p var/log var/snapshots
           npm run dev:start:installed > var/log/kairos.log 2>&1 &
-          for i in $(seq 1 ${HEALTH_CHECK_ATTEMPTS}); do
+          for i in $(seq 1 "${HEALTH_CHECK_ATTEMPTS}"); do
             curl -sSf http://127.0.0.1:3300/health >/dev/null && break
-            [ $i -eq ${HEALTH_CHECK_ATTEMPTS} ] && exit 1
+            [ "$i" -eq "${HEALTH_CHECK_ATTEMPTS}" ] && exit 1
             sleep 2
           done
 
@@ -484,7 +486,12 @@ jobs:
         if: failure()
         run: |
           echo "--- Last test report (tail) ---"
-          latest=$(ls -t reports/tests/*.log 2>/dev/null | head -n1)
+          latest=''
+          for report in reports/tests/*.log; do
+            if [ -f "$report" ] && { [ -z "$latest" ] || [ "$report" -nt "$latest" ]; }; then
+              latest=$report
+            fi
+          done
           if [ -n "$latest" ]; then
             tail -n 200 "$latest"
           else
@@ -607,9 +614,9 @@ jobs:
         run: |
           mkdir -p var/log var/snapshots
           npm run dev:start:installed > var/log/kairos-simple.log 2>&1 &
-          for i in $(seq 1 ${HEALTH_CHECK_ATTEMPTS}); do
+          for i in $(seq 1 "${HEALTH_CHECK_ATTEMPTS}"); do
             curl -sSf http://127.0.0.1:4300/health >/dev/null && break
-            [ $i -eq ${HEALTH_CHECK_ATTEMPTS} ] && exit 1
+            [ "$i" -eq "${HEALTH_CHECK_ATTEMPTS}" ] && exit 1
             sleep 2
           done
 
@@ -627,7 +634,12 @@ jobs:
         if: failure()
         run: |
           echo "--- Last test report (tail) ---"
-          latest=$(ls -t reports/tests/*.log 2>/dev/null | head -n1)
+          latest=''
+          for report in reports/tests/*.log; do
+            if [ -f "$report" ] && { [ -z "$latest" ] || [ "$report" -nt "$latest" ]; }; then
+              latest=$report
+            fi
+          done
           if [ -n "$latest" ]; then
             tail -n 200 "$latest"
           else
@@ -707,7 +719,7 @@ jobs:
       - name: Wait for Qdrant
         run: |
           set -euo pipefail
-          for i in $(seq 1 30); do
+          for _ in $(seq 1 30); do
             curl -sSf http://127.0.0.1:7633/healthz >/dev/null && exit 0
             sleep 2
           done
@@ -738,7 +750,12 @@ jobs:
         if: failure()
         run: |
           echo "--- Last test report (tail) ---"
-          latest=$(ls -t reports/tests/*.log 2>/dev/null | head -n1)
+          latest=''
+          for report in reports/tests/*.log; do
+            if [ -f "$report" ] && { [ -z "$latest" ] || [ "$report" -nt "$latest" ]; }; then
+              latest=$report
+            fi
+          done
           if [ -n "$latest" ]; then
             tail -n 200 "$latest"
           else
@@ -758,8 +775,7 @@ jobs:
         run: npm run qdrant:binary:stop
 
   verify-docker:
-    # Docker image FROM is single-Node (24-alpine) — verify-docker is intentionally non-matrix and
-    # downloads the Node 24 tgz only.
+    # The Dockerfile pins the container runtime independently; this job uses the Node 24 tgz.
     name: Release-equivalent Docker image + Trivy
     needs: [changes, build-primary]
     if: needs.changes.outputs.image == 'true'
