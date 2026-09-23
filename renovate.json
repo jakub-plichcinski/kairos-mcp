@@ -1,159 +1,42 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Renovate replaces Dependabot: npm, github-actions, Dockerfiles, docker-compose, Helm charts, and Helm values image tags. Disable Dependabot version updates in Settings \u2192 Code security and analysis. GitHub Dependabot vulnerability PRs already ignore global schedule; OSV is enabled for npm so more CVEs get fixes, also without schedule gating via packageRules. Advisory CI pins: literal setup-node node-version strings in .github/workflows are not auto-bumped to latest Node Current; follow https://github.com/nodejs/Release and update the YAML manually, or add a Renovate regex/customManager if you want PRs for that pin.",
-  "schedule": [
-    "before 10am"
-  ],
-  "platformAutomerge": true,
-  "osvVulnerabilityAlerts": true,
-  "openPullRequestsLimit": 10,
-  "vulnerabilityAlerts": {
-    "enabled": true,
-    "labels": [
-      "security"
-    ],
-    "prCreation": "immediate"
-  },
-  "helmv3": {
-    "fileMatch": ["helm/kairos-mcp/Chart\\.yaml$"]
-  },
+  "description": "Hosted Mend execution is disabled. The repository Action loads and enables this JSON from its trusted main checkout; Dependabot owns security PRs.",
+  "enabled": false,
+  "enabledManagers": ["npm", "github-actions", "dockerfile", "docker-compose", "helmv3", "helm-values", "custom.regex"],
+  "automerge": false,
+  "platformAutomerge": false,
+  "osvVulnerabilityAlerts": false,
+  "vulnerabilityAlerts": { "enabled": false },
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 4,
+  "semanticCommits": "enabled",
+  "semanticCommitType": "fix",
+  "semanticCommitScope": "deps",
+  "labels": ["dependencies"],
+  "rebaseWhen": "behind-base-branch",
+  "helmv3": { "managerFilePatterns": ["/helm/kairos-mcp/Chart\\.yaml$/"] },
+  "helm-values": { "managerFilePatterns": ["/helm/kairos-mcp/values\\.yaml$/"] },
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Image tags in helm/kairos-mcp/values.yaml (split repository/tag pairs)",
-      "fileMatch": ["helm/kairos-mcp/values\\.yaml$"],
-      "matchStrings": [
-        "repository:\\s*\"(?<depName>[^\"]+)\"\\s*\\n\\s*tag:\\s*\"(?<currentValue>[^\"]+)\""
-      ],
-      "datasourceTemplate": "docker",
-      "versioningTemplate": "docker"
-    },
-    {
-      "customType": "regex",
-      "description": "Inline image references in helm/kairos-mcp/values.yaml (image: docker.io/org/name:tag)",
-      "fileMatch": ["helm/kairos-mcp/values\\.yaml$"],
-      "matchStrings": [
-        "image:\\s*\"(?<depName>(?:docker\\.io|ghcr\\.io|quay\\.io)[^:]+):(?<currentValue>[^\"]+)\""
-      ],
+      "description": "Inline Helm image references including hook and operator images",
+      "managerFilePatterns": ["/helm/kairos-mcp/values\\.yaml$/"],
+      "matchStrings": ["(?:image|[a-zA-Z][a-zA-Z0-9]*Image):\\s*\"(?<depName>[^\"\\s:]+):(?<currentValue>[^\"]+)\""],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
     }
   ],
   "packageRules": [
+    { "matchPackageNames": ["@tiptap/**"], "groupName": "tiptap" },
+    { "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"], "groupName": "react" },
+    { "matchPackageNames": ["@typescript-eslint/**", "typescript", "eslint", "@eslint/**"], "groupName": "typescript tooling" },
+    { "matchPackageNames": ["github/codeql-action"], "groupName": "codeql" },
+    { "description": "Keep the required validation runtime on Node 24 LTS", "matchDatasources": ["node-version"], "matchCurrentValue": "/^24(?:\\.|$)/", "allowedVersions": ">=24 <25" },
+    { "matchDatasources": ["docker"], "pinDigests": true },
     {
-      "description": "Keep TypeScript on its current major: typescript-eslint peers a narrower TS range (carried over from disabled dependabot ignore)",
-      "matchPackageNames": [
-        "typescript"
-      ],
-      "matchUpdateTypes": [
-        "major"
-      ],
+      "description": "Application image versions belong exclusively to the release pipeline, across every manager",
+      "matchPackageNames": ["jakubplichcinski/kairos-mcp", "docker.io/jakubplichcinski/kairos-mcp", "quay.io/jakubplichcinski/kairos-mcp"],
       "enabled": false
-    },
-    {
-      "description": "Group npm updates into one PR",
-      "matchManagers": [
-        "npm"
-      ],
-      "groupName": "npm",
-      "commitMessagePrefix": "deps(npm)"
-    },
-    {
-      "description": "Group GitHub Actions updates into one PR",
-      "matchManagers": [
-        "github-actions"
-      ],
-      "groupName": "github-actions",
-      "commitMessagePrefix": "deps(actions)"
-    },
-    {
-      "description": "Group Dockerfile image updates into one PR",
-      "matchManagers": [
-        "dockerfile"
-      ],
-      "groupName": "docker",
-      "commitMessagePrefix": "deps(docker)"
-    },
-    {
-      "description": "Group docker-compose image updates into one PR",
-      "matchManagers": [
-        "docker-compose"
-      ],
-      "groupName": "docker-compose",
-      "commitMessagePrefix": "deps(compose)"
-    },
-    {
-      "description": "Group Helm Chart.yaml dependency updates into one PR",
-      "matchManagers": [
-        "helmv3"
-      ],
-      "groupName": "helm",
-      "commitMessagePrefix": "deps(helm)"
-    },
-    {
-      "description": "Group Helm values image tag updates into one PR",
-      "matchManagers": [
-        "custom.regex"
-      ],
-      "matchFileNames": [
-        "helm/kairos-mcp/values.yaml"
-      ],
-      "groupName": "helm-images",
-      "commitMessagePrefix": "deps(helm-images)"
-    },
-    {
-      "description": "Exclude app image tag from Renovate (managed by stable release sync)",
-      "matchManagers": [
-        "custom.regex"
-      ],
-      "matchDepNames": [
-        "quay.io/jakubplichcinski/kairos-mcp"
-      ],
-      "enabled": false
-    },
-    {
-      "description": "Pin Docker image digests for immutability and supply-chain compliance",
-      "matchDatasources": [
-        "docker"
-      ],
-      "pinDigests": true
-    },
-    {
-      "description": "Security/vuln fixes: not gated by global schedule, own PR, immediate branch/PR creation (overrides bulk groups above)",
-      "matchCategories": [
-        "security"
-      ],
-      "schedule": [
-        "at any time"
-      ],
-      "groupName": null,
-      "prCreation": "immediate",
-      "labels": [
-        "security"
-      ],
-      "priorityScore": 10000
-    },
-    {
-      "description": "Automerge patch/minor security fixes when CI is green (majors still open as PRs)",
-      "matchCategories": [
-        "security"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "minor"
-      ],
-      "automerge": true
-    },
-    {
-      "description": "Automerge all non-security patch updates when CI is green (minors/majors stay manual-review)",
-      "matchCategories": [
-        "!security"
-      ],
-      "matchUpdateTypes": [
-        "patch",
-        "digest"
-      ],
-      "automerge": true
     }
   ]
 }

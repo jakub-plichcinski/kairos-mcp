@@ -419,23 +419,15 @@ To enable a [merge queue](https://docs.github.com/en/repositories/configuring-br
 - **Status check timeout:** how long to wait for CI before treating as failed (e.g. 15 min).
 - **Merge limits:** min/max PRs per merge (e.g. 1–5), and wait time for minimum group size.
 
-The integration workflow (`.github/workflows/integration.yml`) already triggers on `merge_group`, so required checks run when PRs are in the queue. Use `gh pr merge` (no strategy) to add a PR to the queue; use `gh pr merge --admin` to bypass the queue.
+Integration, Security, and Automation policy support `merge_group`, so their required checks run for queued revisions. If enabling a queue, adapt the dependency controller to enqueue through its supported API before enabling unattended merges. Never bypass the queue or required checks.
 
 ## Releases
 
-Releases are **dispatched manually and versioned automatically**. [semantic-release](https://semantic-release.gitbook.io/semantic-release/) computes the version from conventional commits since the last tag; the Release workflow publishes npm, Docker Hub + Quay images, the Helm OCI chart, the git tag, and the GitHub Release from that single version. Do not create git tags, and do not open version-bump PRs — the pre-push hook blocks manual tags.
+Releasable changes on `main` publish automatically after full Integration, Security, and Automation policy validation at the exact source SHA. Semantic-release chooses the version: dependency/internal fixes are patches, features are minor releases, and declared breaking changes are major releases. An unreleased feature or breaking change takes precedence over dependency patches.
 
-**Flow:** Merge conventional-commit PRs to main (`feat:` → minor, `fix:` → patch, breaking → major) → Integration green → dispatch [Release](.github/workflows/README.md#release-workflow-manual-dispatch) from main (branch choice alone decides the release type).
+Do not create release tags locally or open version-bump PRs. Tests and protected merge checks are mandatory; no approval bot, administrator bypass or AI decision participates in the release path.
 
-### How to cut a release
-
-1. **Check what will release:** `git log "$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -1)..HEAD" --oneline` — only `feat:`/`fix:`/breaking commits count; chore-only history releases nothing.
-2. **Preview (optional):** Actions → Release → Run workflow → branch `main`, `dry-run=true` — shows the next version without publishing.
-3. **Dispatch the stable release:** Actions → Release → Run workflow → branch `main`. CLI: `gh workflow run release.yml --ref main`.
-4. **Prerelease (from a CI-green branch):** dispatch Integration on the branch first (Actions → Integration → Run workflow), wait for green, then `gh workflow run release.yml --ref <branch>`. Dispatching from any non-main branch makes it a prerelease automatically: it gets an `-<branch-id>.N` version suffix derived from the sanitized branch name, a matching npm dist-tag, and never the `latest` image tag.
-5. **Recovery:** if a run fails after the tag exists, just re-dispatch the same branch — no flag. The run falls back to the latest tag and always tolerates already-published npm/chart versions, so re-running is idempotent.
-
-Full pipeline details, dispatch gates, setup (release environment, npm trusted publisher), and secrets: [.github/workflows/README.md](.github/workflows/README.md).
+Follow the [release and dependency automation runbook](.agents/skills/kairos-dev/references/release-semver.md) for rollout, dry-run previews, branch prereleases, credentials and immutable-artifact recovery. The [workflow design](.github/workflows/README.md) describes the validation jobs and privilege boundaries.
 
 ## Code style
 

@@ -1,9 +1,25 @@
-# Dependabot version updates are DISABLED: Renovate (renovate.json) is the
-# single dependency manager for npm, github-actions, docker, docker-compose,
-# and helm. Running both produced duplicate grouped PRs.
-# Keep Dependabot *security alerts* enabled in repo Settings -> Code security
-# and analysis; Renovate consumes them via osvVulnerabilityAlerts.
-# Also disable "Dependabot version updates" in that settings page so no new
-# Dependabot PRs are opened.
+# Renovate owns version updates. A zero limit disables only version PRs;
+# native Dependabot security updates remain enabled in repository settings.
 version: 2
-updates: []
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 0
+    commit-message:
+      prefix: fix(deps)
+      prefix-development: fix(deps)
+    groups:
+      npm-security:
+        applies-to: security-updates
+        patterns: ['*']
+    labels: [dependencies, security]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 0
+    commit-message:
+      prefix: fix(deps)
+    labels: [dependencies, security]

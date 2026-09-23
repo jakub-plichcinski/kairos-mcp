@@ -1,0 +1,39 @@
+name: Automation policy
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+  push:
+    branches: [main]
+  merge_group:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  policy:
+    name: Automation policy passed
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.24.6'
+          cache: false
+      - run: npm ci
+      - name: Conventional Commit title
+        run: node scripts/ci-automation.mjs title
+      - run: npm run test:automation
+      - run: npm run test:audit-fix-workflow
+      - run: npm run lint:workflows
+      - run: npm run lint:renovate

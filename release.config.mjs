@@ -1,59 +1,27 @@
-/**
- * semantic-release configuration — the single SemVer authority for KAIROS.
- *
- * Design:
- * - `main` is the only permanent integration/release branch; no permanent
- *   `dev`/`next` branch. KAIROS_PRERELEASE_BRANCH is set by the workflow when
- *   dispatched from non-main; the branch name is sanitized into the semver
- *   prerelease identifier and npm dist-tag channel automatically.
- * - The version is computed exactly once here; npm publish, container tags,
- *   Helm chart, git tag, and the GitHub Release all consume that version.
- * - `@semantic-release/npm` is intentionally NOT used: npm publication stays a
- *   manual OIDC trusted-publishing step in the release workflow, publishing the
- *   tgz built and consumer-tested by `prepare:publish` below.
- *
- * Phase responsibilities:
- * - prepare: bump workspace package.json, re-sync skills/compose/helm, then
- *   build + pack + consumer-test the .tgz (`npm run prepare:publish`).
- * - publish: emit version/channel/type to $GITHUB_OUTPUT for downstream jobs.
- *   The git tag and the GitHub Release (with notes) are created by
- *   `@semantic-release/github` and semantic-release core.
- */
-
+/** Single version authority. ci-release consumes semantic-release's dry-run result,
+ * then validates and persists immutable artifacts before publishing or tagging. */
 const prereleaseBranch = process.env.KAIROS_PRERELEASE_BRANCH || '';
-// Sanitize branch name for semver: only lowercase alphanumerics and hyphens allowed.
-const prereleaseId = prereleaseBranch
-  .replace(/[^a-zA-Z0-9-]/g, '-')
-  .replace(/-+/g, '-')
-  .replace(/^-|-$/g, '')
-  .toLowerCase() || 'pre';
-
-const branches = prereleaseBranch
-  ? ['main', { name: prereleaseBranch, prerelease: prereleaseId, channel: prereleaseId }]
-  : ['main'];
-
-/** @type {import('semantic-release').GlobalConfig} */
-const config = {
-  branches,
+export function prereleaseChannel(branch) {
+  const slug = branch.replace(/[^a-zA-Z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').toLowerCase() || 'pre';
+  return slug === 'latest' || /^v?\d+$/.test(slug) ? `pre-${slug}` : slug;
+}
+const channel = prereleaseChannel(prereleaseBranch);
+export const parserOpts = {
+  headerPattern: /^(\w*)(?:\((.*)\))?!?: (.*)$/,
+  headerCorrespondence: ['type', 'scope', 'subject'],
+  breakingHeaderPattern: /^(\w*)(?:\((.*)\))?!: (.*)$/,
+  noteKeywords: ['BREAKING CHANGE', 'BREAKING CHANGES', 'BREAKING-CHANGE'],
+};
+export const releaseRules = [
+  { breaking: true, release: 'major' },
+  { type: 'chore', scope: 'deps', release: 'patch' },
+  { type: 'chore', scope: 'deps-dev', release: 'patch' },
+  { type: 'deps', release: 'patch' },
+];
+export default {
+  branches: prereleaseBranch ? ['main', { name: prereleaseBranch, prerelease: channel, channel }] : ['main'],
   plugins: [
-    '@semantic-release/commit-analyzer',
-    '@semantic-release/release-notes-generator',
-    ['@semantic-release/github', { draftRelease: true }],
-    [
-      '@semantic-release/exec',
-      {
-        // Lodash-template placeholders (${nextRelease.*}) are substituted by
-        // the exec plugin, not by this module.
-        prepareCmd:
-          'npm version ${nextRelease.version} --no-git-tag-version --allow-same-version && npm run version:sync && npm run prepare:publish',
-        publishCmd: [
-          'echo "version=${nextRelease.version}" >> "$GITHUB_OUTPUT"',
-          'echo "channel=${nextRelease.channel}" >> "$GITHUB_OUTPUT"',
-          'echo "type=${nextRelease.type}" >> "$GITHUB_OUTPUT"',
-        ].join(' && '),
-      },
-    ],
+    ['@semantic-release/commit-analyzer', { parserOpts, releaseRules }],
+    ['@semantic-release/release-notes-generator', { parserOpts }],
   ],
 };
-
-export default config;

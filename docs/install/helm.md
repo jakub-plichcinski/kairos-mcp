@@ -172,20 +172,19 @@ the Keycloak Admin UI or via the Realm API after deployment.
 
 ## Versioning policy
 
-Chart release identity derives from the repository's **single release version**, computed once by semantic-release in the Release workflow (see `.github/workflows/README.md`):
+Chart release identity derives from the repository's **single release version**, computed once by semantic-release. See the [release runbook](../../.agents/skills/kairos-dev/references/release-semver.md):
 
 | Lane | What | Updated by |
 |------|------|------------|
-| **Chart release identity** | `Chart.yaml` `version` + `appVersion` + default `app.image.tag` in `values.yaml` | Release workflow `publish-helm` job: `scripts/helm-set-release-version.mjs` sets all three to the exact release version (prereleases included) before pushing to `oci://quay.io/<namespace>/kairos-mcp` |
+| **Chart release identity** | `Chart.yaml` `version` + `appVersion` + default `app.image.tag` in `values.yaml` | Release preparation: `scripts/helm-set-release-version.mjs` sets all three to the exact version before validation and publication to `oci://quay.io/<namespace>/kairos-mcp-chart` |
 | **In-repo baseline** | Committed `Chart.yaml` / `values.yaml` values | `npm run version:sync` (stable releases only); the committed values are the last synced baseline, not the next version |
-| **Dependencies** | `Chart.yaml` `dependencies[].version`, third-party image tags (Percona, Ollama, etc.) | Renovate PRs (`deps(helm)` and `deps(helm-images)` groups) |
+| **Dependencies** | `Chart.yaml` `dependencies[].version`, third-party image tags (Percona, Ollama, etc.) | Tests-gated Renovate `fix(deps):` PRs |
 
-Published chart versions are immutable (Helm OCI SemVer identity); the Release
-workflow tolerates an already-published chart version, so re-running a release is
-idempotent and needs no recovery flag. Chart PRs are validated by the Integration workflow's `verify-helm`
-job (lint, unittest, chart-testing, kubeconform) — there is no chart auto-bump bot
-and no "chart version must exceed main" guardrail. Override `app.image.tag` in
-your values to pin a specific release independently of the chart default.
+Published chart versions are immutable. Recovery accepts an existing version only
+when its configuration and payload checksums match the original release manifest.
+Images and charts use separate Quay repositories to avoid tag collisions. Chart PRs
+pass Integration's `verify-helm` job (lint, unittest, chart-testing, kubeconform).
+Override `app.image.tag` in your values to pin a release independently of the chart default.
 
 ---
 

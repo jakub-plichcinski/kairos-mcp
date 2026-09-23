@@ -1,117 +1,77 @@
-# Virtual AI employee, part C: daily npm audit fix (plain dependency-fix PR).
-# Daily: if npm audit reports fixable advisories, run npm audit fix. When npm's
-# resolver blocks on a peer-dependency tree conflict, or the standard fix
-# succeeds but leaves advisories that explicitly require --force, retry once
-# with --force. A PR is opened ONLY when a fix
-# actually changed package.json/package-lock.json; clean runs exit as a no-op.
-# The PR is a plain dependency fix: no version bump, no release automation on
-# merge. The commit uses a conventional `fix(deps):` type so semantic-release
-# ships it as a patch the next time the Release workflow is dispatched.
-# Automated end-to-end security releases are a
-# documented extension point (dispatch Release via API).
-# Requires AUTO_MERGE_TOKEN (same secret as the other automation workflows).
-name: npm audit fix (daily)
+name: npm audit fix
 
 on:
   schedule:
-    - cron: "0 6 * * *"
-  workflow_dispatch: {}
+    - cron: '43 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Assess and prepare fixes without PR mutations
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
 
 concurrency:
   group: npm-audit-fix
   cancel-in-progress: false
 
-permissions:
-  contents: read
-
 jobs:
-  audit-fix:
+  assess:
+    if: vars.AUTOMATION_ENABLED == 'true' || (github.event_name == 'workflow_dispatch' && inputs.dry-run)
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    env:
-      HUSKY: 0
-      GH_TOKEN: ${{ secrets.GH_PAT }}
-      REPO: ${{ github.repository }}
-      AUDIT_LOG_DIR: .local/npm-audit-fix
+    timeout-minutes: 20
+    outputs:
+      changed: ${{ steps.audit.outputs.changed }}
+      sha: ${{ steps.source.outputs.sha }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
+      - uses: actions/checkout@v7
         with:
-          fetch-depth: 0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
+          ref: refs/heads/main
+          persist-credentials: false
+      - id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v7
         with:
-          node-version: "24"
-          cache: "npm"
+          node-version: '24'
+      - run: npm ci --ignore-scripts
+      - name: Assess and fix with no repository credential
+        id: audit
+        run: node scripts/ci-audit.mjs
+      - uses: actions/upload-artifact@v5
+        if: steps.audit.outputs.changed == 'true'
+        with:
+          name: audit-fix
+          include-hidden-files: true
+          if-no-files-found: error
+          path: |
+            package.json
+            package-lock.json
+            .local/npm-audit-fix/before.json
+            .local/npm-audit-fix/after.json
 
-      - name: Dedupe open audit-fix PRs
-        id: dedupe
-        run: |
-          set -euo pipefail
-          open=$(gh pr list --base main --state open --limit 100 --json headRefName \
-            --jq '[.[] | select(.headRefName | startswith("chore/audit-fix-"))] | length')
-          if [ "$open" != "0" ]; then
-            echo "An audit-fix PR is already open; skipping."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Install and assess advisories
-        id: assess
-        if: steps.dedupe.outputs.skip != 'true'
-        run: |
-          set -euo pipefail
-          npm ci
-          mkdir -p "$AUDIT_LOG_DIR"
-          if npm audit --audit-level=moderate > "$AUDIT_LOG_DIR/audit-before.txt" 2>&1; then
-            echo "No moderate-or-higher advisories; nothing to do."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "skip=false" >> "$GITHUB_OUTPUT"
-            tail -n 30 "$AUDIT_LOG_DIR/audit-before.txt"
-          fi
-
-      - name: Apply fixes and verify
-        id: fix
-        if: steps.dedupe.outputs.skip != 'true' && steps.assess.outputs.skip == 'false'
-        run: |
-          set -euo pipefail
-          bash scripts/npm-audit-fix.sh
-          git diff --quiet -- package-lock.json package.json && { echo "audit fix changed nothing; skipping."; echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0; }
-          echo "skip=false" >> "$GITHUB_OUTPUT"
-          npm run build
-
-      - name: Open dependency-fix PR with auto-merge
-        if: steps.dedupe.outputs.skip != 'true' && steps.assess.outputs.skip == 'false' && steps.fix.outputs.skip == 'false'
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Plain dependency fix, no version bump: semantic-release versions it
-          # at the next Release workflow dispatch (conventional fix type).
-          datestamp=$(date -u +%Y%m%d)
-          branch="chore/audit-fix-${datestamp}"
-          pr_body="$AUDIT_LOG_DIR/pr-body.md"
-          git checkout -b "$branch"
-          git add package.json package-lock.json
-          git commit -m "fix(deps): npm audit fix (${datestamp})"
-          git push origin "$branch"
-          {
-            echo "Automated daily \`npm audit fix\` run resolved moderate-or-higher advisories."
-            if [ "${{ steps.fix.outputs.mode }}" = "force" ]; then
-              echo ""
-              echo "> NOTE: the workflow retried with \`npm audit fix --force\` after the standard fix could not clear all fixable advisories."
-            fi
-            echo ""
-            echo '```'
-            tail -n 30 "$AUDIT_LOG_DIR/audit-before.txt"
-            echo '```'
-            echo ""
-            echo "Plain dependency fix (no version bump); the next Release workflow dispatch versions it."
-          } > "$pr_body"
-          pr=$(gh pr create --base main --head "$branch" \
-            --title "fix(deps): npm audit fix (${datestamp})" \
-            --body-file "$pr_body")
-          gh pr merge "$pr" --auto --squash
+  publish:
+    needs: assess
+    if: needs.assess.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: refs/heads/main
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v8
+        with:
+          name: audit-fix
+      - name: Publish only manifest changes through the verified identity
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          AUTOMATION_USER_ID: ${{ vars.AUTOMATION_USER_ID }}
+          AUTOMATION_ENABLED: ${{ vars.AUTOMATION_ENABLED }}
+          SOURCE_SHA: ${{ needs.assess.outputs.sha }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && 'true' || 'false' }}
+        run: node scripts/ci-audit.mjs publish
