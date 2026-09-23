@@ -44,7 +44,7 @@ jobs:
             fi
           }
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            gh pr list --base main --state open --limit 100 \
+            gh pr list --base main --state open --sort created --order asc --limit 100 \
               --json number,author,isDraft \
               --jq '.[] | select(.isDraft | not) | select(.author.login == "dependabot[bot]" or .author.login == "renovate[bot]") | .number' \
               | while read -r pr; do arm "$pr"; done
