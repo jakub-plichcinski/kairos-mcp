@@ -7,6 +7,7 @@ name: Security
 on:
   pull_request:
     branches: [main]
+  merge_group:
   push:
     branches: [main]
   schedule:
@@ -29,6 +30,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Validate .trivyignore expiry dates
         run: |
           python3 scripts/ci-check-trivyignore-expiry.py \
@@ -39,13 +43,15 @@ jobs:
     name: Dependency review
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    continue-on-error: true  # Requires Dependency graph enabled in repo settings
     permissions:
       contents: read
-      pull-requests: write
+      pull-requests: read
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Dependency review
         uses: actions/dependency-review-action@v5
         with:
@@ -60,6 +66,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
@@ -79,15 +88,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-
-      # Same Hub account as the Release workflow's publish-container job; without login, pulls are anonymous and share CI IP limits (429).
-      # Dependabot PRs do not receive DOCKER_* secrets; login with empty creds fails the step.
-      - name: Login to Docker Hub
-        if: (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]'
-        uses: docker/login-action@v4.6.0
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          ref: ${{ github.sha }}
+          persist-credentials: false
 
       - name: Base image ref from Dockerfile
         id: base
@@ -123,6 +126,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4.38.0
         with:
@@ -137,10 +143,9 @@ jobs:
           category: "/language:javascript"
 
   # Merge gate: all security jobs must pass.
-  # dependency-review has continue-on-error so its failure does not block the gate.
   security-pass:
     name: Security workflow passed
-    needs: [trivyignore-expiry, npm-audit, container-base-os-trivy, codeql]
+    needs: [dependency-review, trivyignore-expiry, npm-audit, container-base-os-trivy, codeql]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -150,6 +155,8 @@ jobs:
           NPM_AUDIT: ${{ needs.npm-audit.result }}
           CONTAINER_TRIVY: ${{ needs.container-base-os-trivy.result }}
           CODEQL: ${{ needs.codeql.result }}
+          DEPENDENCY_REVIEW: ${{ needs.dependency-review.result }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           echo "trivyignore-expiry=$TRIVYIGNORE_EXPIRY npm-audit=$NPM_AUDIT container-base-os-trivy=$CONTAINER_TRIVY codeql=$CODEQL"
@@ -158,4 +165,9 @@ jobs:
           test "$NPM_AUDIT" = "success"
           test "$CONTAINER_TRIVY" = "success"
           test "$CODEQL" = "success"
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            test "$DEPENDENCY_REVIEW" = "success"
+          else
+            test "$DEPENDENCY_REVIEW" = "skipped"
+          fi
           echo "All security jobs passed."

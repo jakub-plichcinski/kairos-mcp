@@ -1,125 +1,72 @@
 ---
 name: kmcp-dev-release-semver
 description: >-
-  kairos-mcp: releases via semantic-release dispatch. Conventional commits since the
-  last tag decide the SemVer level (feat=minor, fix=patch, breaking=major); dispatch
-  the Release workflow from main (stable) or a CI-green branch (prerelease); no local
-  tags, no version-bump PRs, no manual version choice.
-  Triggers: cut release, release, ship release, prerelease, beta release, rc, next
-  version, bump version, semver bump, version bump, publish release, dispatch release,
-  release workflow, release:type, npm version.
+  kairos-mcp: unattended semantic releases from validated main, branch prerelease
+  dispatch, immutable artifact recovery, and automation rollout. No manual tags
+  or version-bump PRs; conventional commits determine the version.
 ---
 
-# Releases (kairos-mcp)
+# Releases and dependency automation
 
-**Repository:** `kairos-mcp`. **Skill index:** [`.agents/skills/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.agents/skills/README.md).
-**Release workflow:** `.github/workflows/release.yml` (see **[`.github/workflows/README.md`](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.github/workflows/README.md)**).
-**Build/test after merge:** [`kmcp-dev-build-test`](build-test.md).
+The single release mechanism is [release.yml](https://github.com/jakub-plichcinski/kairos-mcp/blob/main/.github/workflows/release.yml), using `release.config.mjs` as the semantic version authority. Never create release tags locally or bump committed versions to trigger publishing. The committed version is a baseline, not the next release number.
 
-The version is computed by **semantic-release** (`release.config.mjs`) from commit history — the user chooses **when** to release and whether it is stable or a prerelease; nobody chooses the number. Humans never edit `package.json` version for releases and never create `refs/tags/v*` (the pre-push hook blocks manual tags; the Release workflow pushes the tag).
+## Normal operation
 
----
+- Hourly Renovate (`17 * * * *`) owns routine dependency updates, including majors. Native Dependabot owns security updates; its zero version-PR limit does not disable security updates.
+- Hourly npm audit (`43 * * * *`) assesses moderate-or-higher findings. A progressing native security PR takes precedence for two hours; blocked or stalled fixes allow one refreshed consolidated fallback. Registry failures are errors, not vulnerability findings.
+- The API-only controller runs after validations and every ten minutes. It verifies numeric identity, managed branch origin, dependency-only paths, current head/base and checks, then squash-merges at most one PR. Security fixes take priority; otherwise the oldest eligible PR wins. It never approves PRs or rewrites human branches.
+- Main must pass full Integration, Security, and automation-policy validation at the exact source SHA. Completion events and hourly reconciliation (`53 * * * *`) trigger Release automatically.
+- `fix:` and dependency updates are patches; `feat:` is minor; `!` or `BREAKING CHANGE` is major. Legacy `chore(deps)` and `deps(...)` commits count as patches. An unreleased feature or breaking change takes precedence over dependency patches. Housekeeping-only history is a true no-op.
+- No AI agent, administrator bypass, or required human approval is part of this path. Copilot auto-fix remains outside it.
 
-## 1. Evidence first (what would release)
+## One-time rollout and credentials
 
-Inspect commits since the latest tag:
+Keep `AUTOMATION_ENABLED` unset or `false` until all prerequisites are verified:
+
+1. Merge the implementation through normal protected PR checks.
+2. Require `Integration workflow passed`, `Security workflow passed`, and `Automation policy passed`, bound to GitHub Actions (app ID `15368`). Keep strict up-to-date protection, administrator enforcement, and zero mandatory approvals. Set squash commit titles to the PR title.
+3. Set `AUTOMATION_USER_ID` to the verified numeric owner of the existing Actions `GH_PAT`. That credential must have repository contents, pull-request mutation, workflow-file update and required read access. Never copy it to Dependabot secrets. Automation-generated branch/PR mutations use it so fresh CI can start unattended.
+4. Keep the restricted embedding-test `OPENAI_API_KEY` in Actions and Dependabot secrets. Tests receive no publishing or repository-write credentials.
+5. Keep npm's trusted publisher bound to `release.yml` and environment `release`, with no approval requirement. Publishing and dist-tag promotion use package-scoped OIDC credentials, never a long-lived npm token.
+6. Verify `DOCKER_USERNAME`/`DOCKER_PASSWORD`, `QUAY_USERNAME`/`QUAY_PASSWORD`, and `QUAY_NAMESPACE`. Quay credentials need access to both `kairos-mcp` (images) and `kairos-mcp-chart` (Helm); these must be separate repositories so identical version tags cannot collide. Both repositories must be readable by consumers.
+7. Run controller and Renovate dry-runs, then set `AUTOMATION_ENABLED=true`. Observe the next scheduled producer run, a real protected dependency merge, full main validation and all released artifact identities. Do not declare live CVE remediation verified without a real advisory.
+
+The Renovate repository configuration disables hosted Mend execution. Only the trusted self-hosted runner enables it, using a distinct `automation/renovate/` prefix. Install scripts, plugins and arbitrary post-upgrade commands are disabled.
+
+## Preview and prereleases
+
+Preview stable history without mutations:
 
 ```bash
-TAG=$(git tag --sort=-v:refname | rg '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' | head -n 1)
-[ -n "$TAG" ] && git log "${TAG}..HEAD" --oneline || git log --oneline
+gh workflow run release.yml --ref main -f dry-run=true
+gh workflow run automerge-dependabot.yml --ref main -f dry-run=true
+gh workflow run renovate.yml --ref main -f dry-run=true
 ```
 
-| Signal | Level |
-|--------|-------|
-| `BREAKING CHANGE` / `feat!:` / `fix!:` | **major** |
-| `feat:` | **minor** |
-| `fix:` | **patch** |
-| `docs:` / `chore:` / `refactor:` / `ci:` / `test:` / `perf:` | no release on its own |
-| prerelease ask | same level, suffixed `-<channel>.N` |
+Add `-f validate-artifacts=true` to a Release dry-run to also build, consumer-test, scan and checksum every release artifact without publishing. Run this rehearsal before enabling automation.
 
-Deliver before any dispatch:
+For a short-lived prerelease branch, first dispatch **Integration**, **Security**, and **Automation policy** on that branch and wait for all three to pass at the same SHA. Then dispatch `release.yml --ref <branch> -f dry-run=false`. The sanitized branch name becomes the prerelease identifier and channel; prereleases never move `latest` or stable image aliases. A pending older release is recovered before any newer stable or prerelease publication.
 
-1. **Verified facts** — commit categories since the last tag, API/MCP schema surface changes.
-2. **Inference** — why **patch**/**minor**/**major** (or prerelease).
-3. **Uncertainty** — what would change the call.
+## Artifact identity and recovery
 
-Never present a level as fact without commit evidence. Only `feat:`/`fix:`/breaking commits are releasable — if history is chore/docs-only, say so: the dispatch will end "nothing to release" (green no-op).
+Release resolves one source SHA. It prepares and consumer-tests the versioned npm tgz, validates Helm, builds a multi-platform OCI archive, smoke-tests both platforms, and scans both before publication. A manifest records version, channel, source SHA, npm integrity, image digest and artifact checksums. SBOMs and validation evidence are included.
 
----
+Validated artifacts first enter immutable Actions storage, then a draft GitHub Release. npm initially publishes under `pending-<version>`; versioned images and the Helm chart publish without moving stable aliases. Existing artifacts must match the recorded integrity/digest. Container digests are signed and verified. Only after all publication checks pass are channel aliases promoted and the GitHub Release published.
 
-## 2. User confirmation
+Cross-registry publication is not atomic. A failure retains the draft, original source, checksums, original recovery artifact ID and stage progress. The next event, hourly reconciliation, or manual `release.yml --ref main -f dry-run=false` resumes that record. It never rebuilds newer source under an old version. Missing/expired recovery bytes, mismatched artifacts, invalid credentials and legacy drafts without manifests fail visibly and need remediation. Do not delete a pending draft or overwrite an immutable artifact to force progress.
 
-One-line format:
+Transient operations retry up to three times. `automation-health.yml` monitors failures, stale runs and incomplete drafts; it maintains one incident per workflow and closes it after recovery. Setting `AUTOMATION_ENABLED=false` pauses producers, controller and publishing; it does not undo artifacts already published.
 
-`Recommended release: <patch|minor|major>[ as <channel> prerelease] because <impact>.`
+## Verification
 
----
-
-## 3. Dispatch the Release workflow
-
-### 3.1 Stable (from main)
-
-1. Merge conventional-commit PRs to **main**; wait for **Integration** green on the main head.
-2. Dispatch:
-
-```bash
-gh workflow run release.yml --ref main -f release-type=stable
-```
-
-### 3.2 Prerelease (from a CI-green branch)
-
-Integration triggers automatically only for PRs/pushes to main, so validate the branch first, then dispatch Release from the same ref:
-
-```bash
-gh workflow run integration.yml --ref <branch>
-gh run list --workflow=integration.yml --limit 1   # wait for success
-gh workflow run release.yml --ref <branch> -f release-type=prerelease -f channel=beta
-```
-
-The channel (default `beta`) becomes the version suffix, the npm dist-tag, and an image tag — never `latest`.
-
-### 3.3 Preview without publishing
-
-```bash
-gh workflow run release.yml --ref main -f release-type=stable -f dry-run=true
-```
-
-Dry-run shows the next version only; nothing is prepared or published.
-
----
-
-## 4. What the workflow does
-
-- **validate** — ref rules (stable ⇒ main; prerelease ⇒ non-main branch), `.trivyignore` expiry, and a **green Integration run on the exact head SHA**. Dispatch controls timing, never validation.
-- **release** — semantic-release computes the version once, bumps and syncs the workspace, consumer-tests the packed tgz, publishes npm via OIDC trusted publishing (dist-tag `latest`/channel), pushes the git tag, and creates the GitHub Release.
-- **publish-container / publish-helm** — one image build for every alias on Docker Hub **and** Quay (single digest, cosign, SBOM, Trivy gate); Helm chart version/appVersion/image tag = the release version, pushed to `oci://quay.io/<namespace>`.
-- **finalize** — SBOMs attached to the GitHub Release plus a run summary.
-
-One version propagates everywhere: npm, both registries, the chart, `v<version>` tag, GitHub Release.
-
----
-
-## 5. Verify
+Check the workflow summary and the release's `manifest.json`, not merely a green job:
 
 ```bash
 gh run list --workflow=release.yml --limit 3
 gh release view v<version>
+npm view @jakub-plichcinski/kairos-mcp@<version> dist.integrity
 npm dist-tag ls @jakub-plichcinski/kairos-mcp
+helm pull oci://quay.io/<namespace>/kairos-mcp-chart --version <version>
 ```
 
----
-
-## 6. Edge cases
-
-- **Nothing to release** — only chore/docs commits since the last tag: the run ends green with a "nothing to release" summary; add a `feat:`/`fix:` or skip.
-- **Run failed after the tag existed** — re-dispatch with `republish=true`: it falls back to the latest tag reachable from HEAD and tolerates already-published npm/chart versions (both immutable). Investigate the original failure first; always tell the user republish re-uses the existing tag.
-- **Wrong ref** — stable dispatched from a non-main branch (or prerelease from main): `validate` fails fast; re-dispatch from the correct ref.
-- **Channel name** — must be lowercase letters/digits/hyphens and never `latest`.
-- **Version in `package.json` looks stale** — that is the last synced baseline, not the next version; semantic-release decides the next version from tags + commits.
-
----
-
-## Related
-
-- **[`kmcp-dev-build-test`](build-test.md)** — validate after large release merges.
-- **[`kmcp-dev-bugfix-ship`](bugfix-ship.md)** — if a release uncovers a production defect.
+Compare npm integrity, both registries' image digests, downloaded chart checksum, channel aliases, and Git tag source with the manifest. Local regression entry points are `npm run test:automation`, `npm run test:audit-fix-workflow`, `npm run lint:workflows`, and `npm run lint:renovate`. For deployment and integration testing, follow [build-test.md](build-test.md).
