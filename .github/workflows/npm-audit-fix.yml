@@ -6,8 +6,8 @@
 # actually changed package.json/package-lock.json; clean runs exit as a no-op.
 # The PR is a plain dependency fix: no version bump, no release automation on
 # merge. The commit uses a conventional `fix(deps):` type so semantic-release
-# ships it as a patch the next time the Release workflow is dispatched
-# (AI_CI_RELEASE_REDESIGN.md). Automated end-to-end security releases are a
+# ships it as a patch the next time the Release workflow is dispatched.
+# Automated end-to-end security releases are a
 # documented extension point (dispatch Release via API).
 # Requires AUTO_MERGE_TOKEN (same secret as the other automation workflows).
 name: npm audit fix (daily)

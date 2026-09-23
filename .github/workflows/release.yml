@@ -1,18 +1,17 @@
-# Unified release pipeline (AI_CI_RELEASE_REDESIGN.md): ONE manual dispatch publishes
+# Unified release pipeline: ONE manual dispatch publishes
 # npm + container images (Docker Hub + Quay) + Helm OCI chart + git tag + GitHub Release
 # from ONE SemVer version computed by semantic-release (release.config.mjs).
 #
 # Dispatch rules:
-#   stable     - dispatch from `main` only; version derives from commit history.
-#   prerelease - dispatch from a CI-green non-main branch; version gets `-<channel>.N`.
-#   dry-run    - previews the next version; nothing is published.
-#   republish  - recovery: tolerates already-published npm/chart versions and falls back
-#                to the latest tag when semantic-release has nothing to release.
+#   main branch     - stable release; version derives from commit history.
+#   non-main branch - prerelease; suffix auto-derived from sanitized branch name.
+#   dry-run         - previews the next version; nothing is published.
+#   Idempotent: already-published npm/chart versions are always tolerated.
 #
 # Jobs:
-#   validate          - ref eligibility (stable=>main, prerelease=>non-main),
-#                       .trivyignore expiry guard, green Integration run required on
-#                       the exact head SHA (dispatch controls timing, not validation).
+#   validate          - branch ref eligibility, .trivyignore expiry guard, and a
+#                       green Integration run on the exact head SHA (dispatch
+#                       controls timing, not validation).
 #   release           - semantic-release computes the version, bumps + syncs + builds +
 #                       consumer-tests the tgz in-workspace (prepareCmd), creates the git
 #                       tag and GitHub Release, publishes npm via OIDC trusted publishing.
@@ -34,26 +33,8 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      release-type:
-        description: 'stable (from main) or prerelease (from a CI-green non-main branch)'
-        required: true
-        type: choice
-        default: stable
-        options:
-          - stable
-          - prerelease
-      channel:
-        description: 'Prerelease channel: version suffix, npm dist-tag and image tag (e.g. beta)'
-        required: false
-        type: string
-        default: beta
       dry-run:
         description: 'Preview the next version; publish nothing'
-        required: false
-        type: boolean
-        default: false
-      republish:
-        description: 'Recovery: tolerate already-published versions; fall back to latest tag'
         required: false
         type: boolean
         default: false
@@ -75,8 +56,6 @@ jobs:
     steps:
       - name: Check ref eligibility
         env:
-          RELEASE_TYPE: ${{ inputs.release-type }}
-          CHANNEL: ${{ inputs.channel }}
           REF_TYPE: ${{ github.ref_type }}
           REF_NAME: ${{ github.ref_name }}
           REF: ${{ github.ref }}
@@ -86,24 +65,11 @@ jobs:
             echo "::error::Release must be dispatched from a branch ref (got ref_type=${REF_TYPE}, ref=${REF})."
             exit 1
           fi
-          if [ "$RELEASE_TYPE" = "stable" ]; then
-            if [ "$REF_NAME" != "main" ]; then
-              echo "::error::Stable releases must be dispatched from 'main' (got ref ${REF})."
-              echo "Dispatch from main, or use release-type=prerelease from a CI-green branch."
-              exit 1
-            fi
+          if [ "$REF_NAME" = "main" ]; then
+            echo "Ref eligibility OK: stable release from main"
           else
-            if [ "$REF_NAME" = "main" ]; then
-              echo "::error::Prereleases must be dispatched from a non-main branch (got ref ${REF})."
-              echo "Use release-type=stable for main."
-              exit 1
-            fi
-            if ! printf '%s' "$CHANNEL" | grep -Eq '^[a-z][a-z0-9-]*$' || [ "$CHANNEL" = "latest" ]; then
-              echo "::error::Invalid prerelease channel '${CHANNEL}': use lowercase letters/digits/hyphens; must not be 'latest'."
-              exit 1
-            fi
+            echo "Ref eligibility OK: prerelease from ${REF_NAME}"
           fi
-          echo "Ref eligibility OK: release-type=${RELEASE_TYPE} ref=${REF_NAME} channel=${CHANNEL}"
 
       - name: Checkout
         uses: actions/checkout@v7
@@ -117,7 +83,7 @@ jobs:
             --warning-days "$TRIVYIGNORE_EXPIRY_WARNING_DAYS"
 
       # The dispatched ref must have a successful Integration run on its exact head SHA:
-      # dispatching controls timing only, never validation (AI_CI_RELEASE_REDESIGN.md).
+      # dispatching controls timing only, never validation.
       - name: Require Integration success on head SHA
         env:
           HEAD_SHA: ${{ github.sha }}
@@ -219,7 +185,7 @@ jobs:
       # version/channel/type to $GITHUB_OUTPUT, which become this step's outputs.
       # In dry-run mode semantic-release skips prepare/publish entirely, so no
       # version output is written; with no releasable commits it exits 0 with no
-      # output (no-op) and resolve decides skip vs. republish recovery below.
+      # output (no-op) and resolve applies idempotent latest-tag recovery below.
       - name: Run semantic-release
         id: sr
         env:
@@ -227,8 +193,7 @@ jobs:
           GIT_CONFIG_COUNT: 1
           GIT_CONFIG_KEY_0: core.hooksPath
           GIT_CONFIG_VALUE_0: /dev/null
-          KAIROS_PRERELEASE_BRANCH: ${{ inputs.release-type == 'prerelease' && github.ref_name || '' }}
-          KAIROS_PRERELEASE_CHANNEL: ${{ inputs.release-type == 'prerelease' && inputs.channel || 'beta' }}
+          KAIROS_PRERELEASE_BRANCH: ${{ github.ref_name != 'main' && github.ref_name || '' }}
         run: |
           set -euo pipefail
           args=""
@@ -245,8 +210,6 @@ jobs:
           SR_CHANNEL: ${{ steps.sr.outputs.channel }}
           SR_TYPE: ${{ steps.sr.outputs.type }}
           DRY_RUN: ${{ inputs.dry-run }}
-          REPUBLISH: ${{ inputs.republish }}
-          CHANNEL: ${{ inputs.channel }}
         run: |
           set -euo pipefail
           if [ "$DRY_RUN" = "true" ]; then
@@ -261,22 +224,15 @@ jobs:
           if [ -n "$SR_VERSION" ]; then
             version="$SR_VERSION"
             recovered=false
-          elif [ "$REPUBLISH" = "true" ]; then
+          else
             version="$(git describe --tags --abbrev=0)"
             version="${version#v}"
             recovered=true
-            echo "::warning::semantic-release had nothing to release; republish recovery fell back to the latest tag reachable from HEAD: v${version}"
-          else
-            echo "semantic-release found no releasable commits since the last tag; nothing to release."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "version=" >> "$GITHUB_OUTPUT"
-            echo "dist-tag=" >> "$GITHUB_OUTPUT"
-            echo "recovered=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "::warning::semantic-release had nothing new to release; falling back to latest tag v${version} for idempotent republish."
           fi
 
           if printf '%s' "$version" | grep -q '-'; then
-            dist_tag="$CHANNEL"
+            dist_tag="${SR_CHANNEL:-pre}"
           else
             dist_tag="latest"
           fi
@@ -290,7 +246,7 @@ jobs:
       # Recovery path only: semantic-release no-op'd, so the workspace was never
       # bumped/synced/packed. Re-run the exact prepareCmd sequence for the
       # version recovered from the latest tag.
-      - name: Recovery prepare (republish fallback)
+      - name: Recovery prepare (idempotent fallback)
         if: steps.resolve.outputs.recovered == 'true'
         run: |
           set -euo pipefail
@@ -298,14 +254,8 @@ jobs:
           npm run version:sync
           npm run prepare:publish
 
-      - name: Publish to npm (strict)
-        if: steps.resolve.outputs.skip != 'true' && inputs.republish != true
-        run: npm publish ./dist/jakub-plichcinski-kairos-mcp-${{ steps.resolve.outputs.version }}.tgz --access public --provenance --tag ${{ steps.resolve.outputs.dist-tag }}
-
-      # republish: npm versions are immutable; re-publishing an already-published
-      # version is tolerated only in explicit recovery mode.
-      - name: Publish to npm (allow existing)
-        if: steps.resolve.outputs.skip != 'true' && inputs.republish == true
+      - name: Publish to npm
+        if: steps.resolve.outputs.skip != 'true'
         run: |
           set +e
           out=$(npm publish ./dist/jakub-plichcinski-kairos-mcp-${{ steps.resolve.outputs.version }}.tgz --access public --provenance --tag ${{ steps.resolve.outputs.dist-tag }} 2>&1)
@@ -313,7 +263,7 @@ jobs:
           echo "$out"
           if [ $code -eq 0 ]; then exit 0; fi
           if echo "$out" | grep -q "You cannot publish over the previously published versions"; then
-            echo "Version already on npm; continuing (republish mode)."
+            echo "::notice::Version already on npm; continuing (idempotent)."
             exit 0
           fi
           exit 1
@@ -517,11 +467,9 @@ jobs:
       - name: Helm package
         run: helm package helm/kairos-mcp
 
-      # Helm OCI release identity is chart SemVer and immutable. An already-published
-      # version is a hard error unless the operator explicitly chose republish.
+      # Helm OCI release identity is chart SemVer and immutable; existing versions
+      # are tolerated so rerunning the workflow remains idempotent.
       - name: Push chart to Quay OCI registry
-        env:
-          REPUBLISH: ${{ inputs.republish }}
         run: |
           set +e
           out=$(helm push "kairos-mcp-${{ needs.release.outputs.version }}.tgz" "oci://quay.io/${{ vars.QUAY_NAMESPACE }}" 2>&1)
@@ -529,19 +477,16 @@ jobs:
           echo "$out"
           if [ $code -eq 0 ]; then exit 0; fi
           if echo "$out" | grep -qi "already exist"; then
-            if [ "$REPUBLISH" = "true" ]; then
-              echo "::notice::Chart version already published to Quay; tolerated (republish mode)."
-              exit 0
-            fi
-            echo "::error::Chart version already exists (Helm OCI tags are immutable). Re-run with republish=true only if this is an intentional recovery."
+            echo "::notice::Chart version already published; continuing (idempotent)."
+            exit 0
           fi
           exit 1
 
   finalize:
     name: Finalize release (SBOMs + summary)
     needs: [release, publish-container, publish-helm]
-    # Runs on success AND on the nothing-to-release skip (downstream publish jobs are
-    # skipped, which must not skip the summary); never runs when something failed.
+    # Runs on success AND on the dry-run skip (downstream publish jobs are skipped,
+    # which must not skip the summary); never runs when something failed.
     if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
@@ -573,22 +518,25 @@ jobs:
 
       - name: Write job summary
         env:
-          RELEASE_TYPE: ${{ inputs.release-type }}
           VERSION: ${{ needs.release.outputs.version }}
           DIST_TAG: ${{ needs.release.outputs.dist-tag }}
           SKIP: ${{ needs.release.outputs.skip }}
           RECOVERED: ${{ needs.release.outputs.recovered }}
           DIGEST: ${{ needs.publish-container.outputs.digest }}
           DRY_RUN: ${{ inputs.dry-run }}
-          REPUBLISH: ${{ inputs.republish }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           RELEASE_URL: ${{ github.server_url }}/${{ github.repository }}/releases/tag/v${{ needs.release.outputs.version }}
         run: |
           set -euo pipefail
+          if printf '%s' "$VERSION" | grep -q '-'; then
+            release_type="prerelease"
+          else
+            release_type="stable"
+          fi
           {
             echo "| Field | Value |"
             echo "|---|---|"
-            echo "| release-type | ${RELEASE_TYPE} |"
+            echo "| release-type | ${release_type} |"
             if [ "$SKIP" = "true" ]; then
               if [ "$DRY_RUN" = "true" ]; then
                 echo "| result | dry-run preview only — nothing was published |"
@@ -608,13 +556,7 @@ jobs:
           if [ "$RECOVERED" = "true" ]; then
             {
               echo ""
-              echo "> warning: **Recovery mode:** semantic-release had nothing to release; version ${VERSION} was recovered from the latest tag reachable from HEAD (republish=true)."
-            } >> release-summary.md
-          fi
-          if [ "$REPUBLISH" = "true" ] && [ "$RECOVERED" != "true" ]; then
-            {
-              echo ""
-              echo "> note: **republish mode:** already-published npm/chart versions are tolerated on this run."
+              echo "> warning: semantic-release had nothing new to release; version ${VERSION} was recovered from the latest tag."
             } >> release-summary.md
           fi
           node scripts/ci-github-step-summary.mjs "Release summary" -- cat release-summary.md

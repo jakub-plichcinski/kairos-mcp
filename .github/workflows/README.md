@@ -82,7 +82,7 @@ Dependabot **version updates** are disabled (`dependabot.yml` `updates: []`); Re
 
 ## Workflow classification
 
-The redesign (`.github/AI_CI_RELEASE_REDESIGN.md`) collapsed release responsibility into **Integration** (validation) + **Release** (publication).
+Release responsibility is split across **Integration** (validation) and **Release** (publication).
 
 | Workflow | File | Role |
 |----------|------|------|
@@ -208,27 +208,29 @@ To run a single scenario explicitly (after the matching stack is up):
 
 ## Release workflow (manual dispatch)
 
-**Release** (`release.yml`) is `workflow_dispatch`-only and is the **only** path that publishes anything. It implements the canonical pipeline from `.github/AI_CI_RELEASE_REDESIGN.md`.
+**Release** (`release.yml`) is `workflow_dispatch`-only and is the **only** path that publishes anything.
 
-**Version authority:** [semantic-release](https://semantic-release.gitbook.io/semantic-release/) with `release.config.mjs` at the repo root. Conventional commits since the last tag decide the version (`fix:` → patch, `feat:` → minor, `feat!:`/`BREAKING CHANGE:` → major); the operator chooses **when** to release, never the number. The stable channel is `main`; prereleases run from any CI-green non-main branch via `KAIROS_PRERELEASE_BRANCH`/`KAIROS_PRERELEASE_CHANNEL` (no permanent `dev`/`next` branch). semantic-release pushes the git tag (`vX.Y.Z`, GITHUB_TOKEN) and creates the GitHub Release; its exec plugin `prepareCmd` bumps `package.json`, re-syncs skills/compose/helm **in the job workspace only**, and builds + consumer-tests the packed tgz before anything is published. The in-repo `package.json`/skills/compose/helm versions remain the *last synced baseline* — they are not bumped by release PRs anymore.
+**Version authority:** [semantic-release](https://semantic-release.gitbook.io/semantic-release/) with `release.config.mjs` at the repo root. Conventional commits since the last tag decide the version (`fix:` → patch, `feat:` → minor, `feat!:`/`BREAKING CHANGE:` → major); the operator chooses **when** to release, never the number. The stable lane is `main`; prereleases run from any CI-green non-main branch via `KAIROS_PRERELEASE_BRANCH`, whose sanitized branch name becomes both the semver prerelease identifier and the npm dist-tag (no permanent `dev`/`next` branch, and no channel to choose). semantic-release pushes the git tag (`vX.Y.Z`, GITHUB_TOKEN) and creates the GitHub Release; its exec plugin `prepareCmd` bumps `package.json`, re-syncs skills/compose/helm **in the job workspace only**, and builds + consumer-tests the packed tgz before anything is published. The in-repo `package.json`/skills/compose/helm versions remain the *last synced baseline* — they are not bumped by release PRs anymore.
 
-**One version propagates everywhere:** npm `@jakub-plichcinski/kairos-mcp@<version>` (dist-tag `latest` for stable, the channel for prereleases), images `jakubplichcinski/kairos-mcp:<tags>` and `quay.io/<QUAY_NAMESPACE>/kairos-mcp:<tags>` (stable: `X.Y.Z`, `X.Y`, `X`, `latest`; prerelease: `X.Y.Z-<channel>.N`, `<channel>` — never `latest`), Helm chart `oci://quay.io/<QUAY_NAMESPACE>/kairos-mcp` with chart `version`/`appVersion`/`app.image.tag` = the exact release version, git tag `v<version>`, and the GitHub Release.
+**One version propagates everywhere:** npm `@jakub-plichcinski/kairos-mcp@<version>` (dist-tag `latest` for stable, the sanitized branch id for prereleases), images `jakubplichcinski/kairos-mcp:<tags>` and `quay.io/<QUAY_NAMESPACE>/kairos-mcp:<tags>` (stable: `X.Y.Z`, `X.Y`, `X`, `latest`; prerelease: `X.Y.Z-<branch-id>.N`, `<branch-id>` — never `latest`), Helm chart `oci://quay.io/<QUAY_NAMESPACE>/kairos-mcp` with chart `version`/`appVersion`/`app.image.tag` = the exact release version, git tag `v<version>`, and the GitHub Release.
 
 ### Dispatch runbook
 
-1. **Stable release:** merge conventional-commit PRs to `main` → wait for **Integration** green on the main head → **Actions → Release → Run workflow** → branch `main`, `release-type=stable`. CLI: `gh workflow run release.yml --ref main -f release-type=stable`.
-2. **Prerelease:** keep a short-lived branch with `feat:`/`fix:` commits → dispatch **Integration** on that branch (**Actions → Integration → Run workflow**, branch selected) and wait for green → **Actions → Release → Run workflow** → the branch, `release-type=prerelease`, `channel` (default `beta`). CLI: `gh workflow run release.yml --ref <branch> -f release-type=prerelease -f channel=beta`.
-3. **Preview:** `dry-run=true` shows the next version semantic-release would compute; nothing is published (prepare/publish are skipped entirely).
-4. **Recovery:** `republish=true` re-publishes artifacts for the latest tag when a previous run failed mid-pipeline — it falls back to the latest tag reachable from HEAD when semantic-release has nothing to release, and tolerates "already published" npm/chart versions (both are immutable). Always investigate why the original run failed first.
+The release type is **derived from the branch you dispatch from** — there is nothing to select, and `dry-run` is the only input.
 
-The `validate` job enforces the dispatch gates: stable ⇒ ref is `main`; prerelease ⇒ ref is a non-main **branch** with a valid channel name (lowercase, never `latest`); `.trivyignore` entries must not be expired; and the exact head SHA must have a **successful Integration run** (polls the Actions API; dispatch Integration first for non-main refs). Dispatching controls timing only — it can never bypass validation.
+1. **Stable release:** merge conventional-commit PRs to `main` → wait for **Integration** green on the main head → **Actions → Release → Run workflow** → branch `main`. CLI: `gh workflow run release.yml --ref main`.
+2. **Prerelease:** keep a short-lived branch with `feat:`/`fix:` commits → dispatch **Integration** on that branch (**Actions → Integration → Run workflow**, branch selected) and wait for green → **Actions → Release → Run workflow** → that branch. CLI: `gh workflow run release.yml --ref <branch>`. The version suffix and npm dist-tag are auto-derived from the sanitized branch name (lowercase alphanumerics and hyphens).
+3. **Preview:** `dry-run=true` shows the next version semantic-release would compute; nothing is published (prepare/publish are skipped entirely).
+4. **Recovery:** just re-dispatch the same branch — there is no flag. When semantic-release has nothing new to release the run falls back to the latest tag reachable from HEAD, and "already published" npm/chart versions are always tolerated (both are immutable), so re-running is idempotent. Always investigate why the original run failed first.
+
+The `validate` job enforces the dispatch gates: the ref must be a **branch** (`main` ⇒ stable, any other branch ⇒ prerelease); `.trivyignore` entries must not be expired; and the exact head SHA must have a **successful Integration run** (polls the Actions API; dispatch Integration first for non-main refs). Dispatching controls timing only — it can never bypass validation.
 
 ### Jobs
 
 1. **`validate`** — ref eligibility, `.trivyignore` expiry guard, green Integration on the exact head SHA.
-2. **`release`** (environment `release`) — lint, skills-ref validation, knip, then `npx semantic-release`: computes the version, tags, creates the GitHub Release, consumer-tests the packed tgz, and publishes npm via **OIDC trusted publishing** (no `NPM_TOKEN`; `--provenance`; dist-tag `latest`/channel; already-published versions tolerated only in `republish` mode). Generates the npm CycloneDX SBOM.
+2. **`release`** (environment `release`) — lint, skills-ref validation, knip, then `npx semantic-release`: computes the version, tags, creates the GitHub Release, consumer-tests the packed tgz, and publishes npm via **OIDC trusted publishing** (no `NPM_TOKEN`; `--provenance`; dist-tag `latest`/branch id; already-published versions always tolerated). Generates the npm CycloneDX SBOM.
 3. **`publish-container`** (environment `release`) — ONE `docker/build-push-action` invocation publishes every alias to **both** registries (single-digest invariant), with BuildKit GHA cache, cosign keyless signing (digest, both registries), CycloneDX SBOM, and the Trivy CRITICAL/HIGH gate against `.trivyignore`.
-4. **`publish-helm`** (environment `release`) — `scripts/helm-set-release-version.mjs <version>` pins chart `version`/`appVersion`/`app.image.tag`, then dependency build, strict lint, package, and `helm push` to `oci://quay.io/<QUAY_NAMESPACE>` (chart SemVer identity, immutable; already-exists tolerated only in `republish` mode).
+4. **`publish-helm`** (environment `release`) — `scripts/helm-set-release-version.mjs <version>` pins chart `version`/`appVersion`/`app.image.tag`, then dependency build, strict lint, package, and `helm push` to `oci://quay.io/<QUAY_NAMESPACE>` (chart SemVer identity, immutable; already-exists always tolerated so re-runs stay idempotent).
 5. **`finalize`** — attaches the SBOMs to the GitHub Release and writes the run summary (version, dist-tag, digest, artifact links, recovery warnings).
 
 When semantic-release has nothing to release, `release` sets `skip=true`, the publish jobs skip, and the run ends **green** with a "nothing to release" summary — re-running cannot silently create a different artifact under the same version.
