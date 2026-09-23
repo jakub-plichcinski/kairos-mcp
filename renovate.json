@@ -21,7 +21,8 @@
       "customType": "regex",
       "description": "Inline Helm image references including hook and operator images",
       "managerFilePatterns": ["/helm/kairos-mcp/values\\.yaml$/"],
-      "matchStrings": ["(?:image|[a-zA-Z][a-zA-Z0-9]*Image):\\s*\"(?<depName>[^\"\\s:]+):(?<currentValue>[^\"]+)\""],
+      "matchStrings": ["(?<prefix>(?:image|[a-zA-Z][a-zA-Z0-9]*Image):\\s*\")(?<depName>[^\"\\s:]+):(?<currentValue>[^\"@\\s]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?\""],
+      "autoReplaceStringTemplate": "{{{prefix}}}{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{/if}}\"",
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
     }

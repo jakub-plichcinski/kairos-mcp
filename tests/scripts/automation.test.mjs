@@ -198,6 +198,24 @@ test('Helm extraction covers short and fully qualified hook/operator images', ()
   assert.match(runner, /RENOVATE_REQUIRE_CONFIG: 'ignored'/);
 });
 
+test('inline Helm image digest pins remain extractable for subsequent updates', () => {
+  const manager = JSON.parse(readFileSync('renovate.json', 'utf8')).customManagers[0];
+  const pattern = new RegExp(manager.matchStrings[0]);
+  const depName = 'docker.io/percona/percona-distribution-postgresql';
+  const currentValue = '17.6';
+  const currentDigest = `sha256:${'a'.repeat(64)}`;
+  for (const prefix of ['image: "', 'pgBackRestImage:   "', 'kubectlImage: "']) {
+    for (const pinned of [false, true]) {
+      const text = `${prefix}${depName}:${currentValue}${pinned ? `@${currentDigest}` : ''}"`;
+      const match = pattern.exec(text);
+      assert.equal(match[0], text);
+      assert.deepEqual({ ...match.groups }, { prefix, depName, currentValue, currentDigest: pinned ? currentDigest : undefined });
+    }
+  }
+  assert.equal(manager.autoReplaceStringTemplate,
+    '{{{prefix}}}{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{/if}}"');
+});
+
 function auditFixture({ existing = false, orphan = false } = {}) {
   const mutations = [];
   const owner = { id: 42, login: 'automation', type: 'User' };

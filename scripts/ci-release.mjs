@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, openSync, closeSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { GitHub, gateRuns, output, report } from './ci-automation.mjs';
@@ -14,6 +14,15 @@ function run(command, args, { capture = false, ...options } = {}) {
   const result = spawnSync(command, args, { stdio: capture ? ['ignore', 'pipe', 'inherit'] : 'inherit', ...options });
   if (result.status !== 0) throw new Error(`${command} failed (${result.status ?? result.error?.message})`);
   return capture ? result.stdout : undefined;
+}
+export function runToFile(command, args, path, options = {}) {
+  // SBOMs exceed spawnSync's capture buffer; write bytes directly to the artifact.
+  const fd = openSync(path, 'w');
+  try {
+    run(command, args, { ...options, stdio: ['ignore', fd, 'inherit'] });
+  } finally {
+    closeSync(fd);
+  }
 }
 function noCredentials() {
   const env = { ...process.env };
@@ -83,7 +92,7 @@ function preparePackage() {
   run('npm', ['run', 'version:sync'], { env });
   run('npm', ['run', 'prepare:publish'], { env });
   copyFileSync(`dist/jakub-plichcinski-kairos-mcp-${plan.version}.tgz`, `${dir}/package.tgz`);
-  writeFileSync(`${dir}/npm-sbom.json`, run('npm', ['sbom', '--sbom-format', 'cyclonedx'], { env, capture: true }));
+  runToFile('npm', ['sbom', '--sbom-format', 'cyclonedx'], `${dir}/npm-sbom.json`, { env });
   run('node', ['scripts/helm-set-release-version.mjs', plan.version], { env });
   run('helm', ['repo', 'add', 'qdrant', 'https://qdrant.github.io/qdrant-helm']);
   run('helm', ['repo', 'add', 'valkey', 'https://valkey.io/valkey-helm/']);
@@ -120,8 +129,8 @@ async function seal() {
   requireSame(source(), plan.sourceSha, 'Validated source');
   if (process.env.VALIDATION_PASSED !== 'true') throw new Error('Validation is required before sealing artifacts');
   for (const arch of ['amd64', 'arm64']) {
-    writeFileSync(`${dir}/image-${arch}-sbom.json`, run('trivy', ['image', '--input', `${dir}/scan-${arch}.tar`,
-      '--format', 'cyclonedx', '--scanners', 'vuln'], { capture: true }));
+    runToFile('trivy', ['image', '--input', `${dir}/scan-${arch}.tar`,
+      '--format', 'cyclonedx', '--scanners', 'vuln'], `${dir}/image-${arch}-sbom.json`);
   }
   save(`${dir}/validation.json`, { sourceSha: plan.sourceSha, version: plan.version, packedConsumer: true,
     helm: true, platforms: ['linux/amd64', 'linux/arm64'], imageSmoke: true, trivy: 'CRITICAL,HIGH', runId: process.env.GITHUB_RUN_ID });
