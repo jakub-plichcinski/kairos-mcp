@@ -1,13 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { analyzeCommits } from '@semantic-release/commit-analyzer';
 import { generateNotes } from '@semantic-release/release-notes-generator';
 import { parserOpts, releaseRules, prereleaseChannel } from '../../release.config.mjs';
 import { ARTIFACTS, assertManifest, digest, channelTags, requireSame, retry, releaseRecord, recordBody, ensurePublished, publishStages, recordChannel } from '../../scripts/ci-release-state.mjs';
-import { verifyFiles } from '../../scripts/ci-release.mjs';
+import { verifyFiles, runToFile } from '../../scripts/ci-release.mjs';
 import { auditResult, nativeProgressing } from '../../scripts/ci-audit.mjs';
 import { promoteNpmTag } from '../../scripts/ci-npm.mjs';
 
@@ -103,6 +103,28 @@ test('transient failures retry at most three times', async () => {
   let attempts = 0;
   await assert.rejects(retry(async () => { attempts++; throw new Error('HTTP 503'); }, async () => {}));
   assert.equal(attempts, 3);
+});
+
+test('SBOM output larger than the subprocess capture limit is preserved byte-for-byte', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'release-sbom-'));
+  try {
+    const path = join(directory, 'sbom.json');
+    const payload = 'x'.repeat(2 * 1024 * 1024);
+    runToFile(process.execPath, ['-e', 'process.stdout.write(JSON.stringify({ payload: "x".repeat(2 * 1024 * 1024), marker: process.env.SBOM_MARKER }))'],
+      path, { env: { SBOM_MARKER: 'complete' } });
+    assert.equal(await readFile(path, 'utf8'), JSON.stringify({ payload, marker: 'complete' }));
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
+
+test('SBOM subprocess failures still block preparation and allow a clean retry', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'release-sbom-failure-'));
+  try {
+    const path = join(directory, 'sbom.json');
+    assert.throws(() => runToFile(process.execPath, ['-e', 'process.stdout.write("partial"); process.exitCode = 7'], path), /failed \(7\)/);
+    assert.throws(() => runToFile(join(directory, 'missing-command'), [], path), /ENOENT/);
+    runToFile(process.execPath, ['-e', 'process.stdout.write("{}")'], path);
+    assert.equal(await readFile(path, 'utf8'), '{}');
+  } finally { await rm(directory, { recursive: true, force: true }); }
 });
 
 test('artifact recovery validates actual bytes, not names or version strings', async () => {
