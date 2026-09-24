@@ -1,0 +1,462 @@
+{
+  "observations": [
+    {
+      "body_sha256": "0b3eaeaa93cf2e98db65fcf603b49c3b93753cc006ea64ca4dc5e1ddc341e464",
+      "candidate": "praxory",
+      "checked_at_utc": "2026-09-09T09:52:53.529360+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/praxory.com",
+      "http_status": 200,
+      "response_summary": {
+        "ldhName": "PRAXORY.COM"
+      },
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/praxory.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "praxory",
+      "checked_at_utc": "2026-09-09T09:52:53.530271+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/praxory",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/praxory"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "praxory",
+      "checked_at_utc": "2026-09-09T09:52:53.530997+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/praxory",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/praxory"
+    },
+    {
+      "body_sha256": "4d807e47d51f847d4ec814bc4d5730c0ea5cd9f46b3f11c1e87afa1f79d5bbdc",
+      "candidate": "knowloom",
+      "checked_at_utc": "2026-09-09T09:52:53.531655+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/knowloom.com",
+      "http_status": 200,
+      "response_summary": {
+        "ldhName": "KNOWLOOM.COM"
+      },
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/knowloom.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "knowloom",
+      "checked_at_utc": "2026-09-09T09:52:53.532269+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/knowloom",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/knowloom"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "knowloom",
+      "checked_at_utc": "2026-09-09T09:52:53.532818+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/knowloom",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/knowloom"
+    },
+    {
+      "body_sha256": "4631e5d7e57fa336adb67ec117883792def5de6d600fdcde6e26398730bcdf80",
+      "candidate": "praxloom",
+      "checked_at_utc": "2026-09-09T09:53:02.492272+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/praxloom.com",
+      "http_status": 200,
+      "response_summary": {
+        "ldhName": "PRAXLOOM.COM"
+      },
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/praxloom.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "praxloom",
+      "checked_at_utc": "2026-09-09T09:53:02.544662+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/praxloom",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/praxloom"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "praxloom",
+      "checked_at_utc": "2026-09-09T09:53:02.545794+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/praxloom",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/praxloom"
+    },
+    {
+      "body_excerpt": "",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate": "knowtread",
+      "checked_at_utc": "2026-09-09T09:53:02.877520+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/knowtread.com",
+      "http_status": 404,
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/knowtread.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "knowtread",
+      "checked_at_utc": "2026-09-09T09:53:04.318627+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/knowtread",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/knowtread"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "knowtread",
+      "checked_at_utc": "2026-09-09T09:53:04.342169+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/knowtread",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/knowtread"
+    },
+    {
+      "body_excerpt": "",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:53:11.111212+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/tacitloom.com",
+      "http_status": 404,
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/tacitloom.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:53:11.167749+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/tacitloom",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/tacitloom"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "tacitloom",
+      "checked_at_utc": "2026-09-09T09:53:13.389726+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/tacitloom",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/tacitloom"
+    },
+    {
+      "body_excerpt": "",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate": "methodweft",
+      "checked_at_utc": "2026-09-09T09:53:13.390752+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/methodweft.com",
+      "http_status": 404,
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/methodweft.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "methodweft",
+      "checked_at_utc": "2026-09-09T09:53:13.395433+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/methodweft",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/methodweft"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "methodweft",
+      "checked_at_utc": "2026-09-09T09:53:13.732322+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/methodweft",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/methodweft"
+    },
+    {
+      "body_excerpt": "",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:53:13.776651+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/enactloom.com",
+      "http_status": 404,
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/enactloom.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:53:14.104053+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/enactloom",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/enactloom"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "enactloom",
+      "checked_at_utc": "2026-09-09T09:53:21.103411+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/enactloom",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/enactloom"
+    },
+    {
+      "body_excerpt": "",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate": "skillweft",
+      "checked_at_utc": "2026-09-09T09:53:21.341884+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/skillweft.com",
+      "http_status": 404,
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/skillweft.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "skillweft",
+      "checked_at_utc": "2026-09-09T09:53:21.525554+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/skillweft",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/skillweft"
+    },
+    {
+      "body_sha256": "7cf26000f24aa26a7367b1cf2911d8aa974257a1f9e58b62d0c466f0c8a71459",
+      "candidate": "skillweft",
+      "checked_at_utc": "2026-09-09T09:53:21.886774+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/skillweft",
+      "http_status": 200,
+      "response_summary": {
+        "description": "Keep large agent capability libraries hidden and expose only the working set you need.",
+        "name": "skillweft"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/skillweft"
+    },
+    {
+      "body_sha256": "7ba4942b79c0d5161e743356428bfd649eedc16c622c8479bb47c2f183557475",
+      "candidate": "runweft",
+      "checked_at_utc": "2026-09-09T09:53:24.019521+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/runweft.com",
+      "http_status": 200,
+      "response_summary": {
+        "ldhName": "RUNWEFT.COM"
+      },
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/runweft.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "runweft",
+      "checked_at_utc": "2026-09-09T09:53:24.401896+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/runweft",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/runweft"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "runweft",
+      "checked_at_utc": "2026-09-09T09:53:24.423921+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/runweft",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/runweft"
+    },
+    {
+      "body_excerpt": "",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:53:29.542557+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/praxelet.com",
+      "http_status": 404,
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/praxelet.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:53:29.577110+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/praxelet",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/praxelet"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "praxelet",
+      "checked_at_utc": "2026-09-09T09:53:29.620331+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/praxelet",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/praxelet"
+    },
+    {
+      "body_sha256": "9190f3f6f2a5d6217aa5db285f860007a3f0e6d134fcbb60d77a5d2eaa304410",
+      "candidate": "praxelum",
+      "checked_at_utc": "2026-09-09T09:53:30.407813+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/praxelum.com",
+      "http_status": 200,
+      "response_summary": {
+        "ldhName": "PRAXELUM.COM"
+      },
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/praxelum.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "praxelum",
+      "checked_at_utc": "2026-09-09T09:53:30.421946+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/praxelum",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/praxelum"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "praxelum",
+      "checked_at_utc": "2026-09-09T09:53:30.797255+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/praxelum",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/praxelum"
+    },
+    {
+      "body_sha256": "55df1752eb97b82893a0d9f527c0159c32895493b8b083b7e41b1a2660053c85",
+      "candidate": "knowferry",
+      "checked_at_utc": "2026-09-09T09:53:34.550974+00:00",
+      "content_type": "application/rdap+json",
+      "final_url": "https://rdap.verisign.com/com/v1/domain/knowferry.com",
+      "http_status": 200,
+      "response_summary": {
+        "ldhName": "KNOWFERRY.COM"
+      },
+      "surface": "domain_com_rdap",
+      "url": "https://rdap.verisign.com/com/v1/domain/knowferry.com"
+    },
+    {
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "candidate": "knowferry",
+      "checked_at_utc": "2026-09-09T09:53:34.794189+00:00",
+      "content_type": "application/json; charset=utf-8",
+      "final_url": "https://api.github.com/users/knowferry",
+      "http_status": 404,
+      "response_summary": {
+        "message": "Not Found"
+      },
+      "surface": "github_account",
+      "url": "https://api.github.com/users/knowferry"
+    },
+    {
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "candidate": "knowferry",
+      "checked_at_utc": "2026-09-09T09:53:34.869469+00:00",
+      "content_type": "application/json",
+      "final_url": "https://registry.npmjs.org/knowferry",
+      "http_status": 404,
+      "response_summary": {
+        "error": "Not found"
+      },
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/knowferry"
+    }
+  ],
+  "purpose": "Public record checks; not registration guarantees"
+}
