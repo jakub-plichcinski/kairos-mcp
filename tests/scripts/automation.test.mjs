@@ -209,11 +209,11 @@ test('inline Helm image digest pins remain extractable for subsequent updates', 
       const text = `${prefix}${depName}:${currentValue}${pinned ? `@${currentDigest}` : ''}"`;
       const match = pattern.exec(text);
       assert.equal(match[0], text);
-      assert.deepEqual({ ...match.groups }, { prefix, depName, currentValue, currentDigest: pinned ? currentDigest : undefined });
+      assert.deepEqual({ ...match.groups }, { depType: prefix, depName, currentValue, currentDigest: pinned ? currentDigest : undefined });
     }
   }
   assert.equal(manager.autoReplaceStringTemplate,
-    '{{{prefix}}}{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{/if}}"');
+    '{{{depType}}}{{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{/if}}"');
 });
 
 function auditFixture({ existing = false, orphan = false } = {}) {
