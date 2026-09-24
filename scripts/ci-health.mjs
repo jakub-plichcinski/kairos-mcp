@@ -14,7 +14,10 @@ for (const [file, maxMinutes] of checks) {
     .sort((a, b) => b.id - a.id)[0];
   const stale = !completed || Date.now() - Date.parse(completed.updated_at) > maxMinutes * 60000;
   const incomplete = file === 'release.yml' && drafts.some(r => Date.now() - Date.parse(r.created_at) > 3 * 60 * 60 * 1000);
-  const failed = stale || incomplete || completed.conclusion !== 'success';
+  // A `skipped` conclusion is healthy: the automation ran and legitimately
+  // found nothing to do (e.g. no audit fixes, nothing new to release).
+  const healthy = !!completed && (completed.conclusion === 'success' || completed.conclusion === 'skipped');
+  const failed = stale || incomplete || !healthy;
   const key = `<!-- automation-incident:${file} -->`;
   const existing = issues.find(issue => !issue.pull_request && issue.body?.includes(key));
   const reason = incomplete ? 'Incomplete release requires recovery' : stale ? 'Scheduled automation is stale or missing' : `Latest run: ${completed?.conclusion}`;
