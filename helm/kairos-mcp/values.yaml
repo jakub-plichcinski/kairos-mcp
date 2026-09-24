@@ -183,7 +183,7 @@ ollama:
   replicas: 2
   image:
     repository: "ollama/ollama"
-    tag: "0.23.0"
+    tag: "0.23.0@sha256:5600a652d1081050f398152127c584222546354491f27fe47ccbc6351bc870bd"
   model: "nomic-embed-text"
   storageSize: "10Gi"
   resources:
@@ -254,7 +254,7 @@ keycloakDcrCleanup:
   schedule: "0 3 * * 0"
   # Python image (stdlib only — no pip packages needed). The cleanup script is
   # injected via ConfigMap and uses only urllib, json, datetime, os, sys.
-  image: "python:3.12-alpine"
+  image: "python:3.12-alpine@sha256:4c47124a8391cb7a9f571164147d154777cf012a4ece5f86097130d7a4478111"
   # Container resource requests/limits.
   resources:
     requests:
@@ -277,9 +277,9 @@ postgresCluster:
   namespace: ""
   name: "kairos-postgres"
   crVersion: "2.8.2"
-  image: "docker.io/percona/percona-distribution-postgresql:17.7-2"
-  pgBackRestImage: "docker.io/percona/percona-pgbackrest:2.57.0-1"
-  pgBouncerImage: "docker.io/percona/percona-pgbouncer:1.25.0-1"
+  image: "docker.io/percona/percona-distribution-postgresql:17.7-2@sha256:b48abfa1f83026a1beea75da27e49e01cff33e344ecdd8d69c4b4cb674b04285"
+  pgBackRestImage: "docker.io/percona/percona-pgbackrest:2.57.0-1@sha256:4bff26ec1777a748abddb0845fe0e6d06e5f7409d4dd72bcb8c9bba1e746174c"
+  pgBouncerImage: "docker.io/percona/percona-pgbouncer:1.25.0-1@sha256:2524c5f2fab1290b2b0ff39ed4888b08f52bb75dd042fb02a1bd3288cfb74dc8"
   postgresVersion: 17
   instances: 3
   storage: "1Gi"
