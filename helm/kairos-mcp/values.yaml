@@ -279,7 +279,7 @@ postgresCluster:
   crVersion: "2.8.2"
   image: "docker.io/percona/percona-distribution-postgresql:17.7-2@sha256:b48abfa1f83026a1beea75da27e49e01cff33e344ecdd8d69c4b4cb674b04285"
   pgBackRestImage: "docker.io/percona/percona-pgbackrest:2.57.0-1@sha256:4bff26ec1777a748abddb0845fe0e6d06e5f7409d4dd72bcb8c9bba1e746174c"
-  pgBouncerImage: "docker.io/percona/percona-pgbouncer:1.25.0-1@sha256:2524c5f2fab1290b2b0ff39ed4888b08f52bb75dd042fb02a1bd3288cfb74dc8"
+  pgBouncerImage: "docker.io/percona/percona-pgbouncer:1.25.2-1@sha256:0b1592e21978f3b5ee0ac225666d9166b945db55dde0d69cd8bea73db5170b05"
   postgresVersion: 17
   instances: 3
   storage: "1Gi"
