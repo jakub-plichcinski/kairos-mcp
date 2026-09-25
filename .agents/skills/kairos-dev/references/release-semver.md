@@ -21,7 +21,7 @@ The single release mechanism is [release.yml](https://github.com/jakub-plichcins
 
 ## One-time rollout and credentials
 
-Keep `AUTOMATION_ENABLED` unset or `false` until all prerequisites are verified:
+Keep `AUTOMATION_ENABLED` unset or `false` to pause the dependency producers and controller (Renovate, npm audit fix, dependency-merge controller, automation-health) until their prerequisites are verified. Release is **not** gated by this variable — it runs by default from its own triggers (see below).
 
 1. Merge the implementation through normal protected PR checks.
 2. Require `Integration workflow passed`, `Security workflow passed`, and `Automation policy passed`, bound to GitHub Actions (app ID `15368`). Keep strict up-to-date protection, administrator enforcement, and zero mandatory approvals. Set squash commit titles to the PR title.
@@ -55,7 +55,7 @@ Validated artifacts first enter immutable Actions storage, then a draft GitHub R
 
 Cross-registry publication is not atomic. A failure retains the draft, original source, checksums, original recovery artifact ID and stage progress. The next event, hourly reconciliation, or manual `release.yml --ref main -f dry-run=false` resumes that record. It never rebuilds newer source under an old version. Missing/expired recovery bytes, mismatched artifacts, invalid credentials and legacy drafts without manifests fail visibly and need remediation. Do not delete a pending draft or overwrite an immutable artifact to force progress.
 
-Transient operations retry up to three times. `automation-health.yml` monitors failures, stale runs and incomplete drafts; it maintains one incident per workflow and closes it after recovery. Setting `AUTOMATION_ENABLED=false` pauses producers, controller and publishing; it does not undo artifacts already published.
+Transient operations retry up to three times. `automation-health.yml` monitors failures, stale runs and incomplete drafts; it maintains one incident per workflow and closes it after recovery. Setting `AUTOMATION_ENABLED=false` pauses the dependency producers and controller (Renovate, npm audit fix, dependency-merge controller, automation-health). It does **not** pause Release: Release runs by default from main-push, hourly reconciliation and manual dispatch, and a `false` value does not undo artifacts already published.
 
 ## Verification
 
