@@ -324,7 +324,9 @@ async function main() {
   if (command === 'images') return prepareImages();
   if (command === 'seal') return seal();
   if (command === 'publish') {
-    if (process.env.DRY_RUN === 'true' || process.env.AUTOMATION_ENABLED !== 'true') throw new Error('Publishing is disabled');
+    // Release runs by default and is not governed by vars.AUTOMATION_ENABLED (which only
+    // pauses the dependency producers/controller). A dry run never publishes.
+    if (process.env.DRY_RUN === 'true') throw new Error('Publishing is disabled (dry run)');
     return publish();
   }
   throw new Error('Unknown release command');

@@ -28,8 +28,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Release runs by default from its own triggers (main push, hourly reconciliation,
+  # manual dispatch); it is intentionally NOT gated by vars.AUTOMATION_ENABLED, which
+  # only pauses the dependency producers/controller. Production vs non-production is
+  # decided by branch: main -> stable, any other branch dispatched -> prerelease channel.
   resolve:
-    if: vars.AUTOMATION_ENABLED == 'true' || (github.event_name == 'workflow_dispatch' && inputs.dry-run)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -162,7 +165,6 @@ jobs:
       id-token: write
     env:
       SOURCE_SHA: ${{ needs.resolve.outputs.sha }}
-      AUTOMATION_ENABLED: ${{ vars.AUTOMATION_ENABLED }}
       RECOVERY_ID: ${{ needs.resolve.outputs.recovery }}
       RECOVERY_ARTIFACT_ID: ${{ needs.prepare.outputs.artifact }}
       QUAY_NAMESPACE: ${{ vars.QUAY_NAMESPACE }}
