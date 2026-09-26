@@ -84,7 +84,7 @@ services:
   postgres:
     profiles:
       - fullstack
-    image: postgres:18.3-alpine3.22@sha256:50961b448dfcf6dcc2f1f73ec173edb60c1b9dd18245b3978a8a569e09d8b9aa
+    image: postgres:18.3-alpine3.22@sha256:af27ebd3413839ccfdcdf88e91ca76ad82117e52192067b76de9bb5be7ea6e04
     env_file:
       - .env
     environment:
@@ -92,7 +92,8 @@ services:
       POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-}
       POSTGRES_DB: keycloak
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      # PostgreSQL 18+ stores data in a major-version-specific subdirectory.
+      - postgres-data:/var/lib/postgresql
     ports:
       - "5432:5432"
     networks:
