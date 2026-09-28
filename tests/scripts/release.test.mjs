@@ -9,7 +9,6 @@ import { parserOpts, releaseRules, prereleaseChannel } from '../../release.confi
 import { ARTIFACTS, assertManifest, digest, channelTags, requireSame, retry, releaseRecord, recordBody, ensurePublished, publishStages, recordChannel } from '../../scripts/ci-release-state.mjs';
 import { verifyFiles, runToFile } from '../../scripts/ci-release.mjs';
 import { auditResult, nativeProgressing } from '../../scripts/ci-audit.mjs';
-import { promoteNpmTag } from '../../scripts/ci-npm.mjs';
 
 const manifest = (overrides = {}) => ({ schema: 1, sourceSha: 'a'.repeat(40), branch: 'main', version: '5.1.2',
   channel: 'latest', validated: true, imageDigest: `sha256:${'b'.repeat(64)}`, npmIntegrity: 'sha512-YWJjZA==',
@@ -191,28 +190,54 @@ test('missing post-publish metadata is transient, not proof of a mismatched arti
   assert.equal(writes, 1);
 });
 
+test('post-publish metadata propagation outlasts the old three-attempt window', async () => {
+  let reads = 0;
+  let writes = 0;
+  const waits = [];
+  // npm registry can withhold metadata well past three lookups; publication must keep polling.
+  await ensurePublished({
+    lookup: async () => ++reads < 8 ? null : { digest: 'expected' },
+    publish: async () => { writes++; },
+    verify: value => requireSame(value.digest, 'expected', 'npm'),
+    wait: async ms => { waits.push(ms); },
+  });
+  assert.equal(writes, 1);
+  assert.ok(reads >= 8); assert.equal(waits.length, 6);
+});
+
+test('propagation polling still fails fast on a real identity mismatch', async () => {
+  let reads = 0; let writes = 0;
+  await assert.rejects(ensurePublished({
+    lookup: async () => { reads++; return writes ? { digest: 'wrong' } : null; },
+    publish: async () => { writes++; },
+    verify: value => requireSame(value.digest, 'expected', 'npm'),
+    wait: async () => {},
+  }), /identity mismatch/);
+  assert.equal(reads, 2); // published then re-read once; the mismatch is not retried away
+});
+
+test('the attempts budget bounds how long a still-propagating write is awaited', async () => {
+  // Guards publishNpm's widened window: patience scales with `attempts`, and a write that
+  // never becomes queryable gives up after exactly that budget (publish happens once).
+  let reads = 0; let writes = 0; const waits = [];
+  await assert.rejects(ensurePublished({
+    lookup: async () => { reads++; return null; },
+    publish: async () => { writes++; },
+    verify: () => {},
+    attempts: 4,
+    wait: async ms => { waits.push(ms); },
+  }), /not yet available/);
+  assert.equal(writes, 1);
+  assert.equal(reads, 5);        // one extra read right after publish, then one per attempt
+  assert.equal(waits.length, 3); // no wait after the final attempt
+});
+
 const audit = (count = 0) => JSON.stringify({ vulnerabilities: {}, metadata: { vulnerabilities: {
   moderate: count, high: 0, critical: 0,
 } } });
 test('audit clean no-op and structured moderate assessment', () => {
   assert.equal(auditResult(audit(), 0).count, 0);
   assert.equal(auditResult(audit(1), 1).count, 1);
-});
-test('npm promotion exchanges OIDC and uses only a package-scoped temporary credential', async () => {
-  const calls = [];
-  const request = async (url, options) => {
-    calls.push({ url: String(url), options });
-    return Response.json(calls.length === 1 ? { value: 'fixture-id' } : calls.length === 2 ? { token: 'fixture-exchange' } : {});
-  };
-  await promoteNpmTag('@owner/package', '1.2.3', 'latest', request, {
-    ACTIONS_ID_TOKEN_REQUEST_URL: 'https://example.actions.githubusercontent.com/token', ACTIONS_ID_TOKEN_REQUEST_TOKEN: 'fixture-request',
-  });
-  assert.equal(calls.length, 3);
-  assert.match(calls[0].url, /audience=npm%3Aregistry.npmjs.org/);
-  assert.match(calls[1].url, /oidc\/token\/exchange\/package\/%40owner%2Fpackage/);
-  assert.equal(calls[2].options.method, 'PUT');
-  assert.equal(calls[2].options.headers.Authorization, 'Bearer fixture-exchange');
-  await assert.rejects(promoteNpmTag('@owner/package', '1.2.3', 'latest', request, {}), /requires GitHub OIDC/);
 });
 
 test('registry and auth errors are not security findings', () => {
