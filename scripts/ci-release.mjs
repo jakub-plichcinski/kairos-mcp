@@ -4,7 +4,6 @@ import { pathToFileURL } from 'node:url';
 import { GitHub, gateRuns, output, report } from './ci-automation.mjs';
 import { ARTIFACTS, assertManifest, fileDigest, digest, releaseRecord, recordBody, channelTags, requireSame, retry, versionPattern, ensurePublished, publishStages, recordChannel } from './ci-release-state.mjs';
 import { registries, remoteManifest, registryRequest, download } from './ci-registry.mjs';
-import { promoteNpmTag } from './ci-npm.mjs';
 
 const dir = '.local/release';
 const packageName = '@jakub-plichcinski/kairos-mcp';
@@ -41,15 +40,24 @@ async function gates(api, sha, branch) {
 
 async function resolve() {
   const api = new GitHub();
-  const drafts = (await api.pages('/releases')).filter(r => r.draft && /^v\d+\./.test(r.tag_name))
-    .sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
-  const recovery = drafts[0];
   const event = process.env.GITHUB_EVENT_PATH ? json(process.env.GITHUB_EVENT_PATH) : {};
   if (process.env.GITHUB_EVENT_NAME === 'workflow_run' &&
       (event.workflow_run?.head_branch !== 'main' || event.workflow_run?.event !== 'push' ||
        event.workflow_run?.head_repository?.full_name !== api.repo)) {
     output({ skip: true }); return report({ state: 'ignored', reason: 'not a trusted main validation event' });
   }
+  const releases = await api.pages('/releases');
+  // An interrupted run can leave a release whose git tag was created but whose GitHub
+  // publication never reached `complete`; GitHub then detaches it to an unrecoverable
+  // "untagged-*" draft (our identity checks require tag_name vX). Delete those orphans so
+  // they cannot pile up on the Releases page or force a fresh version reservation each run.
+  // Genuine in-flight drafts keep tag_name vX and are preserved for recovery below.
+  for (const orphan of releases.filter(r => r.draft && /^untagged-/.test(r.tag_name ?? ''))) {
+    await api.request(`/releases/${orphan.id}`, { method: 'DELETE' });
+  }
+  const drafts = releases.filter(r => r.draft && /^v\d+\./.test(r.tag_name))
+    .sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at));
+  const recovery = drafts[0];
   let branch = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' ? process.env.GITHUB_REF_NAME : 'main';
   if (!branch || process.env.GITHUB_REF_TYPE === 'tag') throw new Error('Release requires a branch');
   let sha;
@@ -211,7 +219,7 @@ async function recover(api, release, record) {
 
 async function mark(api, release, record, stage) {
   record.stages[stage] = new Date().toISOString();
-  await api.request(`/releases/${release.id}`, { method: 'PATCH', body: { body: recordBody(record) } });
+  await api.request(`/releases/${release.id}`, { method: 'PATCH', body: { tag_name: `v${record.manifest.version}`, body: recordBody(record) } });
   report({ sourceSha: record.manifest.sourceSha, version: record.manifest.version, stages: record.stages });
 }
 
@@ -225,9 +233,11 @@ async function npmVersion(version) {
 async function publishNpm(manifest) {
   await ensurePublished({
     lookup: () => npmVersion(manifest.version),
+    // npm OIDC authorizes only `npm publish`, which sets the version's dist-tag directly.
     publish: async () => run('npm', ['publish', `${dir}/package.tgz`, '--access', 'public', '--provenance', '--ignore-scripts',
-      '--tag', `pending-${manifest.version}`], { env: { ...noCredentials(), GITHUB_SHA: manifest.sourceSha, GITHUB_REF: `refs/heads/${manifest.branch}` } }),
+      '--tag', manifest.channel], { env: { ...noCredentials(), GITHUB_SHA: manifest.sourceSha, GITHUB_REF: `refs/heads/${manifest.branch}` } }),
     verify: existing => requireSame(existing.dist?.integrity, manifest.npmIntegrity, 'npm package'),
+    attempts: 30, // npm's post-publish provenance pass keeps the version unqueryable for minutes; this slowest registry gets the widest still-capped poll (mismatches fast-fail)
   });
 }
 
@@ -276,7 +286,8 @@ async function promote(manifest, targets) {
     }
   }
   await retry(async () => {
-    await promoteNpmTag(packageName, manifest.version, manifest.channel);
+    // The channel tag is set atomically by `npm publish --tag <channel>`; npm OIDC does
+    // not authorize a separate dist-tag PUT, so this only verifies it propagated.
     const response = await fetch(`https://registry.npmjs.org/-/package/${encodeURIComponent(packageName)}/dist-tags`);
     if (!response.ok) throw new Error(`npm dist-tags: HTTP ${response.status}`);
     requireSame((await response.json())[manifest.channel], manifest.version, 'npm dist-tag');
@@ -299,6 +310,7 @@ async function publish() {
       try { tag = await api.request(`/git/ref/tags/v${manifest.version}`); } catch (error) { if (error.status !== 404) throw error; }
       if (tag) requireSame(tag.object.sha, manifest.sourceSha, 'Git tag');
       else await api.request('/git/refs', { method: 'POST', body: { ref: `refs/tags/v${manifest.version}`, sha: manifest.sourceSha } });
+      // A draft made before its ref exists is keyed to an untagged-<id> placeholder, and any later release PATCH that omits tag_name re-detaches it; mark()/complete() therefore re-submit tag_name on every write.
       await recordChannel(api, manifest);
     },
     npm: publishNpm,
@@ -306,10 +318,12 @@ async function publish() {
     chart: manifest => publishChart(manifest, targets[1]),
     promoted: manifest => promote(manifest, targets),
     complete: async manifest => {
+      const tag = `v${manifest.version}`;
       const published = await api.request(`/releases/${release.id}`, { method: 'PATCH', body: {
-        draft: false, make_latest: manifest.version.includes('-') ? 'false' : 'true', body: recordBody(record),
+        tag_name: tag, draft: false, make_latest: manifest.version.includes('-') ? 'false' : 'true', body: recordBody(record),
       } });
       if (published.draft || !published.published_at) throw new Error('GitHub Release promotion was not confirmed');
+      requireSame((await api.request(`/releases/tags/${tag}`)).id, release.id, 'GitHub release tag binding');
       report({ state: 'published', sourceSha: manifest.sourceSha, version: manifest.version, imageDigest: manifest.imageDigest });
     },
   });
