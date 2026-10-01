@@ -18,7 +18,7 @@ RUN apk update && apk upgrade --no-cache
 
 # Pin global npm to a newer release than the default in the base image (bundled deps drift with the CLI).
 # npm 11.18.0 bundles tar 7.5.19 (CVE-2026-59873/CVE-2026-59874 / CVE-2026-73566) and still ships:
-#   - brace-expansion 5.0.7  → patched to 5.0.9 (CVE-2026-14257, CVE-2026-69152)
+#   - brace-expansion 5.0.7  → patched to 5.0.12 (CVE-2026-14257, CVE-2026-69152, CVE-2026-102276, CVE-2026-102278)
 #   - ip-address 10.2.0      → patched to 10.3.1 (CVE-2026-69192)
 # until an npm release bundles the fixes.
 RUN npm install -g npm@11.18.0 && \
@@ -28,11 +28,11 @@ RUN npm install -g npm@11.18.0 && \
     tar -xzf tar-7.5.21.tgz -C /usr/local/lib/node_modules/npm/node_modules/tar --strip-components=1 && \
     rm tar-7.5.21.tgz && \
     cd /tmp && \
-    npm pack brace-expansion@5.0.9 --silent && \
+    npm pack brace-expansion@5.0.12 --silent && \
     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion && \
     mkdir -p /usr/local/lib/node_modules/npm/node_modules/brace-expansion && \
-    tar -xzf brace-expansion-5.0.9.tgz -C /usr/local/lib/node_modules/npm/node_modules/brace-expansion --strip-components=1 && \
-    rm brace-expansion-5.0.9.tgz && \
+    tar -xzf brace-expansion-5.0.12.tgz -C /usr/local/lib/node_modules/npm/node_modules/brace-expansion --strip-components=1 && \
+    rm brace-expansion-5.0.12.tgz && \
     npm pack ip-address@10.3.1 --silent && \
     rm -rf /usr/local/lib/node_modules/npm/node_modules/ip-address && \
     mkdir -p /usr/local/lib/node_modules/npm/node_modules/ip-address && \
