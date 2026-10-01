@@ -111,10 +111,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # PR flow: commit to the PR branch
+            # PR flow: commit to the PR branch (detached HEAD, push to head_ref)
             git add package.json package-lock.json
             git commit -m "fix(deps): auto-remediate npm audit vulnerabilities"
-            git push
+            git push origin HEAD:"${{ github.head_ref }}"
             echo "✓ Committed dependency updates to PR branch"
           else
             # Scheduled/push flow: open a PR
@@ -227,10 +227,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            # PR flow: commit to the PR branch
+            # PR flow: commit to the PR branch (detached HEAD, push to head_ref)
             git add Dockerfile
             git commit -m "fix(docker): auto-update base image to remediate Trivy vulnerabilities"
-            git push
+            git push origin HEAD:"${{ github.head_ref }}"
             echo "✓ Committed base image update to PR branch"
           else
             # Scheduled/push flow: open a PR
