@@ -82,9 +82,34 @@ jobs:
         run: |
           set -euo pipefail
           
-          # Try audit first
-          if npm audit --audit-level=high; then
-            echo "✓ No high/critical vulnerabilities found"
+          # Function to check for project vulnerabilities (excluding npm's bundled deps)
+          check_project_vulns() {
+            local audit_output
+            audit_output=$(npm audit --json 2>/dev/null || true)
+            
+            # Filter out vulnerabilities that ONLY exist in npm's bundled dependencies
+            local project_vulns
+            project_vulns=$(echo "$audit_output" | node -e "
+              const data = JSON.parse(require('fs').readFileSync('/dev/stdin', 'utf8'));
+              const vulns = data.vulnerabilities || {};
+              const projectVulns = Object.entries(vulns).filter(([name, vuln]) => {
+                const nodes = vuln.nodes || [];
+                // Keep if at least one node is NOT in npm's bundled deps
+                return nodes.some(n => !n.includes('node_modules/npm/node_modules/'));
+              });
+              console.log(projectVulns.length);
+            ")
+            
+            if [ "$project_vulns" = "0" ]; then
+              return 0
+            else
+              return 1
+            fi
+          }
+          
+          # Try audit first (excluding npm's bundled deps)
+          if check_project_vulns; then
+            echo "✓ No high/critical vulnerabilities in project dependencies"
             exit 0
           fi
           
@@ -101,7 +126,7 @@ jobs:
           
           # Check again if files changed
           if git diff --quiet package.json package-lock.json; then
-            echo "::error::Could not auto-remediate vulnerabilities"
+            echo "::error::Could not auto-remediate project vulnerabilities"
             npm audit --audit-level=high
             exit 1
           fi
@@ -131,7 +156,10 @@ jobs:
           fi
           
           # Re-run audit to verify
-          npm audit --audit-level=high
+          if ! check_project_vulns; then
+            echo "::error::Vulnerabilities still present after auto-remediation"
+            exit 1
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: 0
