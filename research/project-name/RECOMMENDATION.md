@@ -1,4 +1,10 @@
-# Recommendation: Tacitloom
+# Historical recommendation: Tacitloom (superseded)
+
+> **Superseded on 2026-10-01.** No candidate is currently recommended. The revised
+> [brief](BRIEF.md) rejects obscure vocabulary and explanatory metaphors; Tacitloom
+> fails that test. The text and namespace observations below record the
+> 2026-09-09 decision only, not current availability or adoption guidance.
+> See [current candidate directions](CANDIDATES.md) for the active research.
 
 **Tacitloom** (TASS-it-loom): **reusable know-how, carried through to action.**
 
