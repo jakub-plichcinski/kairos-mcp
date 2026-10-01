@@ -1,0 +1,754 @@
+{
+  "purpose": "Read-only screening; availability can change; missing public records do not guarantee claimability.",
+  "domains": [],
+  "namespaces": [
+    {
+      "candidate": "definedway",
+      "surface": "github_account",
+      "url": "https://api.github.com/users/definedway",
+      "checked_at_utc": "2026-10-01T17:15:10.884644+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/users/definedway",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "github_repositories",
+      "url": "https://api.github.com/search/repositories?q=definedway&per_page=100",
+      "checked_at_utc": "2026-10-01T17:15:10.885073+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=definedway&per_page=100",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "response_summary": {
+        "total_count": 0,
+        "incomplete_results": false
+      },
+      "items": []
+    },
+    {
+      "candidate": "definedway",
+      "surface": "github_owner_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/definedway",
+      "checked_at_utc": "2026-10-01T17:15:10.885167+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/definedway",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "github_mcp_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/definedway-mcp",
+      "checked_at_utc": "2026-10-01T17:15:10.885229+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/definedway-mcp",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/definedway",
+      "checked_at_utc": "2026-10-01T17:15:11.230965+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/definedway",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "npm_mcp_package",
+      "url": "https://registry.npmjs.org/definedway-mcp",
+      "checked_at_utc": "2026-10-01T17:15:11.238576+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/definedway-mcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "npm_scope",
+      "url": "https://registry.npmjs.org/-/org/definedway/user",
+      "checked_at_utc": "2026-10-01T17:15:11.268639+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/-/org/definedway/user",
+      "content_type": "application/json",
+      "body_sha256": "b4007018e183e22c41c007931425c2fb7536d42266b6bebc384c61723d0480e4",
+      "response_summary": {
+        "error": "Scope not found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "npm_scoped_package",
+      "url": "https://registry.npmjs.org/@definedway%2Fmcp",
+      "checked_at_utc": "2026-10-01T17:15:11.273345+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/@definedway%2Fmcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "npm_search",
+      "url": "https://registry.npmjs.org/-/v1/search?text=definedway&size=100",
+      "checked_at_utc": "2026-10-01T17:15:11.579288+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/-/v1/search?text=definedway&size=100",
+      "content_type": "application/json",
+      "body_sha256": "b9c07f4df061d3c2c29cbd895998d0e129bf879f021fe6c5c5182f80ac9f3124",
+      "response_summary": {},
+      "objects_count": 0
+    },
+    {
+      "candidate": "definedway",
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/definedway/",
+      "checked_at_utc": "2026-10-01T17:15:11.579662+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/users/definedway/",
+      "content_type": "application/json",
+      "body_sha256": "e1577c699c18892e2081d968c71cbcc4b01fbc558c014fe72b88f44522dc76a9",
+      "response_summary": {
+        "message": "User not found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "docker_image",
+      "url": "https://hub.docker.com/v2/repositories/definedway/definedway/",
+      "checked_at_utc": "2026-10-01T17:15:11.586853+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/repositories/definedway/definedway/",
+      "content_type": "application/json",
+      "body_sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+      "response_summary": {
+        "message": "object not found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/definedway",
+      "checked_at_utc": "2026-10-01T17:15:11.587170+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/organization/definedway",
+      "content_type": "application/json",
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "response_summary": {
+        "title": "not_found",
+        "detail": "Not Found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/definedway",
+      "checked_at_utc": "2026-10-01T17:15:11.801599+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/users/definedway",
+      "content_type": "application/json",
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "quay_image",
+      "url": "https://quay.io/api/v1/repository/definedway/definedway",
+      "checked_at_utc": "2026-10-01T17:15:11.808110+00:00",
+      "http_status": 401,
+      "final_url": "https://quay.io/api/v1/repository/definedway/definedway",
+      "content_type": "application/json",
+      "body_sha256": "ff558ce99f01e24bfe86d970979ca6b39140bf6514b5e13752e20b04144f0a21",
+      "response_summary": {
+        "title": "invalid_token",
+        "detail": "Requires authentication"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "ghcr_image",
+      "url": "https://ghcr.io/v2/definedway/definedway/tags/list",
+      "checked_at_utc": "2026-10-01T17:15:11.898624+00:00",
+      "http_status": 401,
+      "final_url": "https://ghcr.io/v2/definedway/definedway/tags/list",
+      "content_type": "application/json",
+      "body_sha256": "89a052af62c612d0e05d2596f03edba77d7d904c4478b387a5dc6305821fe0a1",
+      "response_summary": {}
+    },
+    {
+      "candidate": "definedway",
+      "surface": "mcp_registry",
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=definedway&limit=100",
+      "checked_at_utc": "2026-10-01T17:15:12.105163+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=definedway&limit=100",
+      "content_type": "application/json",
+      "body_sha256": "bd77acb780201187e66256677f13e4145d6839a056c477181355b19589b40f23",
+      "response_summary": {},
+      "servers_count": 0
+    },
+    {
+      "candidate": "definedway",
+      "surface": "artifact_hub",
+      "url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=definedway&limit=60&offset=0",
+      "checked_at_utc": "2026-10-01T17:15:12.106765+00:00",
+      "http_status": 200,
+      "final_url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=definedway&limit=60&offset=0",
+      "content_type": "application/json",
+      "body_sha256": "454eea274ef715bed0aef364fec823e04318850d28eb04f1c16a03a5127c071c",
+      "response_summary": {},
+      "packages_count": 0
+    },
+    {
+      "candidate": "definedway",
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/definedway/json",
+      "checked_at_utc": "2026-10-01T17:15:12.233624+00:00",
+      "http_status": 404,
+      "final_url": "https://pypi.org/pypi/definedway/json",
+      "content_type": "application/json",
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "definedway",
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/definedway",
+      "checked_at_utc": "2026-10-01T17:15:12.238556+00:00",
+      "http_status": 404,
+      "final_url": "https://crates.io/api/v1/crates/definedway",
+      "content_type": "application/json",
+      "body_sha256": "a8237ae0211070aeb4349468ab487102af00eac6221b2f3a6e80df639d4c61d5",
+      "response_summary": {}
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "github_account",
+      "url": "https://api.github.com/users/crewpractice",
+      "checked_at_utc": "2026-10-01T17:15:12.322170+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/users/crewpractice",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "github_repositories",
+      "url": "https://api.github.com/search/repositories?q=crewpractice&per_page=100",
+      "checked_at_utc": "2026-10-01T17:15:12.478901+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=crewpractice&per_page=100",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "c9dd45b81dcc8e7216d73b5a53b416eb674e534fbb106753195500598a3b0850",
+      "response_summary": {
+        "total_count": 3,
+        "incomplete_results": false
+      },
+      "items": [
+        {
+          "full_name": "MianAhsan786/crewpractice1",
+          "html_url": "https://github.com/MianAhsan786/crewpractice1",
+          "description": null
+        },
+        {
+          "full_name": "MianAhsan786/crewpractice2",
+          "html_url": "https://github.com/MianAhsan786/crewpractice2",
+          "description": null
+        },
+        {
+          "full_name": "MianAhsan786/crewpractice",
+          "html_url": "https://github.com/MianAhsan786/crewpractice",
+          "description": null
+        }
+      ]
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "github_owner_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/crewpractice",
+      "checked_at_utc": "2026-10-01T17:15:12.630278+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/crewpractice",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "github_mcp_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/crewpractice-mcp",
+      "checked_at_utc": "2026-10-01T17:15:12.671737+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/crewpractice-mcp",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/crewpractice",
+      "checked_at_utc": "2026-10-01T17:15:12.857528+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/crewpractice",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "npm_mcp_package",
+      "url": "https://registry.npmjs.org/crewpractice-mcp",
+      "checked_at_utc": "2026-10-01T17:15:12.912320+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/crewpractice-mcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "npm_scope",
+      "url": "https://registry.npmjs.org/-/org/crewpractice/user",
+      "checked_at_utc": "2026-10-01T17:15:12.918662+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/-/org/crewpractice/user",
+      "content_type": "application/json",
+      "body_sha256": "b4007018e183e22c41c007931425c2fb7536d42266b6bebc384c61723d0480e4",
+      "response_summary": {
+        "error": "Scope not found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "npm_scoped_package",
+      "url": "https://registry.npmjs.org/@crewpractice%2Fmcp",
+      "checked_at_utc": "2026-10-01T17:15:13.180524+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/@crewpractice%2Fmcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "npm_search",
+      "url": "https://registry.npmjs.org/-/v1/search?text=crewpractice&size=100",
+      "checked_at_utc": "2026-10-01T17:15:13.217206+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/-/v1/search?text=crewpractice&size=100",
+      "content_type": "application/json",
+      "body_sha256": "deb40e602472a39ccb64a586bf8b4dba83eb3c8fbba8066ca0791de36c34f011",
+      "response_summary": {},
+      "objects_count": 0
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/crewpractice/",
+      "checked_at_utc": "2026-10-01T17:15:13.236454+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/users/crewpractice/",
+      "content_type": "application/json",
+      "body_sha256": "39bc1dea0aaa3f7516be8a71b6af61d67151a712dea1a6a2143684034572d602",
+      "response_summary": {
+        "message": "User not found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "docker_image",
+      "url": "https://hub.docker.com/v2/repositories/crewpractice/crewpractice/",
+      "checked_at_utc": "2026-10-01T17:15:13.425756+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/repositories/crewpractice/crewpractice/",
+      "content_type": "application/json",
+      "body_sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+      "response_summary": {
+        "message": "object not found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/crewpractice",
+      "checked_at_utc": "2026-10-01T17:15:13.491470+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/organization/crewpractice",
+      "content_type": "application/json",
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "response_summary": {
+        "title": "not_found",
+        "detail": "Not Found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/crewpractice",
+      "checked_at_utc": "2026-10-01T17:15:13.519441+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/users/crewpractice",
+      "content_type": "application/json",
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "quay_image",
+      "url": "https://quay.io/api/v1/repository/crewpractice/crewpractice",
+      "checked_at_utc": "2026-10-01T17:15:13.679337+00:00",
+      "http_status": 401,
+      "final_url": "https://quay.io/api/v1/repository/crewpractice/crewpractice",
+      "content_type": "application/json",
+      "body_sha256": "ff558ce99f01e24bfe86d970979ca6b39140bf6514b5e13752e20b04144f0a21",
+      "response_summary": {
+        "title": "invalid_token",
+        "detail": "Requires authentication"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "ghcr_image",
+      "url": "https://ghcr.io/v2/crewpractice/crewpractice/tags/list",
+      "checked_at_utc": "2026-10-01T17:15:13.920823+00:00",
+      "http_status": 401,
+      "final_url": "https://ghcr.io/v2/crewpractice/crewpractice/tags/list",
+      "content_type": "application/json",
+      "body_sha256": "89a052af62c612d0e05d2596f03edba77d7d904c4478b387a5dc6305821fe0a1",
+      "response_summary": {}
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "mcp_registry",
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=crewpractice&limit=100",
+      "checked_at_utc": "2026-10-01T17:15:14.014411+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=crewpractice&limit=100",
+      "content_type": "application/json",
+      "body_sha256": "bd77acb780201187e66256677f13e4145d6839a056c477181355b19589b40f23",
+      "response_summary": {},
+      "servers_count": 0
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "artifact_hub",
+      "url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=crewpractice&limit=60&offset=0",
+      "checked_at_utc": "2026-10-01T17:15:14.111377+00:00",
+      "http_status": 200,
+      "final_url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=crewpractice&limit=60&offset=0",
+      "content_type": "application/json",
+      "body_sha256": "454eea274ef715bed0aef364fec823e04318850d28eb04f1c16a03a5127c071c",
+      "response_summary": {},
+      "packages_count": 0
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/crewpractice/json",
+      "checked_at_utc": "2026-10-01T17:15:14.381820+00:00",
+      "http_status": 404,
+      "final_url": "https://pypi.org/pypi/crewpractice/json",
+      "content_type": "application/json",
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "crewpractice",
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/crewpractice",
+      "checked_at_utc": "2026-10-01T17:15:14.621436+00:00",
+      "http_status": 404,
+      "final_url": "https://crates.io/api/v1/crates/crewpractice",
+      "content_type": "application/json",
+      "body_sha256": "0dd519e2d5dad62eefaf4a3dd7a41e7326574a7d22ea04f8e234dac04fc11276",
+      "response_summary": {}
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "github_account",
+      "url": "https://api.github.com/users/coopplaybook",
+      "checked_at_utc": "2026-10-01T17:15:14.864278+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/users/coopplaybook",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "github_repositories",
+      "url": "https://api.github.com/search/repositories?q=coopplaybook&per_page=100",
+      "checked_at_utc": "2026-10-01T17:15:15.077642+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=coopplaybook&per_page=100",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "response_summary": {
+        "total_count": 0,
+        "incomplete_results": false
+      },
+      "items": []
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "github_owner_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/coopplaybook",
+      "checked_at_utc": "2026-10-01T17:15:15.107720+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/coopplaybook",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "github_mcp_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/coopplaybook-mcp",
+      "checked_at_utc": "2026-10-01T17:15:15.378339+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/coopplaybook-mcp",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/coopplaybook",
+      "checked_at_utc": "2026-10-01T17:15:15.428694+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/coopplaybook",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "npm_mcp_package",
+      "url": "https://registry.npmjs.org/coopplaybook-mcp",
+      "checked_at_utc": "2026-10-01T17:15:15.617199+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/coopplaybook-mcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "npm_scope",
+      "url": "https://registry.npmjs.org/-/org/coopplaybook/user",
+      "checked_at_utc": "2026-10-01T17:15:15.798746+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/-/org/coopplaybook/user",
+      "content_type": "application/json",
+      "body_sha256": "b4007018e183e22c41c007931425c2fb7536d42266b6bebc384c61723d0480e4",
+      "response_summary": {
+        "error": "Scope not found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "npm_scoped_package",
+      "url": "https://registry.npmjs.org/@coopplaybook%2Fmcp",
+      "checked_at_utc": "2026-10-01T17:15:16.051814+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/@coopplaybook%2Fmcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "npm_search",
+      "url": "https://registry.npmjs.org/-/v1/search?text=coopplaybook&size=100",
+      "checked_at_utc": "2026-10-01T17:15:16.076021+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/-/v1/search?text=coopplaybook&size=100",
+      "content_type": "application/json",
+      "body_sha256": "ce9a336b93b9abb1628ef9ec3392b9487c771c846358ce854c59e94d99ed14b8",
+      "response_summary": {},
+      "objects_count": 0
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/coopplaybook/",
+      "checked_at_utc": "2026-10-01T17:15:16.393526+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/users/coopplaybook/",
+      "content_type": "application/json",
+      "body_sha256": "6224b03159346b5c2a4b10a13216fb38df73cd4f9f6773a05344df1fa79dd0a6",
+      "response_summary": {
+        "message": "User not found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "docker_image",
+      "url": "https://hub.docker.com/v2/repositories/coopplaybook/coopplaybook/",
+      "checked_at_utc": "2026-10-01T17:15:16.454954+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/repositories/coopplaybook/coopplaybook/",
+      "content_type": "application/json",
+      "body_sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+      "response_summary": {
+        "message": "object not found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/coopplaybook",
+      "checked_at_utc": "2026-10-01T17:15:16.586820+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/organization/coopplaybook",
+      "content_type": "application/json",
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "response_summary": {
+        "title": "not_found",
+        "detail": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/coopplaybook",
+      "checked_at_utc": "2026-10-01T17:15:16.635961+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/users/coopplaybook",
+      "content_type": "application/json",
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "quay_image",
+      "url": "https://quay.io/api/v1/repository/coopplaybook/coopplaybook",
+      "checked_at_utc": "2026-10-01T17:15:16.948785+00:00",
+      "http_status": 401,
+      "final_url": "https://quay.io/api/v1/repository/coopplaybook/coopplaybook",
+      "content_type": "application/json",
+      "body_sha256": "ff558ce99f01e24bfe86d970979ca6b39140bf6514b5e13752e20b04144f0a21",
+      "response_summary": {
+        "title": "invalid_token",
+        "detail": "Requires authentication"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "ghcr_image",
+      "url": "https://ghcr.io/v2/coopplaybook/coopplaybook/tags/list",
+      "checked_at_utc": "2026-10-01T17:15:17.055232+00:00",
+      "http_status": 401,
+      "final_url": "https://ghcr.io/v2/coopplaybook/coopplaybook/tags/list",
+      "content_type": "application/json",
+      "body_sha256": "89a052af62c612d0e05d2596f03edba77d7d904c4478b387a5dc6305821fe0a1",
+      "response_summary": {}
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "mcp_registry",
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=coopplaybook&limit=100",
+      "checked_at_utc": "2026-10-01T17:15:17.217744+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=coopplaybook&limit=100",
+      "content_type": "application/json",
+      "body_sha256": "bd77acb780201187e66256677f13e4145d6839a056c477181355b19589b40f23",
+      "response_summary": {},
+      "servers_count": 0
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "artifact_hub",
+      "url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=coopplaybook&limit=60&offset=0",
+      "checked_at_utc": "2026-10-01T17:15:17.350212+00:00",
+      "http_status": 200,
+      "final_url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=coopplaybook&limit=60&offset=0",
+      "content_type": "application/json",
+      "body_sha256": "454eea274ef715bed0aef364fec823e04318850d28eb04f1c16a03a5127c071c",
+      "response_summary": {},
+      "packages_count": 0
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/coopplaybook/json",
+      "checked_at_utc": "2026-10-01T17:15:17.537956+00:00",
+      "http_status": 404,
+      "final_url": "https://pypi.org/pypi/coopplaybook/json",
+      "content_type": "application/json",
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopplaybook",
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/coopplaybook",
+      "checked_at_utc": "2026-10-01T17:15:17.872914+00:00",
+      "http_status": 404,
+      "final_url": "https://crates.io/api/v1/crates/coopplaybook",
+      "content_type": "application/json",
+      "body_sha256": "a94d13ef11c0db5b1831800e68c744960e8cd3eb72ffe1de1a26e56b8e708b8a",
+      "response_summary": {}
+    }
+  ]
+}

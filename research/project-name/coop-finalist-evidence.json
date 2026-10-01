@@ -1,0 +1,755 @@
+{
+  "purpose": "Read-only screening; availability can change; missing public records do not guarantee claimability.",
+  "domains": [
+    {
+      "domain": "sameplaybook.dev",
+      "checked_at_utc": "2026-10-01T17:15:43.437225+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "sameplaybook.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "sameplaybook.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "sameplaybook.io",
+      "checked_at_utc": "2026-10-01T17:15:43.438924+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "sameplaybook.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "sameplaybook.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    },
+    {
+      "domain": "squadrules.dev",
+      "checked_at_utc": "2026-10-01T17:15:43.439416+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadrules.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "squadrules.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "squadrules.io",
+      "checked_at_utc": "2026-10-01T17:15:43.441825+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadrules.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "squadrules.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    },
+    {
+      "domain": "coplay.com",
+      "checked_at_utc": "2026-10-01T17:15:45.319844+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coplay.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "coplay.com"
+      }
+    },
+    {
+      "domain": "teamway.com",
+      "checked_at_utc": "2026-10-01T17:15:45.321448+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "teamway.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "teamway.com"
+      }
+    },
+    {
+      "domain": "sharedplay.com",
+      "checked_at_utc": "2026-10-01T17:15:45.322980+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "sharedplay.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "sharedplay.com"
+      }
+    },
+    {
+      "domain": "squadpact.com",
+      "checked_at_utc": "2026-10-01T17:15:45.324241+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadpact.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "squadpact.com"
+      }
+    },
+    {
+      "domain": "crewpact.com",
+      "checked_at_utc": "2026-10-01T17:15:46.886459+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "crewpact.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "crewpact.com"
+      }
+    },
+    {
+      "domain": "playmethod.com",
+      "checked_at_utc": "2026-10-01T17:15:46.889104+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "playmethod.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "playmethod.com"
+      }
+    },
+    {
+      "domain": "workdefault.com",
+      "checked_at_utc": "2026-10-01T17:15:46.890310+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "workdefault.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "workdefault.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "google.com",
+      "checked_at_utc": "2026-10-01T17:15:46.891469+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "google.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "google.com"
+      }
+    }
+  ],
+  "namespaces": [
+    {
+      "candidate": "sameplaybook",
+      "surface": "github_account",
+      "url": "https://api.github.com/users/sameplaybook",
+      "checked_at_utc": "2026-10-01T17:15:48.485252+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/users/sameplaybook",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "github_repositories",
+      "url": "https://api.github.com/search/repositories?q=sameplaybook&per_page=100",
+      "checked_at_utc": "2026-10-01T17:15:48.485660+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=sameplaybook&per_page=100",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "response_summary": {
+        "total_count": 0,
+        "incomplete_results": false
+      },
+      "items": []
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "github_owner_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/sameplaybook",
+      "checked_at_utc": "2026-10-01T17:15:48.485879+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/sameplaybook",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "github_mcp_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/sameplaybook-mcp",
+      "checked_at_utc": "2026-10-01T17:15:48.485836+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/sameplaybook-mcp",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/sameplaybook",
+      "checked_at_utc": "2026-10-01T17:15:48.806822+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/sameplaybook",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "npm_mcp_package",
+      "url": "https://registry.npmjs.org/sameplaybook-mcp",
+      "checked_at_utc": "2026-10-01T17:15:48.807799+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/sameplaybook-mcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "npm_scope",
+      "url": "https://registry.npmjs.org/-/org/sameplaybook/user",
+      "checked_at_utc": "2026-10-01T17:15:48.807938+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/-/org/sameplaybook/user",
+      "content_type": "application/json",
+      "body_sha256": "b4007018e183e22c41c007931425c2fb7536d42266b6bebc384c61723d0480e4",
+      "response_summary": {
+        "error": "Scope not found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "npm_scoped_package",
+      "url": "https://registry.npmjs.org/@sameplaybook%2Fmcp",
+      "checked_at_utc": "2026-10-01T17:15:48.808033+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/@sameplaybook%2Fmcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "npm_search",
+      "url": "https://registry.npmjs.org/-/v1/search?text=sameplaybook&size=100",
+      "checked_at_utc": "2026-10-01T17:15:49.113855+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/-/v1/search?text=sameplaybook&size=100",
+      "content_type": "application/json",
+      "body_sha256": "186680bc8ac69e60d4b073d14712531ff61673a91411a64bca9225533186dc1f",
+      "response_summary": {},
+      "objects_count": 0
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/sameplaybook/",
+      "checked_at_utc": "2026-10-01T17:15:49.118177+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/users/sameplaybook/",
+      "content_type": "application/json",
+      "body_sha256": "40390f9313605d3fdc8c8e1d0f8c69336adb4d983c149f522a5d34496d298371",
+      "response_summary": {
+        "message": "User not found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "docker_image",
+      "url": "https://hub.docker.com/v2/repositories/sameplaybook/sameplaybook/",
+      "checked_at_utc": "2026-10-01T17:15:49.128025+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/repositories/sameplaybook/sameplaybook/",
+      "content_type": "application/json",
+      "body_sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+      "response_summary": {
+        "message": "object not found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/sameplaybook",
+      "checked_at_utc": "2026-10-01T17:15:49.143514+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/organization/sameplaybook",
+      "content_type": "application/json",
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "response_summary": {
+        "title": "not_found",
+        "detail": "Not Found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/sameplaybook",
+      "checked_at_utc": "2026-10-01T17:15:49.330008+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/users/sameplaybook",
+      "content_type": "application/json",
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "quay_image",
+      "url": "https://quay.io/api/v1/repository/sameplaybook/sameplaybook",
+      "checked_at_utc": "2026-10-01T17:15:49.344527+00:00",
+      "http_status": 401,
+      "final_url": "https://quay.io/api/v1/repository/sameplaybook/sameplaybook",
+      "content_type": "application/json",
+      "body_sha256": "ff558ce99f01e24bfe86d970979ca6b39140bf6514b5e13752e20b04144f0a21",
+      "response_summary": {
+        "title": "invalid_token",
+        "detail": "Requires authentication"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "ghcr_image",
+      "url": "https://ghcr.io/v2/sameplaybook/sameplaybook/tags/list",
+      "checked_at_utc": "2026-10-01T17:15:49.419567+00:00",
+      "http_status": 401,
+      "final_url": "https://ghcr.io/v2/sameplaybook/sameplaybook/tags/list",
+      "content_type": "application/json",
+      "body_sha256": "89a052af62c612d0e05d2596f03edba77d7d904c4478b387a5dc6305821fe0a1",
+      "response_summary": {}
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "mcp_registry",
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=sameplaybook&limit=100",
+      "checked_at_utc": "2026-10-01T17:15:49.584378+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=sameplaybook&limit=100",
+      "content_type": "application/json",
+      "body_sha256": "bd77acb780201187e66256677f13e4145d6839a056c477181355b19589b40f23",
+      "response_summary": {},
+      "servers_count": 0
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "artifact_hub",
+      "url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=sameplaybook&limit=60&offset=0",
+      "checked_at_utc": "2026-10-01T17:15:49.715815+00:00",
+      "http_status": 200,
+      "final_url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=sameplaybook&limit=60&offset=0",
+      "content_type": "application/json",
+      "body_sha256": "454eea274ef715bed0aef364fec823e04318850d28eb04f1c16a03a5127c071c",
+      "response_summary": {},
+      "packages_count": 0
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/sameplaybook/json",
+      "checked_at_utc": "2026-10-01T17:15:49.893547+00:00",
+      "http_status": 404,
+      "final_url": "https://pypi.org/pypi/sameplaybook/json",
+      "content_type": "application/json",
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "sameplaybook",
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/sameplaybook",
+      "checked_at_utc": "2026-10-01T17:15:49.985951+00:00",
+      "http_status": 404,
+      "final_url": "https://crates.io/api/v1/crates/sameplaybook",
+      "content_type": "application/json",
+      "body_sha256": "718ce2df1ddb1d6bacfca546ea4d236ffddf12eb9705dc0e5be7cf7091365271",
+      "response_summary": {}
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "github_account",
+      "url": "https://api.github.com/users/squadrules",
+      "checked_at_utc": "2026-10-01T17:15:50.136312+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/users/squadrules",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "github_repositories",
+      "url": "https://api.github.com/search/repositories?q=squadrules&per_page=100",
+      "checked_at_utc": "2026-10-01T17:15:50.154387+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=squadrules&per_page=100",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "response_summary": {
+        "total_count": 0,
+        "incomplete_results": false
+      },
+      "items": []
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "github_owner_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/squadrules",
+      "checked_at_utc": "2026-10-01T17:15:50.378463+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/squadrules",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "github_mcp_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/squadrules-mcp",
+      "checked_at_utc": "2026-10-01T17:15:50.433272+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/squadrules-mcp",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/squadrules",
+      "checked_at_utc": "2026-10-01T17:15:50.601725+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/squadrules",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "npm_mcp_package",
+      "url": "https://registry.npmjs.org/squadrules-mcp",
+      "checked_at_utc": "2026-10-01T17:15:50.671047+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/squadrules-mcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "npm_scope",
+      "url": "https://registry.npmjs.org/-/org/squadrules/user",
+      "checked_at_utc": "2026-10-01T17:15:50.915772+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/-/org/squadrules/user",
+      "content_type": "application/json",
+      "body_sha256": "b4007018e183e22c41c007931425c2fb7536d42266b6bebc384c61723d0480e4",
+      "response_summary": {
+        "error": "Scope not found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "npm_scoped_package",
+      "url": "https://registry.npmjs.org/@squadrules%2Fmcp",
+      "checked_at_utc": "2026-10-01T17:15:50.972484+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/@squadrules%2Fmcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "npm_search",
+      "url": "https://registry.npmjs.org/-/v1/search?text=squadrules&size=100",
+      "checked_at_utc": "2026-10-01T17:15:51.018143+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/-/v1/search?text=squadrules&size=100",
+      "content_type": "application/json",
+      "body_sha256": "b145db95685d96667545b1c3fc28c53d1a65ca9c19a432ae5508a934054f5888",
+      "response_summary": {},
+      "objects_count": 0
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/squadrules/",
+      "checked_at_utc": "2026-10-01T17:15:51.198533+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/users/squadrules/",
+      "content_type": "application/json",
+      "body_sha256": "e1e390722ec8b000a1c86a9c1ebe4a6b66842f119fc6997329bb908b84579d7e",
+      "response_summary": {
+        "message": "User not found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "docker_image",
+      "url": "https://hub.docker.com/v2/repositories/squadrules/squadrules/",
+      "checked_at_utc": "2026-10-01T17:15:51.301784+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/repositories/squadrules/squadrules/",
+      "content_type": "application/json",
+      "body_sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+      "response_summary": {
+        "message": "object not found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/squadrules",
+      "checked_at_utc": "2026-10-01T17:15:51.312963+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/organization/squadrules",
+      "content_type": "application/json",
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "response_summary": {
+        "title": "not_found",
+        "detail": "Not Found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/squadrules",
+      "checked_at_utc": "2026-10-01T17:15:51.427493+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/users/squadrules",
+      "content_type": "application/json",
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "quay_image",
+      "url": "https://quay.io/api/v1/repository/squadrules/squadrules",
+      "checked_at_utc": "2026-10-01T17:15:51.566074+00:00",
+      "http_status": 401,
+      "final_url": "https://quay.io/api/v1/repository/squadrules/squadrules",
+      "content_type": "application/json",
+      "body_sha256": "ff558ce99f01e24bfe86d970979ca6b39140bf6514b5e13752e20b04144f0a21",
+      "response_summary": {
+        "title": "invalid_token",
+        "detail": "Requires authentication"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "ghcr_image",
+      "url": "https://ghcr.io/v2/squadrules/squadrules/tags/list",
+      "checked_at_utc": "2026-10-01T17:15:51.664394+00:00",
+      "http_status": 401,
+      "final_url": "https://ghcr.io/v2/squadrules/squadrules/tags/list",
+      "content_type": "application/json",
+      "body_sha256": "89a052af62c612d0e05d2596f03edba77d7d904c4478b387a5dc6305821fe0a1",
+      "response_summary": {}
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "mcp_registry",
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=squadrules&limit=100",
+      "checked_at_utc": "2026-10-01T17:15:51.791233+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=squadrules&limit=100",
+      "content_type": "application/json",
+      "body_sha256": "bd77acb780201187e66256677f13e4145d6839a056c477181355b19589b40f23",
+      "response_summary": {},
+      "servers_count": 0
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "artifact_hub",
+      "url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=squadrules&limit=60&offset=0",
+      "checked_at_utc": "2026-10-01T17:15:51.832809+00:00",
+      "http_status": 200,
+      "final_url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=squadrules&limit=60&offset=0",
+      "content_type": "application/json",
+      "body_sha256": "454eea274ef715bed0aef364fec823e04318850d28eb04f1c16a03a5127c071c",
+      "response_summary": {},
+      "packages_count": 0
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/squadrules/json",
+      "checked_at_utc": "2026-10-01T17:15:51.953535+00:00",
+      "http_status": 404,
+      "final_url": "https://pypi.org/pypi/squadrules/json",
+      "content_type": "application/json",
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "squadrules",
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/squadrules",
+      "checked_at_utc": "2026-10-01T17:15:52.092551+00:00",
+      "http_status": 404,
+      "final_url": "https://crates.io/api/v1/crates/squadrules",
+      "content_type": "application/json",
+      "body_sha256": "db204f958a25f1eba9a2d78fe92cb2b4569f2837fa3f8bb67f6a6aea967e73d0",
+      "response_summary": {}
+    }
+  ]
+}

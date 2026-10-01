@@ -1,6 +1,6 @@
 # Historical recommendation: Tacitloom (superseded)
 
-> **Superseded on 2026-10-01.** No candidate is currently recommended. The revised
+> **Superseded on 2026-10-01.** The current [ranked research](RESEARCH-2026-10-01.md) recommends three finalists, without adoption. The revised
 > [brief](BRIEF.md) rejects obscure vocabulary and explanatory metaphors; Tacitloom
 > fails that test. The text and namespace observations below record the
 > 2026-09-09 decision only, not current availability or adoption guidance.

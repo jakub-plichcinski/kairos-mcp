@@ -1,0 +1,439 @@
+{
+  "purpose": "Read-only screening; availability can change; missing public records do not guarantee claimability.",
+  "domains": [
+    {
+      "domain": "squadrules.com",
+      "checked_at_utc": "2026-10-01T17:17:10.048397+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadrules.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "squadrules.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "squadrules.dev",
+      "checked_at_utc": "2026-10-01T17:17:10.048827+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadrules.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "squadrules.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "squadrules.io",
+      "checked_at_utc": "2026-10-01T17:17:10.048943+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadrules.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "squadrules.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    },
+    {
+      "domain": "definedway.com",
+      "checked_at_utc": "2026-10-01T17:17:10.050282+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "definedway.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "definedway.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "definedway.dev",
+      "checked_at_utc": "2026-10-01T17:17:11.854646+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "definedway.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "definedway.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "definedway.io",
+      "checked_at_utc": "2026-10-01T17:17:11.856398+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "definedway.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "definedway.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    },
+    {
+      "domain": "coopplaybook.com",
+      "checked_at_utc": "2026-10-01T17:17:11.856922+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopplaybook.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopplaybook.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "coopplaybook.dev",
+      "checked_at_utc": "2026-10-01T17:17:11.860192+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopplaybook.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopplaybook.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "coopplaybook.io",
+      "checked_at_utc": "2026-10-01T17:17:13.216502+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopplaybook.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopplaybook.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    }
+  ],
+  "namespaces": [
+    {
+      "candidate": "control",
+      "surface": "github_account",
+      "url": "https://api.github.com/users/octocat",
+      "checked_at_utc": "2026-10-01T17:17:14.489993+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/users/octocat",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "ff9e2c4ce82524cc54904eeedd73a59b92c71af522366ce1b59a0779e22a021e",
+      "response_summary": {
+        "login": "octocat",
+        "name": "The Octocat"
+      }
+    },
+    {
+      "candidate": "control",
+      "surface": "github_repositories",
+      "url": "https://api.github.com/search/repositories?q=github-mcp-server&per_page=5",
+      "checked_at_utc": "2026-10-01T17:17:14.490381+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=github-mcp-server&per_page=5",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "5b936765d7a7ca67067451c52853f360820d7280914d4f1e46fa10649d809e9e",
+      "response_summary": {
+        "total_count": 3604,
+        "incomplete_results": false
+      },
+      "items": [
+        {
+          "full_name": "github/github-mcp-server",
+          "html_url": "https://github.com/github/github-mcp-server",
+          "description": "GitHub's official MCP Server"
+        },
+        {
+          "full_name": "skills/integrate-mcp-with-copilot",
+          "html_url": "https://github.com/skills/integrate-mcp-with-copilot",
+          "description": "Learn how to use MCP Servers with GitHub Copilot"
+        },
+        {
+          "full_name": "LoamStudios/zed-mcp-server-github",
+          "html_url": "https://github.com/LoamStudios/zed-mcp-server-github",
+          "description": "A GitHub MCP Server extension for Zed"
+        },
+        {
+          "full_name": "idosal/git-mcp",
+          "html_url": "https://github.com/idosal/git-mcp",
+          "description": "Put an end to code hallucinations! GitMCP is a free, open-source, remote MCP server for any GitHub project"
+        },
+        {
+          "full_name": "coleam00/remote-mcp-server-with-auth",
+          "html_url": "https://github.com/coleam00/remote-mcp-server-with-auth",
+          "description": "Template for a remote MCP server with GitHub OAuth - following best practices for building MCP servers so you can take this as a starting point for any MCP server you want to build!"
+        }
+      ]
+    },
+    {
+      "candidate": "control",
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/express/latest",
+      "checked_at_utc": "2026-10-01T17:17:14.490452+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/express/latest",
+      "content_type": "application/json",
+      "body_sha256": "3d7d6a94d17c24abeecb500b77f93227e2d8914eb87989db93d7ac3e7ca2134e",
+      "response_summary": {
+        "description": "Fast, unopinionated, minimalist web framework",
+        "name": "express"
+      }
+    },
+    {
+      "candidate": "control",
+      "surface": "npm_scope",
+      "url": "https://registry.npmjs.org/-/org/types/user",
+      "checked_at_utc": "2026-10-01T17:17:14.490489+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/-/org/types/user",
+      "content_type": "application/json",
+      "body_sha256": "1691081d1b376eefc9b1b617d225d6ff71e511b40d17ce3775d242e5073ebe65",
+      "response_summary": {}
+    },
+    {
+      "candidate": "control",
+      "surface": "npm_search",
+      "url": "https://registry.npmjs.org/-/v1/search?text=express&size=5",
+      "checked_at_utc": "2026-10-01T17:17:14.632764+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/-/v1/search?text=express&size=5",
+      "content_type": "application/json",
+      "body_sha256": "44c5b85cde6f8a8beb4f7852137b0f688ad6d39bfe99643ea1ea608f6fff3915",
+      "response_summary": {},
+      "objects_count": 5
+    },
+    {
+      "candidate": "control",
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/library/",
+      "checked_at_utc": "2026-10-01T17:17:14.789281+00:00",
+      "http_status": 200,
+      "final_url": "https://hub.docker.com/v2/orgs/library",
+      "content_type": "application/json",
+      "body_sha256": "9867305490e154991529e4c6cfb56b63023bee11163c2e3f7d59ccf32e5611d2",
+      "response_summary": {
+        "orgname": "library"
+      }
+    },
+    {
+      "candidate": "control",
+      "surface": "docker_image",
+      "url": "https://hub.docker.com/v2/repositories/library/alpine/",
+      "checked_at_utc": "2026-10-01T17:17:14.829850+00:00",
+      "http_status": 200,
+      "final_url": "https://hub.docker.com/v2/repositories/library/alpine/",
+      "content_type": "application/json",
+      "body_sha256": "4f439885f3c121467bcafe45242dfe1c0fe905f4986c7abb42b584e7cb5b45a5",
+      "response_summary": {
+        "description": "A minimal Docker image based on Alpine Linux with a complete package index and only 5 MB in size!",
+        "name": "alpine",
+        "namespace": "library"
+      }
+    },
+    {
+      "candidate": "control",
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/projectquay",
+      "checked_at_utc": "2026-10-01T17:17:14.977540+00:00",
+      "http_status": 200,
+      "final_url": "https://quay.io/api/v1/organization/projectquay",
+      "content_type": "application/json",
+      "body_sha256": "b69618d94d5af6377114d5125876b9e74375650049b029b9f784c8bc463ccf35",
+      "response_summary": {
+        "name": "projectquay"
+      }
+    },
+    {
+      "candidate": "control",
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/smarterclayton",
+      "checked_at_utc": "2026-10-01T17:17:15.026490+00:00",
+      "http_status": 200,
+      "final_url": "https://quay.io/api/v1/users/smarterclayton",
+      "content_type": "application/json",
+      "body_sha256": "50814392d0959a4cfbdf17e77428bf7ca9704cd6f748c7f7a03b8a43d42daf23",
+      "response_summary": {
+        "username": "smarterclayton"
+      }
+    },
+    {
+      "candidate": "control",
+      "surface": "mcp_registry",
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=github&limit=5",
+      "checked_at_utc": "2026-10-01T17:17:15.047763+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=github&limit=5",
+      "content_type": "application/json",
+      "body_sha256": "a2dd2c08be238c19f166a42175ff469fb2fbc56852639f584a5aeb184dfe62ad",
+      "response_summary": {},
+      "servers_count": 5
+    },
+    {
+      "candidate": "control",
+      "surface": "artifact_hub",
+      "url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=postgresql&limit=5&offset=0",
+      "checked_at_utc": "2026-10-01T17:17:15.167827+00:00",
+      "http_status": 200,
+      "final_url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=postgresql&limit=5&offset=0",
+      "content_type": "application/json",
+      "body_sha256": "d40830cad218eb5e5461396e725cbe703d9743dc23beaca6d8e618a558317f9d",
+      "response_summary": {},
+      "packages_count": 5
+    },
+    {
+      "candidate": "control",
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/requests/json",
+      "checked_at_utc": "2026-10-01T17:17:15.325740+00:00",
+      "http_status": 200,
+      "final_url": "https://pypi.org/pypi/requests/json",
+      "content_type": "application/json",
+      "body_sha256": "bcfc6a202592e4e90f5a28ff002694eaa7c58ba741b76077f432b8bee1480111",
+      "response_summary": {}
+    },
+    {
+      "candidate": "control",
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/serde",
+      "checked_at_utc": "2026-10-01T17:17:15.453828+00:00",
+      "http_status": 200,
+      "final_url": "https://crates.io/api/v1/crates/serde",
+      "content_type": "application/json",
+      "body_sha256": "26d8b56c548a06a086fbf2e1e5c0513782e5a5785e5648bc34e33b062d365a72",
+      "response_summary": {}
+    }
+  ]
+}

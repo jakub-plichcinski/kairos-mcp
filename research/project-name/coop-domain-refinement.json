@@ -1,0 +1,334 @@
+{
+  "purpose": "Read-only screening; availability can change; missing public records do not guarantee claimability.",
+  "domains": [
+    {
+      "domain": "squadrules.com",
+      "checked_at_utc": "2026-10-01T17:14:53.340905+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadrules.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "squadrules.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "coopcue.com",
+      "checked_at_utc": "2026-10-01T17:14:53.341265+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopcue.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopcue.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "playclause.com",
+      "checked_at_utc": "2026-10-01T17:14:53.342996+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "playclause.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "playclause.com"
+      }
+    },
+    {
+      "domain": "teamclause.com",
+      "checked_at_utc": "2026-10-01T17:14:53.345305+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "teamclause.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "teamclause.com"
+      }
+    },
+    {
+      "domain": "cooproutine.com",
+      "checked_at_utc": "2026-10-01T17:14:54.503713+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "cooproutine.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "cooproutine.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "sameplaybook.com",
+      "checked_at_utc": "2026-10-01T17:14:54.584739+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "sameplaybook.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "sameplaybook.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "playbyteam.com",
+      "checked_at_utc": "2026-10-01T17:14:54.959421+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "playbyteam.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "playbyteam.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "definedway.dev",
+      "checked_at_utc": "2026-10-01T17:14:54.960976+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "definedway.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "definedway.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "definedway.io",
+      "checked_at_utc": "2026-10-01T17:14:56.004878+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "definedway.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "definedway.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    },
+    {
+      "domain": "crewpractice.dev",
+      "checked_at_utc": "2026-10-01T17:14:56.008047+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "crewpractice.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "crewpractice.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "crewpractice.io",
+      "checked_at_utc": "2026-10-01T17:14:56.089789+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "crewpractice.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "crewpractice.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    },
+    {
+      "domain": "coopplaybook.dev",
+      "checked_at_utc": "2026-10-01T17:14:56.463736+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopplaybook.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopplaybook.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "coopplaybook.io",
+      "checked_at_utc": "2026-10-01T17:14:58.139524+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopplaybook.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopplaybook.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    }
+  ],
+  "namespaces": []
+}

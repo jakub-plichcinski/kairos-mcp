@@ -1,0 +1,292 @@
+{
+  "purpose": "Read-only screening; availability can change; missing public records do not guarantee claimability.",
+  "domains": [
+    {
+      "domain": "crewpact.com",
+      "checked_at_utc": "2026-10-01T17:12:53.143756+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "crewpact.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "crewpact.com"
+      }
+    },
+    {
+      "domain": "playaccord.com",
+      "checked_at_utc": "2026-10-01T17:12:53.144235+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "playaccord.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "playaccord.com"
+      }
+    },
+    {
+      "domain": "crewmethod.com",
+      "checked_at_utc": "2026-10-01T17:12:53.144301+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "crewmethod.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "crewmethod.com"
+      }
+    },
+    {
+      "domain": "squadmethod.com",
+      "checked_at_utc": "2026-10-01T17:12:53.145705+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadmethod.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "squadmethod.com"
+      }
+    },
+    {
+      "domain": "teamcanon.com",
+      "checked_at_utc": "2026-10-01T17:12:54.723251+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "teamcanon.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "teamcanon.com"
+      }
+    },
+    {
+      "domain": "squadlore.com",
+      "checked_at_utc": "2026-10-01T17:12:54.901337+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadlore.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "squadlore.com"
+      }
+    },
+    {
+      "domain": "crewrule.com",
+      "checked_at_utc": "2026-10-01T17:12:54.909228+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "crewrule.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "crewrule.com"
+      }
+    },
+    {
+      "domain": "teamcue.com",
+      "checked_at_utc": "2026-10-01T17:12:54.918258+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "teamcue.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "teamcue.com"
+      }
+    },
+    {
+      "domain": "squadpact.com",
+      "checked_at_utc": "2026-10-01T17:12:56.224184+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadpact.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "squadpact.com"
+      }
+    },
+    {
+      "domain": "squadway.com",
+      "checked_at_utc": "2026-10-01T17:12:56.363009+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "squadway.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "squadway.com"
+      }
+    },
+    {
+      "domain": "coopact.com",
+      "checked_at_utc": "2026-10-01T17:12:56.371567+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopact.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "coopact.com"
+      }
+    },
+    {
+      "domain": "definedway.com",
+      "checked_at_utc": "2026-10-01T17:12:56.476754+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "definedway.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "definedway.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "workdefault.com",
+      "checked_at_utc": "2026-10-01T17:12:57.849659+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "workdefault.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "workdefault.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "playorder.com",
+      "checked_at_utc": "2026-10-01T17:12:57.947374+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "playorder.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "playorder.com"
+      }
+    },
+    {
+      "domain": "teammethod.com",
+      "checked_at_utc": "2026-10-01T17:12:57.968551+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "teammethod.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "UNAVAILABLE",
+        "domainName": "teammethod.com"
+      }
+    }
+  ],
+  "namespaces": []
+}

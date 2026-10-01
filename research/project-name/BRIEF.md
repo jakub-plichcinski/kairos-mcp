@@ -1,6 +1,7 @@
 # KAIROS naming brief: product spirit and local correctness
 
-Status: active brief, revised 2026-10-01. **No name is selected or recommended.**
+Status: active brief, revised 2026-10-01. **No name is selected for adoption.**
+See the [ranked research recommendation](RESEARCH-2026-10-01.md) for three finalists.
 This supersedes the 2026-09-09 Tacitloom recommendation. Naming research only:
 no product rename, migration, registration or purchase.
 

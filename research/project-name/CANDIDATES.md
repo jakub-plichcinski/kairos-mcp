@@ -1,5 +1,8 @@
 # Current naming directions
 
+> The [2026-10-01 ranked research](RESEARCH-2026-10-01.md) supersedes the
+> preliminary screening status below. WorkDefault is rejected; DefinedWay is a finalist.
+
 Status: conceptual hypotheses as of 2026-10-01. **No finalist or recommendation;
 none of these directions has current namespace clearance in this research.**
 Evaluate against the [brief and north-star test](BRIEF.md) before promotion.

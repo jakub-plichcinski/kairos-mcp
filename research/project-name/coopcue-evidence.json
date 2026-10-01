@@ -1,0 +1,331 @@
+{
+  "purpose": "Read-only screening; availability can change; missing public records do not guarantee claimability.",
+  "domains": [
+    {
+      "domain": "coopcue.com",
+      "checked_at_utc": "2026-10-01T17:17:38.548595+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopcue.com",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopcue.com",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "coopcue.dev",
+      "checked_at_utc": "2026-10-01T17:17:38.548882+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopcue.dev",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopcue.dev",
+        "domainNotices": [
+          "HSTS_PRELOADED"
+        ],
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA",
+          "REDACTED_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "12"
+        }
+      }
+    },
+    {
+      "domain": "coopcue.io",
+      "checked_at_utc": "2026-10-01T17:17:38.548986+00:00",
+      "command": [
+        "gcloud",
+        "domains",
+        "registrations",
+        "get-register-parameters",
+        "coopcue.io",
+        "--format=json",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "response": {
+        "availability": "AVAILABLE",
+        "domainName": "coopcue.io",
+        "supportedPrivacy": [
+          "PUBLIC_CONTACT_DATA"
+        ],
+        "yearlyPrice": {
+          "currencyCode": "USD",
+          "units": "60"
+        }
+      }
+    }
+  ],
+  "namespaces": [
+    {
+      "candidate": "coopcue",
+      "surface": "github_account",
+      "url": "https://api.github.com/users/coopcue",
+      "checked_at_utc": "2026-10-01T17:17:40.472386+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/users/coopcue",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "3a32eab6ffbfd1cf2684b1a409bf40db46e46c5eaff44de656e499df05d92730",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "github_repositories",
+      "url": "https://api.github.com/search/repositories?q=coopcue&per_page=100",
+      "checked_at_utc": "2026-10-01T17:17:40.472284+00:00",
+      "http_status": 200,
+      "final_url": "https://api.github.com/search/repositories?q=coopcue&per_page=100",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4af480b8ee5b87b369a76c49bd22c9a783908272ebffbe97898f8ab0f0772a5f",
+      "response_summary": {
+        "total_count": 0,
+        "incomplete_results": false
+      },
+      "items": []
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "github_owner_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/coopcue",
+      "checked_at_utc": "2026-10-01T17:17:40.472350+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/coopcue",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "github_mcp_repository",
+      "url": "https://api.github.com/repos/jakub-plichcinski/coopcue-mcp",
+      "checked_at_utc": "2026-10-01T17:17:40.471925+00:00",
+      "http_status": 404,
+      "final_url": "https://api.github.com/repos/jakub-plichcinski/coopcue-mcp",
+      "content_type": "application/json; charset=utf-8",
+      "body_sha256": "4f50e254a719a6b1b06b529bdaa08980e4acf0878aad0090cba7771f6ebdf0b9",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "npm_package",
+      "url": "https://registry.npmjs.org/coopcue",
+      "checked_at_utc": "2026-10-01T17:17:40.728106+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/coopcue",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "npm_mcp_package",
+      "url": "https://registry.npmjs.org/coopcue-mcp",
+      "checked_at_utc": "2026-10-01T17:17:40.728409+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/coopcue-mcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "npm_scope",
+      "url": "https://registry.npmjs.org/-/org/coopcue/user",
+      "checked_at_utc": "2026-10-01T17:17:40.734603+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/-/org/coopcue/user",
+      "content_type": "application/json",
+      "body_sha256": "b4007018e183e22c41c007931425c2fb7536d42266b6bebc384c61723d0480e4",
+      "response_summary": {
+        "error": "Scope not found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "npm_scoped_package",
+      "url": "https://registry.npmjs.org/@coopcue%2Fmcp",
+      "checked_at_utc": "2026-10-01T17:17:40.750080+00:00",
+      "http_status": 404,
+      "final_url": "https://registry.npmjs.org/@coopcue%2Fmcp",
+      "content_type": "application/json",
+      "body_sha256": "c8d3eae160a892e32837db3dcae515e843e5383fef52b8141940c8bcf8b6d59f",
+      "response_summary": {
+        "error": "Not found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "npm_search",
+      "url": "https://registry.npmjs.org/-/v1/search?text=coopcue&size=100",
+      "checked_at_utc": "2026-10-01T17:17:41.013244+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.npmjs.org/-/v1/search?text=coopcue&size=100",
+      "content_type": "application/json",
+      "body_sha256": "f21b84264c8708cc2c781cf25ed0ba6498ec6c5da809015f0ab4b04928619647",
+      "response_summary": {},
+      "objects_count": 0
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "docker_namespace",
+      "url": "https://hub.docker.com/v2/users/coopcue/",
+      "checked_at_utc": "2026-10-01T17:17:41.035844+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/users/coopcue/",
+      "content_type": "application/json",
+      "body_sha256": "b2082d4d0342d6af81c6e3a386ae79535a3c4c71dba6d38c16940dfe8dfe9493",
+      "response_summary": {
+        "message": "User not found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "docker_image",
+      "url": "https://hub.docker.com/v2/repositories/coopcue/coopcue/",
+      "checked_at_utc": "2026-10-01T17:17:41.102977+00:00",
+      "http_status": 404,
+      "final_url": "https://hub.docker.com/v2/repositories/coopcue/coopcue/",
+      "content_type": "application/json",
+      "body_sha256": "80019e0eccb66899c98d834b3cb71c777f67f5724ec63cc7ce355350e28da5e7",
+      "response_summary": {
+        "message": "object not found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "quay_org",
+      "url": "https://quay.io/api/v1/organization/coopcue",
+      "checked_at_utc": "2026-10-01T17:17:41.103096+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/organization/coopcue",
+      "content_type": "application/json",
+      "body_sha256": "2d39a5ce11478e538d0b589506d7e9e661136370a84ec221815b5986b4b36b25",
+      "response_summary": {
+        "title": "not_found",
+        "detail": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "quay_user",
+      "url": "https://quay.io/api/v1/users/coopcue",
+      "checked_at_utc": "2026-10-01T17:17:41.212341+00:00",
+      "http_status": 404,
+      "final_url": "https://quay.io/api/v1/users/coopcue",
+      "content_type": "application/json",
+      "body_sha256": "548a6e716f31ba559d8c2c89b120434180d3a0e7f044a02a36768cd7d207fcab",
+      "response_summary": {
+        "message": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "quay_image",
+      "url": "https://quay.io/api/v1/repository/coopcue/coopcue",
+      "checked_at_utc": "2026-10-01T17:17:41.283444+00:00",
+      "http_status": 401,
+      "final_url": "https://quay.io/api/v1/repository/coopcue/coopcue",
+      "content_type": "application/json",
+      "body_sha256": "ff558ce99f01e24bfe86d970979ca6b39140bf6514b5e13752e20b04144f0a21",
+      "response_summary": {
+        "title": "invalid_token",
+        "detail": "Requires authentication"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "ghcr_image",
+      "url": "https://ghcr.io/v2/coopcue/coopcue/tags/list",
+      "checked_at_utc": "2026-10-01T17:17:41.302197+00:00",
+      "http_status": 401,
+      "final_url": "https://ghcr.io/v2/coopcue/coopcue/tags/list",
+      "content_type": "application/json",
+      "body_sha256": "89a052af62c612d0e05d2596f03edba77d7d904c4478b387a5dc6305821fe0a1",
+      "response_summary": {}
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "mcp_registry",
+      "url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=coopcue&limit=100",
+      "checked_at_utc": "2026-10-01T17:17:41.529883+00:00",
+      "http_status": 200,
+      "final_url": "https://registry.modelcontextprotocol.io/v0.1/servers?search=coopcue&limit=100",
+      "content_type": "application/json",
+      "body_sha256": "bd77acb780201187e66256677f13e4145d6839a056c477181355b19589b40f23",
+      "response_summary": {},
+      "servers_count": 0
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "artifact_hub",
+      "url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=coopcue&limit=60&offset=0",
+      "checked_at_utc": "2026-10-01T17:17:41.530222+00:00",
+      "http_status": 200,
+      "final_url": "https://artifacthub.io/api/v1/packages/search?ts_query_web=coopcue&limit=60&offset=0",
+      "content_type": "application/json",
+      "body_sha256": "454eea274ef715bed0aef364fec823e04318850d28eb04f1c16a03a5127c071c",
+      "response_summary": {},
+      "packages_count": 0
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "pypi_package",
+      "url": "https://pypi.org/pypi/coopcue/json",
+      "checked_at_utc": "2026-10-01T17:17:41.656927+00:00",
+      "http_status": 404,
+      "final_url": "https://pypi.org/pypi/coopcue/json",
+      "content_type": "application/json",
+      "body_sha256": "b82014934f66beeb9e05a37f65357c4b50db0349d25d68d818ed0319dd4feb40",
+      "response_summary": {
+        "message": "Not Found"
+      }
+    },
+    {
+      "candidate": "coopcue",
+      "surface": "crates_package",
+      "url": "https://crates.io/api/v1/crates/coopcue",
+      "checked_at_utc": "2026-10-01T17:17:41.715005+00:00",
+      "http_status": 404,
+      "final_url": "https://crates.io/api/v1/crates/coopcue",
+      "content_type": "application/json",
+      "body_sha256": "88ae2b38b3158f1df6783c2eb346dd1b2025c6799e1cc7f9e80277c42508aa2e",
+      "response_summary": {}
+    }
+  ]
+}
