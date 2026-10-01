@@ -139,7 +139,7 @@ jobs:
             # PR flow: commit to the PR branch (detached HEAD, push to head_ref)
             git add package.json package-lock.json
             git commit -m "fix(deps): auto-remediate npm audit vulnerabilities"
-            git push origin HEAD:"${{ github.head_ref }}"
+            git push origin HEAD:"$HEAD_REF"
             echo "✓ Committed dependency updates to PR branch"
           else
             # Scheduled/push flow: open a PR
@@ -163,6 +163,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: 0
+          HEAD_REF: ${{ github.head_ref }}
 
   container-base-os-trivy:
     name: Base image OS (Trivy)
@@ -258,7 +259,7 @@ jobs:
             # PR flow: commit to the PR branch (detached HEAD, push to head_ref)
             git add Dockerfile
             git commit -m "fix(docker): auto-update base image to remediate Trivy vulnerabilities"
-            git push origin HEAD:"${{ github.head_ref }}"
+            git push origin HEAD:"$HEAD_REF"
             echo "✓ Committed base image update to PR branch"
           else
             # Scheduled/push flow: open a PR
@@ -275,6 +276,7 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REF: ${{ github.head_ref }}
 
   codeql:
     name: CodeQL
