@@ -49,14 +49,14 @@ WORKDIR /app
 
 FROM base AS deps-registry
 ARG PACKAGE_VERSION
-RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"${PACKAGE_VERSION}\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.19\",\"typescript\":\"5.9.3\"}}" > package.json && \
+RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"${PACKAGE_VERSION}\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.19\",\"typescript\":\"5.9.3\",\"brace-expansion\":\"^5.0.12\",\"undici\":\"8.10.2\"}}" > package.json && \
     npm install --omit=dev && \
     npm cache clean --force && \
     chown -R kairos:nodejs /app
 
 FROM base AS deps-local
 COPY .ci/docker/package.tgz /tmp/pkg.tgz
-RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"file:/tmp/pkg.tgz\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.19\",\"typescript\":\"5.9.3\"}}" > package.json && \
+RUN printf '%s\n' "{\"private\":true,\"dependencies\":{\"@jakub-plichcinski/kairos-mcp\":\"file:/tmp/pkg.tgz\"},\"overrides\":{\"minimatch\":\"^10.2.3\",\"tar\":\"^7.5.19\",\"typescript\":\"5.9.3\",\"brace-expansion\":\"^5.0.12\",\"undici\":\"8.10.2\"}}" > package.json && \
     npm install --omit=dev && \
     npm cache clean --force && \
     chown -R kairos:nodejs /app
